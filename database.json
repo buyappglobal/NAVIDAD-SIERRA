@@ -1,0 +1,66 @@
+
+[
+  {
+    "id": "1",
+    "title": "Belén Viviente de Alájar",
+    "description": "Representación del nacimiento de Jesús por los habitantes del pueblo, en un entorno natural único. Una tradición con décadas de historia.",
+    "town": "Alájar",
+    "date": "2024-12-25",
+    "category": "Belén Viviente",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/nieve-de-navidad-foatbkxtk11j1d1n.jpg"
+  },
+  {
+    "id": "2",
+    "title": "Campanilleros de Higuera",
+    "description": "Coro de campanilleros que cantan villancicos por las calles del pueblo, manteniendo viva la tradición musical de la sierra.",
+    "town": "Higuera de la Sierra",
+    "date": "2024-12-24",
+    "category": "Campanilleros",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/ffd74fbe1.jpg"
+  },
+  {
+    "id": "3",
+    "title": "Mercado Navideño de Aracena",
+    "description": "La Plaza Marqués de Aracena se llena de puestos de artesanía, productos típicos de la sierra, dulces navideños y una gran variedad de artículos de regalo. Ideal para encontrar regalos únicos y disfrutar del ambiente festivo. Habrá talleres para niños y degustaciones.",
+    "town": "Aracena",
+    "date": "2024-12-14",
+    "category": "Mercado Navideño",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/7e12d760-9e8f-11ee-823a-2bfe5f093e41.jpg.webp"
+  },
+  {
+    "id": "4",
+    "title": "Fiesta de Nochevieja",
+    "description": "Gran fiesta en la plaza del pueblo para dar la bienvenida al Año Nuevo, con música en directo y fuegos artificiales.",
+    "town": "Cortegana",
+    "date": "2024-12-31",
+    "category": "Fiesta / Zambombá",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/buenos-pueblos-buenas-tradiciones-navidenas-1.jpg"
+  },
+  {
+    "id": "5",
+    "title": "Cabalgata de Reyes Magos",
+    "description": "Sus Majestades los Reyes Magos de Oriente recorren las calles del pueblo repartiendo caramelos e ilusión a pequeños y mayores.",
+    "town": "Zufre",
+    "date": "2025-01-05",
+    "category": "Cabalgata de Reyes",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/tradiciones-navidenas-1024x500-1.jpg"
+  },
+  {
+    "id": "6",
+    "title": "Cabalgata de Almonaster la Real",
+    "description": "Tradicional Cabalgata de Reyes Magos con medio siglo de historia, organizada por la Asociación 'Carbón Dulce'. El cortejo, con unas seis carrozas, sale a las 18:00h desde el Polígono Industrial, recorre el pueblo y finaliza en la plaza del Ayuntamiento, donde Sus Majestades entregan regalos a los niños.",
+    "town": "Almonaster la Real",
+    "date": "2026-01-05",
+    "category": "Cabalgata de Reyes",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/almonaster-Rafael-Caballero-Vazquez.jpg"
+  },
+  {
+    "id": "7",
+    "title": "Cabalgata de Alájar",
+    "description": "La Cabalgata de Alájar, con raíces en los años 60, fue reactivada en los 80. Actualmente, cuenta con 7 carrozas y música, organizada por la Asociación Cultural Arias Montano y el Ayuntamiento. El desfile sale a las 20:00h desde el Pabellón Municipal y finaliza con la entrega de regalos en la Parroquia de San Marcos.",
+    "town": "Alájar",
+    "date": "2026-01-05",
+    "category": "Cabalgata de Reyes",
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/ALAJAR-CARTEL-2025-Rafael-Caballero-Vazquez.jpeg"
+  }
+]
