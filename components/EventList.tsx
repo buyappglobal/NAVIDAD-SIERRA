@@ -1,12 +1,14 @@
+
 import React from 'react';
 import { EventType } from '../types';
 import EventCard from './EventCard';
 
 interface EventListProps {
   events: EventType[];
+  onSelectEvent: (eventId: string) => void;
 }
 
-const EventList: React.FC<EventListProps> = ({ events }) => {
+const EventList: React.FC<EventListProps> = ({ events, onSelectEvent }) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-16 px-4 bg-slate-800/50 rounded-lg">
@@ -24,7 +26,7 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
             href="https://solonet.es/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="block rounded-lg overflow-hidden shadow-lg hover:opacity-90 transition-opacity"
+            className="block rounded-lg overflow-hidden shadow-lg hover:opacity-90 transition-opacity border border-slate-700"
             aria-label="Publicidad de SoloNet Huelva"
         >
             <img 
@@ -39,6 +41,7 @@ const EventList: React.FC<EventListProps> = ({ events }) => {
         <EventCard 
             key={event.id} 
             event={event} 
+            onSelectEvent={onSelectEvent}
         />
       ))}
     </div>

@@ -3,8 +3,8 @@ import React from 'react';
 import { ICONS, GOOGLE_FORM_URL } from '../constants';
 
 interface HeaderProps {
-    view: 'list' | 'calendar';
-    setView: (view: 'list' | 'calendar') => void;
+    view?: 'list' | 'calendar';
+    setView?: (view: 'list' | 'calendar') => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ view, setView }) => {
@@ -17,22 +17,24 @@ const Header: React.FC<HeaderProps> = ({ view, setView }) => {
                 </div>
                 <div className="flex items-center gap-2">
                     {/* View Toggler */}
-                    <div className="bg-slate-800 p-1 rounded-md flex gap-1">
-                        <button
-                            onClick={() => setView('list')}
-                            className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'list' ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
-                        >
-                            {ICONS.list}
-                            <span className="hidden sm:inline">Lista</span>
-                        </button>
-                        <button
-                            onClick={() => setView('calendar')}
-                             className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'calendar' ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
-                        >
-                           {ICONS.calendar}
-                           <span className="hidden sm:inline">Calendario</span>
-                        </button>
-                    </div>
+                    {view && setView && (
+                        <div className="bg-slate-800 p-1 rounded-md flex gap-1">
+                            <button
+                                onClick={() => setView('list')}
+                                className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'list' ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
+                            >
+                                {ICONS.list}
+                                <span className="hidden sm:inline">Lista</span>
+                            </button>
+                            <button
+                                onClick={() => setView('calendar')}
+                                 className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'calendar' ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
+                            >
+                               {ICONS.calendar}
+                               <span className="hidden sm:inline">Calendario</span>
+                            </button>
+                        </div>
+                    )}
                     
                     <a
                         href={GOOGLE_FORM_URL}

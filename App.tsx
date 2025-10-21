@@ -5,11 +5,13 @@ import Header from './components/Header';
 import TownFilter from './components/TownFilter';
 import EventList from './components/EventList';
 import EventCalendar from './components/EventCalendar';
+import EventDetail from './components/EventDetail';
 
 const App: React.FC = () => {
   const [events, setEvents] = useState<EventType[]>([]);
   const [selectedTown, setSelectedTown] = useState<string>('Todos');
   const [view, setView] = useState<'list' | 'calendar'>('list');
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('./database.json')
@@ -38,6 +40,22 @@ const App: React.FC = () => {
     const towns = new Set(events.map(event => event.town));
     return Array.from(towns).sort();
   }, [events]);
+  
+  const selectedEvent = useMemo(() => {
+    if (!selectedEventId) return null;
+    return events.find(e => e.id === selectedEventId);
+  }, [selectedEventId, events]);
+
+  if (selectedEvent) {
+    return (
+      <div className="bg-slate-900 text-white min-h-screen font-sans">
+        <Header />
+        <main className="container mx-auto p-4">
+          <EventDetail event={selectedEvent} onBack={() => setSelectedEventId(null)} />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-slate-900 text-white min-h-screen font-sans">
@@ -55,9 +73,9 @@ const App: React.FC = () => {
         </aside>
         <section className="md:col-span-3">
           {view === 'list' ? (
-            <EventList events={filteredEvents} />
+            <EventList events={filteredEvents} onSelectEvent={setSelectedEventId} />
           ) : (
-            <EventCalendar events={filteredEvents} />
+            <EventCalendar events={filteredEvents} onSelectEvent={setSelectedEventId} />
           )}
         </section>
       </main>
