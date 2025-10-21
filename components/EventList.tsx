@@ -23,15 +23,15 @@ const EventList: React.FC<EventListProps> = ({ events, onSelectEvent }) => {
       {/* --- Banner Publicitario Añadido --- */}
       <div className="w-full">
          <a 
-            href="https://solonet.es/" 
+            href="http://www.turismohuelva.org/inicio/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="block rounded-lg overflow-hidden shadow-lg hover:opacity-90 transition-opacity border border-slate-700"
-            aria-label="Publicidad de SoloNet Huelva"
+            aria-label="Publicidad de Turismo Huelva"
         >
             <img 
                 src="https://solonet.es/wp-content/uploads/2025/10/BANNER-HUELVA.webp" 
-                alt="Publicidad de SoloNet Huelva" 
+                alt="Publicidad de Turismo Huelva" 
                 className="w-full h-auto object-contain"
             />
         </a>
