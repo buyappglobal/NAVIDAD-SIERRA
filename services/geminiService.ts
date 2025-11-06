@@ -1,7 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { EventType, EventCategory } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+// FIX: Per coding guidelines, initialize GoogleGenAI without type assertion.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const parseEventsFromText = async (text: string): Promise<Omit<EventType, 'id'>[] | null> => {
   // FIX: Per coding guidelines, the API key is assumed to be present in the environment.

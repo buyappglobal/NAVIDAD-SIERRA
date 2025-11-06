@@ -1,6 +1,6 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { EventType, EventCategory } from '../types';
+import { ICONS } from '../constants';
 
 // Copied from EventCard.tsx for consistency
 const categoryColors: Record<EventCategory, string> = {
@@ -16,24 +16,21 @@ const categoryColors: Record<EventCategory, string> = {
 interface EventCalendarProps {
   events: EventType[];
   onSelectEvent: (eventId: string) => void;
+  isLoggedIn: boolean;
+  onEdit: (event: EventType) => void;
 }
 
-const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) => {
-  // Default to a fallback date that will be updated by the effect.
+const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, isLoggedIn, onEdit }) => {
   const [currentDate, setCurrentDate] = useState(new Date('2025-12-01T00:00:00'));
 
-  // Effect to set the initial week to the first event's week.
-  // This also updates the view when the filtered events change.
   useEffect(() => {
     if (events.length > 0) {
-      // The parent component sorts events by date, so the first one is the earliest.
       const firstEventDate = events[0].date;
       setCurrentDate(new Date(`${firstEventDate}T00:00:00`));
     } else {
-      // If there are no events to show, keep the default or reset to a known date.
       setCurrentDate(new Date('2025-12-01T00:00:00'));
     }
-  }, [events]); // Re-run the effect if the events prop changes.
+  }, [events]);
 
 
   const eventsByDate = useMemo(() => {
@@ -117,8 +114,10 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) 
            <div className="mt-3">
             {dayEvents.length > 0 ? (
                 <div className="space-y-3">
-                    {dayEvents.map(event => (
-                        <div key={event.id} className="bg-slate-900/50 p-3 rounded-md flex items-start justify-between gap-4">
+                    {dayEvents.map(event => {
+                        const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.town + ', Huelva, España')}`;
+                        return (
+                        <div key={event.id} className="bg-slate-900/50 p-3 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div>
                                 <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-1 text-white ${categoryColors[event.category]}`}>
                                     {event.category}
@@ -126,14 +125,25 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) 
                                 <p className="font-bold text-amber-400">{event.title}</p>
                                 <p className="text-sm text-slate-400 font-semibold">{event.town}</p>
                             </div>
-                            <button 
-                                onClick={() => onSelectEvent(event.id)} 
-                                className="text-amber-400 hover:text-amber-300 text-sm font-bold whitespace-nowrap self-center"
-                            >
-                                Saber más
-                            </button>
+                            <div className="flex items-center gap-2 self-start sm:self-center">
+                                {isLoggedIn && (
+                                  <button
+                                    onClick={() => onEdit(event)}
+                                    className="p-2 rounded-md bg-slate-700 hover:bg-slate-600 transition-colors"
+                                    aria-label="Editar evento"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536l12.232-12.232z" /></svg>
+                                  </button>
+                                )}
+                                <button 
+                                    onClick={() => onSelectEvent(event.id)} 
+                                    className="text-amber-400 hover:text-amber-300 text-sm font-bold whitespace-nowrap"
+                                >
+                                    Saber más
+                                </button>
+                            </div>
                         </div>
-                    ))}
+                    )})}
                 </div>
             ) : (
                 <p className="text-slate-500 text-sm italic">No hay eventos programados.</p>

@@ -15,6 +15,7 @@ export interface EventType {
   date: string; // YYYY-MM-DD
   category: EventCategory;
   imageUrl?: string;
+  interestInfo?: string; // Información adicional sobre el pueblo, rutas, etc.
 }
 
 // Types for change instructions

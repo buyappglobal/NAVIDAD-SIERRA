@@ -1,13 +1,14 @@
-
 import React from 'react';
 import { ICONS, GOOGLE_FORM_URL } from '../constants';
 
 interface HeaderProps {
     view?: 'list' | 'calendar';
     setView?: (view: 'list' | 'calendar') => void;
+    isLoggedIn?: boolean;
+    onAddEventClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ view, setView }) => {
+const Header: React.FC<HeaderProps> = ({ view, setView, isLoggedIn, onAddEventClick }) => {
     return (
         <header className="bg-slate-900/50 backdrop-blur-sm sticky top-0 z-40 p-4 shadow-lg mb-8">
             <div className="container mx-auto flex justify-between items-center gap-4">
@@ -36,16 +37,27 @@ const Header: React.FC<HeaderProps> = ({ view, setView }) => {
                         </div>
                     )}
                     
-                    <a
-                        href={GOOGLE_FORM_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-500 transition-colors ml-2"
-                        title="Sugiere un nuevo evento"
-                    >
-                        {ICONS.add}
-                        <span className="hidden sm:inline">Sugerir Evento</span>
-                    </a>
+                    {isLoggedIn ? (
+                         <button
+                            onClick={onAddEventClick}
+                            className="flex items-center gap-2 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-500 transition-colors ml-2"
+                            title="Añadir un nuevo evento"
+                        >
+                            {ICONS.add}
+                            <span className="hidden sm:inline">Añadir Evento</span>
+                        </button>
+                    ) : (
+                        <a
+                            href={GOOGLE_FORM_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-500 transition-colors ml-2"
+                            title="Sugiere un nuevo evento"
+                        >
+                            {ICONS.add}
+                            <span className="hidden sm:inline">Sugerir Evento</span>
+                        </a>
+                    )}
                 </div>
             </div>
         </header>

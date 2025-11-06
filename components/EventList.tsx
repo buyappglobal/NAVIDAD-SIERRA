@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { EventType } from '../types';
 import EventCard from './EventCard';
@@ -6,13 +5,15 @@ import EventCard from './EventCard';
 interface EventListProps {
   events: EventType[];
   onSelectEvent: (eventId: string) => void;
+  isLoggedIn: boolean;
+  onEdit: (event: EventType) => void;
 }
 
-const EventList: React.FC<EventListProps> = ({ events, onSelectEvent }) => {
+const EventList: React.FC<EventListProps> = ({ events, onSelectEvent, isLoggedIn, onEdit }) => {
   if (events.length === 0) {
     return (
-      <div className="text-center py-16 px-4 bg-slate-800/50 rounded-lg">
-        <h3 className="text-2xl font-bold text-slate-400">No hay eventos que mostrar</h3>
+      <div className="text-center py-16 px-4 bg-slate-800/50 rounded-lg animate-fade-in">
+        <h3 className="text-2xl font-bold text-slate-400 font-display">No hay eventos que mostrar</h3>
         <p className="text-slate-500 mt-2">Prueba a seleccionar otro pueblo o a borrar los filtros.</p>
       </div>
     );
@@ -21,7 +22,10 @@ const EventList: React.FC<EventListProps> = ({ events, onSelectEvent }) => {
   return (
     <div className="grid gap-6 md:gap-8 grid-cols-1">
       {/* --- Banner Publicitario Añadido --- */}
-      <div className="w-full">
+      <div 
+        className="w-full animate-fade-in-up" 
+        style={{ animationDelay: '50ms' }}
+      >
          <a 
             href="http://www.turismohuelva.org/inicio/" 
             target="_blank" 
@@ -37,12 +41,19 @@ const EventList: React.FC<EventListProps> = ({ events, onSelectEvent }) => {
         </a>
       </div>
 
-      {events.map(event => (
-        <EventCard 
-            key={event.id} 
-            event={event} 
-            onSelectEvent={onSelectEvent}
-        />
+      {events.map((event, index) => (
+        <div
+          key={event.id}
+          className="animate-fade-in-up"
+          style={{ animationDelay: `${100 + index * 75}ms` }}
+        >
+          <EventCard 
+              event={event} 
+              onSelectEvent={onSelectEvent}
+              isLoggedIn={isLoggedIn}
+              onEdit={onEdit}
+          />
+        </div>
       ))}
     </div>
   );
