@@ -8,6 +8,7 @@ interface EventDetailProps {
   onBack: () => void;
   isLoggedIn: boolean;
   onEdit: () => void;
+  onCategoryFilterClick: (category: EventCategory) => void;
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
@@ -58,7 +59,7 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit }) => {
+const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick }) => {
   const { title, description, town, date, category, imageUrl, interestInfo } = event;
   const colors = categoryColors[category] || categoryColors[EventCategory.OTRO];
   const [isReading, setIsReading] = useState(false);
@@ -143,9 +144,12 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
           )}
           
           <div className={`p-6 sm:p-8 border-t-4 ${colors.border}`}>
-            <span className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-4 ${colors.bg} ${colors.text}`}>
+            <button
+                onClick={() => onCategoryFilterClick(category)}
+                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-4 ${colors.bg} ${colors.text} transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-amber-400`}
+            >
               {category}
-            </span>
+            </button>
             <h1 className="text-3xl sm:text-4xl font-display text-amber-300 mb-4">{title}</h1>
             
             <div className="flex flex-col sm:flex-row sm:items-center justify-between flex-wrap gap-y-4 gap-x-8 text-slate-300 mb-6 border-y border-slate-700/50 py-4">

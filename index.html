@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
       body {
         font-family: 'Lato', sans-serif;
@@ -42,6 +43,30 @@
         animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* Ease-out suave */
         animation-fill-mode: forwards;
       }
+      
+      /* Estilos personalizados para Leaflet - TEMA CLARO */
+      .leaflet-popup-content-wrapper {
+        background-color: #ffffff; /* white */
+        color: #1e293b; /* slate-800 */
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+      .leaflet-popup-content {
+        margin: 12px;
+        font-family: 'Lato', sans-serif;
+      }
+      .leaflet-popup-tip-container .leaflet-popup-tip {
+        background-color: #ffffff; /* white */
+      }
+      .leaflet-popup-close-button {
+        color: #64748b !important; /* slate-500 */
+      }
+      .leaflet-popup-close-button:hover {
+        color: #0f172a !important; /* slate-900 */
+      }
+      .leaflet-container a.leaflet-popup-close-button {
+        font-size: 20px;
+      }
     </style>
 <script type="importmap">
 {
@@ -56,5 +81,6 @@
 </head>
 <body class="bg-slate-900 text-slate-200">
     <div id="root"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
 </html>

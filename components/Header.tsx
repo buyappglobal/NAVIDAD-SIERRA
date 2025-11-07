@@ -4,11 +4,13 @@ import { ICONS, GOOGLE_FORM_URL } from '../constants';
 interface HeaderProps {
     view?: 'list' | 'calendar';
     setView?: (view: 'list' | 'calendar') => void;
+    isMapVisible?: boolean;
+    onMapClick?: () => void;
     isLoggedIn?: boolean;
     onAddEventClick?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ view, setView, isLoggedIn, onAddEventClick }) => {
+const Header: React.FC<HeaderProps> = ({ view, setView, isMapVisible, onMapClick, isLoggedIn, onAddEventClick }) => {
     return (
         <header className="bg-slate-900/50 backdrop-blur-sm sticky top-0 z-40 p-4 shadow-lg mb-8">
             <div className="container mx-auto flex justify-between items-center gap-4">
@@ -18,21 +20,28 @@ const Header: React.FC<HeaderProps> = ({ view, setView, isLoggedIn, onAddEventCl
                 </div>
                 <div className="flex items-center gap-2">
                     {/* View Toggler */}
-                    {view && setView && (
+                    {setView && (
                         <div className="bg-slate-800 p-1 rounded-md flex gap-1">
                             <button
                                 onClick={() => setView('list')}
-                                className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'list' ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
+                                className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'list' && !isMapVisible ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
                             >
                                 {ICONS.list}
                                 <span className="hidden sm:inline">Lista</span>
                             </button>
                             <button
                                 onClick={() => setView('calendar')}
-                                 className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'calendar' ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
+                                 className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${view === 'calendar' && !isMapVisible ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
                             >
                                {ICONS.calendar}
                                <span className="hidden sm:inline">Calendario</span>
+                            </button>
+                            <button
+                                onClick={onMapClick}
+                                 className={`flex items-center gap-2 px-3 py-1 text-sm rounded transition-colors ${isMapVisible ? 'bg-amber-400 text-slate-900' : 'text-slate-300 hover:bg-slate-700'}`}
+                            >
+                               {ICONS.map}
+                               <span className="hidden sm:inline">Mapa</span>
                             </button>
                         </div>
                     )}

@@ -11,16 +11,16 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
   const currentYear = new Date().getFullYear();
 
   const friendLinks = [
-    { name: 'Diputación Huelva', url: 'https://www.diphuelva.es/' },
-    { name: 'Delegación Turismo', url: 'https://www.turismohuelva.org/' },
-    { name: 'Andalucía Flamenco', url: 'https://nuevobuscador.afland.es' },
-    { name: 'Destino Huelva', url: 'https://www.destinohuelva.es/' },
+    { name: 'Delegación de Turismo', url: 'https://www.turismohuelva.org/' },
+    { name: 'Diputación de Huelva', url: 'https://www.diphuelva.es/' },
+    { name: 'Agencia Destino Huelva', url: 'https://www.turismohuelva.org/blog/' },
+    { name: 'Andalucía Flamenco Land', url: 'https://nuevobuscador.afland.es' },
   ];
 
   const legalLinks = [
-    { name: 'Política de Cookies', url: 'https://turisteandoporhuelva.es/politica-de-cookies/' },
-    { name: 'Política de Privacidad', url: 'https://turisteandoporhuelva.es/politica-de-privacidad/' },
-    { name: 'Aviso Legal', url: 'https://turisteandoporhuelva.es/aviso-legal/' },
+    { name: 'Política de Cookies', url: 'https://turisteandoporhuelva.es/cookies/' },
+    { name: 'Política de Privacidad', url: 'https://turisteandoporhuelva.es/privacidad/' },
+    { name: 'Aviso Legal', url: 'https://turisteandoporhuelva.es/privacidad/' },
   ];
 
   return (

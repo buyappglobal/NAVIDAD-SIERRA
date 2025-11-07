@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { EventType, EventCategory } from '../types';
 import { IMAGE_PLACEHOLDER } from '../constants';
@@ -16,9 +17,10 @@ interface EventCardProps {
   onSelectEvent: (eventId: string) => void;
   isLoggedIn: boolean;
   onEdit: (event: EventType) => void;
+  onCategoryFilterClick: (category: EventCategory) => void;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn, onEdit }) => {
+const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn, onEdit, onCategoryFilterClick }) => {
   const { id, title, description, town, date, category, imageUrl } = event;
 
   const eventDate = new Date(date + 'T00:00:00');
@@ -34,7 +36,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn,
   };
 
   return (
-    <article className="bg-slate-800 rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row group transition-all duration-300 hover:shadow-2xl">
+    <article className="bg-slate-800 md:rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row group transition-all duration-300 hover:shadow-2xl">
       <div className="md:w-2/5 flex-shrink-0 h-56 md:h-auto flex items-center justify-center p-4">
         <div className="relative w-full h-full flex items-center justify-center">
             <div className="w-full h-full flex items-center justify-center p-2">
@@ -51,9 +53,12 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn,
       <div className="p-6 flex flex-col justify-between flex-grow">
         <div>
           <div className="flex justify-between items-start mb-2">
-            <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full text-white ${categoryColors[category]}`}>
+             <button
+                onClick={() => onCategoryFilterClick(category)}
+                className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full text-white ${categoryColors[category]} transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-amber-400`}
+            >
               {category}
-            </span>
+            </button>
           </div>
           <h2 className="text-2xl font-display text-amber-300 mb-2">{title}</h2>
           <p className="text-slate-400 line-clamp-2 mb-4">{description}</p>
