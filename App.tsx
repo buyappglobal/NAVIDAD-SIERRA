@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import { EventType, EventCategory, ChangeInstruction } from './types';
 import Header from './components/Header';
@@ -66,7 +68,7 @@ const initialEventsData: EventType[] = [
   {
     "id": "6",
     "title": "Cabalgata de Almonaster la Real",
-    "description": "La Cabalgata de Reyes Magos de Almonaster la Real comenzó su andadura histórica hace medio siglo. Era una Cabalgata  importante, los Reyes Magos iban a caballo, y se recogían entonces buenos regalos, normalmente en el porche de la Iglesia.\n\nComo curiosidad sobre 1986 la organizaban las Hermanas de la Providencia, junto a un grupo de personas. Entonces, todas las carrozas escenificaban pasajes de la vida de Jesús, siendo por tanto de temática bíblica.\n\nActualmente, la organiza un valiente e ilusionado grupo joven denominado Asociación Carbón Dulce, que comenzaron en 2019 su andadura con éxito tras la gran acogida del pueblo, padres y madres, y los niños como grandes protagonistas.\n\nAnteriormente a este joven colectivo  fueron las madres del pueblo quiénes hicieron que la Cabalgata no desapareciera.\n\nA estos grupos y personas le ayudan de forma importante el Ayuntamiento de Almonaster y algunas empresas del municipio como las vinculadas con el sector minero.\n\nEl cortejo se compone de varias carrozas, durante estos últimos años en torno a seis, destacando los tronos de los tres Reyes Magos y el resto son de fantasía y animación que cada año van cambiando de temática.\n\nLa Cabalgata de Almonaster sale a las 18 horas desde el Polígono Industrial.\n\nSeguidamente, baja por el callejón de Carmona, llega a la plaza del Ayuntamiento, avanza por El Barrio hasta llegar a la Iglesia donde se realiza una ofrenda al Niño Jesús. Destacar que durante el recorrido la cabalgata es animada por una charanga.\n\nEl cortejo sigue de nuevo hacia la céntrica plaza donde se ubica el Ayuntamiento de Almonaster la Real, y allí se colocan  los Reyes Magos en sus tronos. A continuación, todos los niños del pueblo y presentes son recibidos por SS.MM para entregarles algún obsequio.\n\nComo curiosidad Almonaster la Real es el pueblo de Huelva con un mayor número de aldeas y además de la propia de Almonaster en muchas de ellas existen también Cabalgatas  (cuya salida suele ser el mismo día 5 por la tarde temprano) y otros actos típicos de la Navidad.",
+    "description": "La Cabalgata de Reyes Magos de Almonaster la Real comenzó su andadura histórica hace medio siglo. Era una Cabalgata  importante, los Reyes Magos iban a caballo, y se recogían entonces buenos regalos, normalmente en el porche de la Iglesia.\n\nComo curiosidad sobre 1986 la organizaban las Hermanas de la Providencia, junto a un grupo de personas. Entonces, todas las carrozas escenificaban pasajes de la vida de Jesús, siendo por tanto de temática bíblica.\n\nActualmente, la organiza un valiente e ilusionado grupo joven denominado Asociación Carbón Dulce, que comenzaron en 2019 su andadura con éxito tras la gran acogida del pueblo, padres y madres, y los niños como grandes protagonists.\n\nAnteriormente a este joven colectivo  fueron las madres del pueblo quiénes hicieron que la Cabalgata no desapareciera.\n\nA estos grupos y personas le ayudan de forma importante el Ayuntamiento de Almonaster y algunas empresas del municipio como las vinculadas con el sector minero.\n\nEl cortejo se compone de varias carrozas, durante estos últimos años en torno a seis, destacando los tronos de los tres Reyes Magos y el resto son de fantasía y animación que cada año van cambiando de temática.\n\nLa Cabalgata de Almonaster sale a las 18 horas desde el Polígono Industrial.\n\nSeguidamente, baja por el callejón de Carmona, llega a la plaza del Ayuntamiento, avanza por El Barrio hasta llegar a la Iglesia donde se realiza una ofrenda al Niño Jesús. Destacar que durante el recorrido la cabalgata es animada por una charanga.\n\nEl cortejo sigue de nuevo hacia la céntrica plaza donde se ubica el Ayuntamiento de Almonaster la Real, y allí se colocan  los Reyes Magos en sus tronos. A continuación, todos los niños del pueblo y presentes son recibidos por SS.MM para entregarles algún obsequio.\n\nComo curiosidad Almonaster la Real es el pueblo de Huelva con un mayor número de aldeas y además de la propia de Almonaster en muchas de ellas existen también Cabalgatas  (cuya salida suele ser el mismo día 5 por la tarde temprano) y otros actos típicos de la Navidad.",
     "town": "Almonaster la Real",
     "date": "2026-01-05",
     "category": EventCategory.CABALGATA,
@@ -109,6 +111,92 @@ const initialEventsData: EventType[] = [
     "category": EventCategory.OTRO,
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/AGENDA-TURISTEANDO-ALAJAR-4-Rafael-Caballero-Vazquez.png",
     "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Aracena\nAracena es la capital de la comarca y un centro neurálgico que combina patrimonio, naturaleza y gastronomía.\n\nGruta de las Maravillas: Una de las cuevas turísticas más espectaculares de España. Un viaje subterráneo a través de lagos y formaciones calcáreas que te dejará sin palabras. ¡Imprescindible reservar con antelación!\n\nCastillo de Aracena e Iglesia Prioral: Domina el pueblo desde su cerro. Pasea por las murallas del castillo fortaleza y visita la iglesia gótico-mudéjar, el templo más antiguo y emblemático de la localidad.\n\nMuseo del Jamón: Un centro de interpretación dedicado al producto estrella de la sierra. Descubre todo el proceso de elaboración del jamón ibérico de bellota, desde la dehesa hasta tu plato.\n\nPlaza Alta y Plaza Marqués de Aracena: El corazón social y arquitectónico de la ciudad, con edificios modernistas como el Casino de Arias Montano y el Ayuntamiento.\n\n🥾 Ruta de Senderismo Sugerida: Aracena - Linares de la Sierra\nUna de las rutas más clásicas y bellas de la comarca.\n\nRecorrido: Aracena – Linares de la Sierra (lineal).\n\nDistancia y Dificultad: Unos 5 km (solo ida), de dificultad baja. Ideal para hacer en una mañana y comer en Linares.\n\nAtractivo: El camino, conocido como 'el camino de las pedrizas', es un antiguo sendero empedrado que serpentea entre dehesas de encinas y alcornoques, muros de piedra y arroyos. El paisaje es puramente serrano.\n\nConexión: Puedes volver por el mismo camino o coordinar un taxi para el regreso.\n\n🛣️ Cómo Llegar a Aracena\n\nDesde Huelva (Capital)\nEn Coche: La ruta más común es por la N-435 en dirección a Badajoz. Tras pasar la zona minera, encontrarás las indicaciones para tomar la carretera hacia Aracena (aprox. 1h 15min - 100 km).\n\nEn Autobús: La empresa Damas ofrece conexiones directas y frecuentes desde Huelva.\n\nDesde Sevilla\nEn Coche: Toma la autovía A-66 (Ruta de la Plata) dirección Mérida y coge la salida 75 hacia la N-433 (dirección Portugal). Sigue esta carretera y te llevará directamente a Aracena (aprox. 1h 10min - 90 km).\n\nEn Autobús: Damas ofrece servicios directos desde la Estación de Autobuses Plaza de Armas de Sevilla."
+  },
+  {
+    "id": "16",
+    "title": "Belén Viviente de Galaroza",
+    "description": `Galaroza Ilumina la Navidad con su Belén Viviente: Una Tradición que Renace en el Cerro de Santa Brígida
+
+Galaroza, un pintoresco pueblo en el corazón de la Sierra de Huelva, se prepara una vez más para transportarnos al pasado con la celebración de su Belén Viviente. Más que una simple representación, este evento es un conmovedor tributo a la historia y la fe, que cada año atrae a visitantes de todas partes para experimentar la magia de la Navidad de una manera única.
+
+Un Viaje a las Raíces del Belén Viviente
+
+La tradición de los belenes vivientes, o "pesebres vivientes", tiene sus raíces en la Europa medieval, con San Francisco de Asís siendo uno de los pioneros al organizar la primera representación de este tipo en la Navidad de 1223 en Greccio, Italia. Su objetivo era acercar la historia del nacimiento de Jesús a la gente común de una manera tangible y emocional. Desde entonces, la práctica se extendió por todo el continente, adaptándose a las costumbres y paisajes locales. En España, los belenes vivientes han florecido en diversas regiones, y Galaroza ha sabido infundirle su propio espíritu y encanto, convirtiéndolo en un evento emblemático de la Sierra de Huelva.
+
+El Cerro de Santa Brígida: Un Escenario Natural de Inigualable Belleza
+
+Lo que distingue al Belén Viviente de Galaroza es, sin duda, su espectacular ubicación: el Cerro de Santa Brígida. Este enclave natural, que domina el paisaje de Galaroza, ofrece un telón de fondo incomparable para recrear la Judea de hace más de dos mil años. Las laderas del cerro, con su vegetación autóctona y sus vistas panorámicas, se transforman en las calles de Belén, el portal, el mercado, los oficios tradicionales y los campos de pastores. La topografía del terreno y la iluminación cuidadosamente diseñada crean una atmósfera mágica y envolvente, donde cada rincón cuenta una historia y cada personaje cobra vida con una autenticidad asombrosa. Pasear por el Cerro de Santa Brígida durante la representación es como hacer un verdadero viaje en el tiempo, sumergiéndose en la esencia de la Navidad.
+
+Galaroza 2025: Un Belén Viviente que Cobra Vida de Nuevo
+
+Según el cartel anunciador, Galaroza se prepara para recibir nuevamente a sus visitantes en el Belén Viviente 2025. Los detalles clave para no perderse esta experiencia son los siguientes:
+
+Horario: El Belén estará abierto al público de 18:30 a 20:30 horas.
+
+Días de Realización: Podrá disfrutarse los días 6, 7, 8, 13, 14, 20, 21, 27 y 28 de diciembre.
+
+Lugar: Como ya es tradición, la representación tendrá lugar en el emblemático Cerro de Santa Brígida.
+
+El Belén Viviente de Galaroza es una cita ineludible para quienes buscan una experiencia navideña auténtica y profundamente arraigada en la cultura y la tradición. Una oportunidad perfecta para disfrutar en familia, redescubrir la historia de la Navidad y maravillarse con la belleza de un pueblo que sabe mantener vivas sus costumbres.
+
+Si estás planeando una escapada navideña, el Belén Viviente de Galaroza en el Cerro de Santa Brígida es una parada obligatoria. ¡Te esperamos para vivir la magia!`,
+    "town": "Galaroza",
+    "date": "2025-12-06",
+    "category": EventCategory.BELEN_VIVIENTE,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/BELEN-GALAROZA.jpg",
+    "interestInfo": `🏞️ Lugares Emblemáticos que Debes Visitar en Galaroza
+Conocido como el "Valle del Agua" por la Ribera de Múrtiga que lo atraviesa, Galaroza es un pueblo lleno de vida, agua y tradiciones.
+
+Iglesia Parroquial de la Purísima Concepción: Un imponente templo del siglo XVII que domina el centro del pueblo, con una torre barroca y un valioso patrimonio artístico en su interior.
+
+Ermita de Santa Brígida: Situada en el cerro que acoge el Belén Viviente, esta ermita del siglo XIV es un lugar de gran devoción local y un mirador natural excepcional.
+
+Paseo del Carmen y Fuente de Nuestra Señora del Carmen: El corazón social de Galaroza, un paseo arbolado junto a una fuente-monumento de Aníbal González (arquitecto de la Plaza de España de Sevilla). Un lugar perfecto para relajarse.
+
+Arquitectura del Agua: No te pierdas sus numerosas fuentes, pilares y lavaderos que salpican las calles, testimonio de la importancia del agua en la vida del pueblo.
+
+🥾 Ruta de Senderismo Sugerida: Galaroza - Fuenteheridos (Ruta de las Cuestecillas)
+Un sendero que te sumerge en el corazón del Parque Natural.
+
+Recorrido: Galaroza – Fuenteheridos (lineal).
+
+Distancia y Dificultad: Aproximadamente 3 km (solo ida), de dificultad baja. Ideal para un paseo tranquilo.
+
+Atractivo: La ruta discurre entre huertas, castañares y dehesas, siguiendo en parte el curso de la Ribera de Múrtiga. Es un camino lleno de encanto que conecta dos de los pueblos más emblemáticos de la sierra.
+
+Conexión: Puedes volver por el mismo camino o continuar hacia otros senderos de la red del parque.
+
+🛣️ Cómo Llegar a Galaroza
+
+Desde Huelva (Capital)
+En Coche: Toma la N-435 en dirección a Badajoz. Al llegar a la altura de Gibraleón, sigue las indicaciones de la N-435. Pasarás Jabugo antes de llegar a Galaroza (aprox. 1h 25min - 110 km).
+
+En Autobús: La empresa Damas conecta Huelva con Galaroza, siendo una de las paradas principales de la línea de la sierra.
+
+Desde Sevilla
+En Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue la N-433 pasando Aracena hasta llegar a Galaroza (aprox. 1h 25min - 115 km).
+
+En Autobús: Damas ofrece servicios desde Sevilla que pasan por Galaroza.`
+  },
+  {
+    "id": "17",
+    "title": "Los Rehiletes de Aracena",
+    "description": "En el corazón de la Sierra de Aracena, Huelva, justo en la víspera de la festividad de la Inmaculada Concepción, el calendario se detiene y la noche se ilumina con una de las tradiciones más espectaculares y queridas por sus habitantes: La Noche de los Rehiletes. Más que una simple celebración, es un ritual purificador, un cierre de ciclo agrícola y una fascinante muestra de la cultura serrana.\n\n📜 Historia y Simbología: El Triángulo de la Tradición\nEl origen exacto de los Rehiletes se pierde en la bruma del tiempo, lo que añade un aura de misterio y arraigo a la fiesta. Sin embargo, tres pilares fundamentales se entrelazan para dar sentido a esta ancestral celebración:\n\nEl Cierre del Ciclo Agrícola: La fiesta está íntimamente ligada al castañar, el motor económico y paisajístico de la Sierra. El 7 de diciembre marca, tradicionalmente, el final de la cosecha de la castaña y la caída masiva de la hoja. La quema del rehilete, compuesto por estas hojas secas, se interpreta como un acto de \"limpieza\" del campo, permitiendo que la tierra descanse y se prepare para las lluvias invernales.\n\nEl Fuego Purificador (Pagano): En la mayoría de las culturas, el fuego es un elemento de purificación y renovación. Quemar los rehiletes en grandes candelas (hogueras) en cada barrio es un rito ancestral para alejar los malos espíritus, purificar el año que termina y dar la bienvenida a la etapa siguiente con energías renovadas.\n\nLa Víspera Religiosa: La celebración ocurre la tarde-noche del 7 de diciembre, justo antes de la festividad de la Purísima Concepción o \"La Pura\" (8 de diciembre). Esta cercanía alude a la luz y la pureza del fuego en contraposición a las tinieblas de la noche, mezclando el carácter popular y pagano con la tradición cristiana.\n\n🔥 ¿Qué son exactamente los Rehiletes?\nEl protagonista absoluto de la noche es el Rehilete. No es una antorcha cualquiera, sino una ingeniosa y sencilla creación artesanal:\n\nComposición: Se elabora ensartando y prensando las hojas secas de los castaños en una fina vara de olivo.\n\nEl Sello: En el extremo, se utiliza una castaña o a veces un trozo de corcho para sellar y sujetar firmemente la ristra de hojas.\n\nEl ritual es sencillo y emocionante: se prende fuego al rehilete en las grandes candelas de barrio y, con un movimiento circular del brazo, se hace girar en el aire. La combinación de las hojas secas y el giro produce un efecto visual hipnótico: una estela de fuego y miles de chispas rojas y doradas que \"dibujan\" círculos y espirales en la oscuridad de la noche serrana.\n\nCuriosidad: Los días previos al 7 de diciembre, los niños y niñas de Aracena salen al castañar con sus varas de olivo para recoger y confeccionar personalmente sus propios rehiletes. Este acto, el de su fabricación, ya es parte del ceremonial.\n\n🌰 La Gastronomía de la Noche\nLa Noche de los Rehiletes es también una noche de intensa convivencia social y gastronomía serrana que se disfruta al calor de las brasas:\n\nEl Tostón de Castañas: El producto estrella de la noche. Las castañas se asan en grandes tostaós sobre las brasas de las candelas. A menudo, se organiza un Tostón Solidario de Castañas para recaudar fondos para causas sociales.\n\nSabor Ibérico: El fuego de las candelas se aprovecha para asar carnes ibéricas (chorizos, lomos, presa) de la excelente calidad que caracteriza a la Sierra.\n\nAcompañamiento: Todo esto se riega con el tradicional mosto serrano de la zona y se endulza con los buñuelos y dulces típicos de las asociaciones de mujeres del municipio.\n\nUn consejo experto: Vístase con ropa de abrigo, ya que las noches de diciembre en la Sierra son frías, pero ¡no olvide la calidez de las hogueras y la gente de Aracena le harán olvidarse del frío!",
+    "town": "Aracena",
+    "date": "2025-12-07",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-ALAJAR-1-Rafael-Caballero-Vazquez.png",
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Aracena\nAracena es la capital de la comarca y un centro neurálgico que combina patrimonio, naturaleza y gastronomía.\n\nGruta de las Maravillas: Una de las cuevas turísticas más espectaculares de España. Un viaje subterráneo a través de lagos y formaciones calcáreas que te dejará sin palabras. ¡Imprescindible reservar con antelación!\n\nCastillo de Aracena e Iglesia Prioral: Domina el pueblo desde su cerro. Pasea por las murallas del castillo fortaleza y visita la iglesia gótico-mudéjar, el templo más antiguo y emblemático de la localidad.\n\nMuseo del Jamón: Un centro de interpretación dedicado al producto estrella de la sierra. Descubre todo el proceso de elaboración del jamón ibérico de bellota, desde la dehesa hasta tu plato.\n\nPlaza Alta y Plaza Marqués de Aracena: El corazón social y arquitectónico de la ciudad, con edificios modernistas como el Casino de Arias Montano y el Ayuntamiento.\n\n🥾 Ruta de Senderismo Sugerida: Aracena - Linares de la Sierra\nUna de las rutas más clásicas y bellas de la comarca.\n\nRecorrido: Aracena – Linares de la Sierra (lineal).\n\nDistancia y Dificultad: Unos 5 km (solo ida), de dificultad baja. Ideal para hacer en una mañana y comer en Linares.\n\nAtractivo: El camino, conocido como 'el camino de las pedrizas', es un antiguo sendero empedrado que serpentea entre dehesas de encinas y alcornoques, muros de piedra y arroyos. El paisaje es puramente serrano.\n\nConexión: Puedes volver por el mismo camino o coordinar un taxi para el regreso.\n\n🛣️ Cómo Llegar a Aracena\n\nDesde Huelva (Capital)\nEn Coche: La ruta más común es por la N-435 en dirección a Badajoz. Tras pasar la zona minera, encontrarás las indicaciones para tomar la carretera hacia Aracena (aprox. 1h 15min - 100 km).\n\nEn Autobús: La empresa Damas ofrece conexiones directas y frecuentes desde Huelva.\n\nDesde Sevilla\nEn Coche: Toma la autovía A-66 (Ruta de la Plata) dirección Mérida y coge la salida 75 hacia la N-433 (dirección Portugal). Sigue esta carretera y te llevará directamente a Aracena (aprox. 1h 10min - 90 km).\n\nEn Autobús: Damas ofrece servicios directos desde la Estación de Autobuses Plaza de Armas de Sevilla."
+  },
+  {
+    "id": "18",
+    "title": "Saborea Cumbres Mayores",
+    "description": "Cumbres Mayores: Donde la Tradición se Saborea\nCumbres Mayores, un pintoresco municipio en el corazón de la Sierra de Huelva, es célebre no solo por su imponente castillo medieval, sino también por ser cuna de una arraigada cultura gastronómica que tiene en el cerdo ibérico a su máximo exponente. Desde tiempos inmemoriales, la vida en Cumbres Mayores ha estado ligada al ciclo de la dehesa y a la maestría en la elaboración de productos curados, transmitida de generación en generación.\n\nEsta profunda conexión con sus raíces culinarias dio origen a un evento que hoy es referente en el calendario gastronómico andaluz: \"Saborea Cumbres Mayores\". Lo que comenzó como una iniciativa local para destacar y promover la calidad de sus productos, especialmente los derivados del cerdo ibérico de bellota, ha evolucionado hasta convertirse en una feria consolidada que atrae a miles de visitantes cada año. Es un reflejo de la pasión y el orgullo de un pueblo por su patrimonio, que se ha sabido mantener y potenciar a lo largo del tiempo.\n\nUn Festín para los Sentidos: Actividades de la Feria\n\"Saborea Cumbres Mayores\" es mucho más que una feria gastronómica; es una experiencia completa que celebra la cultura, la historia y, por supuesto, el inigualable sabor de la Sierra. A lo largo de sus jornadas, los asistentes pueden disfrutar de un variado programa de actividades diseñadas para deleitar y educar:\n\nDegustaciones y Mercado de Productos Locales: El corazón de la feria. Aquí, productores locales ofrecen sus exquisitos jamones, paletas, embutidos y quesos, permitiendo a los visitantes probar y adquirir directamente estas joyas gastronómicas. Es una oportunidad única para conocer de cerca la calidad y el mimo con el que se elaboran.\n\nTalleres y Demostraciones Culinarias: Chefs y maestros cortadores de jamón comparten sus secretos, enseñando a los asistentes las técnicas de corte perfecto y las mejores formas de disfrutar los productos ibéricos. También se suelen impartir talleres sobre elaboración artesanal de embutidos y otros productos típicos.\n\nCatas Dirigidas: Expertos guían a los participantes a través de catas de jamón, vino y aceite de oliva de la región, ayudándoles a apreciar los matices y la complejidad de estos productos.\n\nActividades Culturales y Artesanales: La feria se complementa con exposiciones de artesanía local, demostraciones de oficios tradicionales y actuaciones musicales y folclóricas, que enriquecen la experiencia y muestran la riqueza cultural de Cumbres Mayores.\n\nRutas Gastronómicas y Turísticas: Se organizan paseos y visitas guiadas por el pueblo y sus alrededores, incluyendo el castillo y las bodegas y secaderos, para que los visitantes puedan sumergirse completamente en el entorno y el proceso de producción.\n\nEste año, la XIV FERIA CULTURAL Y GASTRONÓMICA \"SABOREA CUMBRES MAYORES\" tendrá lugar del 5 al 8 de Diciembre. ¡No te pierdas esta fantástica oportunidad de sumergirte en la tradición y el sabor de la Sierra de Huelva!",
+    "town": "Cumbres Mayores",
+    "date": "2025-12-05",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-ALAJAR-2-Rafael-Caballero-Vazquez.png",
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Cumbres Mayores\nDominado por su imponente castillo, Cumbres Mayores es un pueblo con un rico patrimonio histórico y gastronómico.\n\nCastillo de Sancho IV: Una impresionante fortaleza del siglo XIII, declarada Monumento Nacional. Sus murallas y torres ofrecen un viaje al pasado y unas vistas espectaculares de las dehesas circundantes. Es uno de los castillos más importantes de la comarca.\n\nIglesia de San Miguel Arcángel: Un templo de origen gótico-mudéjar que destaca por su robusta torre y sus valiosas obras de arte sacro en el interior.\n\nConvento de las Clarisas (Nuestra Señora de las Llagas): Un convento de clausura del siglo XVII, un remanso de paz con una bella iglesia barroca.\n\nErmitas: No dejes de visitar la Ermita de Nuestra Señora del Amparo y la Ermita de la Candelaria, centros de devoción local situados en parajes con encanto.\n\n🥾 Ruta de Senderismo Sugerida: Ruta de la Ribera del Sillo\nUn sendero que te conecta con el paisaje de agua y dehesa.\n\nRecorrido: Cumbres Mayores - Ribera del Sillo (circular).\n\nDistancia y Dificultad: Dificultad baja-media, ideal para disfrutar de la naturaleza en una mañana.\n\nAtractivo: La ruta sigue el curso de la Ribera del Sillo, donde podrás ver antiguos molinos harineros y un paisaje de bosque de ribera y dehesas. Es una zona de gran valor ecológico.\n\n🛣️ Cómo Llegar a Cumbres Mayores\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Tras pasar Jabugo y Cortegana, toma la A-470 en dirección a Cumbres Mayores (aprox. 1h 50min - 140 km).\n\nEn Autobús: La empresa Damas conecta Huelva con la sierra. Puede ser necesario hacer transbordo en Aracena o Cortegana.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) dirección Mérida. Coge la salida 722 hacia Santa Olalla del Cala y luego sigue la A-434 y la HU-9123 que te llevarán directamente a Cumbres Mayores (aprox. 1h 30min - 120 km). Es la ruta más directa y rápida.\n\nEn Autobús: No hay línea directa. La opción sería ir a Aracena y desde allí coordinar el transporte o buscar líneas interurbanas."
   }
 ];
 
@@ -116,10 +204,28 @@ const initialEventsData: EventType[] = [
 const App: React.FC = () => {
   const [allEvents, setAllEvents] = React.useState<EventType[]>(() => {
     try {
-      const storedEvents = localStorage.getItem('sierra-navidad-events');
-      return storedEvents ? JSON.parse(storedEvents) : initialEventsData;
+      const storedEventsString = localStorage.getItem('sierra-navidad-events');
+
+      // Si no hay eventos guardados, se usa la lista inicial.
+      if (!storedEventsString) {
+        return initialEventsData;
+      }
+
+      const storedEvents: EventType[] = JSON.parse(storedEventsString);
+
+      // Se crea un mapa con los eventos iniciales para facilitar la búsqueda.
+      const initialEventsMap = new Map(initialEventsData.map(e => [e.id, e]));
+      
+      // Se filtran los eventos guardados para mantener solo los que ha añadido el usuario (los que no están en la lista inicial).
+      const userAddedEvents = storedEvents.filter(e => !initialEventsMap.has(e.id));
+
+      // Se combinan los eventos iniciales (siempre actualizados desde el código) con los eventos añadidos por el usuario.
+      const finalEvents = [...initialEventsData, ...userAddedEvents];
+      
+      return finalEvents;
+
     } catch (e) {
-      console.error("Failed to parse events from localStorage, using initial data.", e);
+      console.error("Fallo al procesar eventos de localStorage, se usará la lista de eventos inicial.", e);
       return initialEventsData;
     }
   });
