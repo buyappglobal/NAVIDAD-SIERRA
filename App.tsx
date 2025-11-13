@@ -1,5 +1,6 @@
 
 
+
 import React from 'react';
 import { EventType, EventCategory, ChangeInstruction } from './types';
 import Header from './components/Header';
@@ -197,6 +198,52 @@ En Autobús: Damas ofrece servicios desde Sevilla que pasan por Galaroza.`
     "category": EventCategory.OTRO,
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-ALAJAR-2-Rafael-Caballero-Vazquez.png",
     "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Cumbres Mayores\nDominado por su imponente castillo, Cumbres Mayores es un pueblo con un rico patrimonio histórico y gastronómico.\n\nCastillo de Sancho IV: Una impresionante fortaleza del siglo XIII, declarada Monumento Nacional. Sus murallas y torres ofrecen un viaje al pasado y unas vistas espectaculares de las dehesas circundantes. Es uno de los castillos más importantes de la comarca.\n\nIglesia de San Miguel Arcángel: Un templo de origen gótico-mudéjar que destaca por su robusta torre y sus valiosas obras de arte sacro en el interior.\n\nConvento de las Clarisas (Nuestra Señora de las Llagas): Un convento de clausura del siglo XVII, un remanso de paz con una bella iglesia barroca.\n\nErmitas: No dejes de visitar la Ermita de Nuestra Señora del Amparo y la Ermita de la Candelaria, centros de devoción local situados en parajes con encanto.\n\n🥾 Ruta de Senderismo Sugerida: Ruta de la Ribera del Sillo\nUn sendero que te conecta con el paisaje de agua y dehesa.\n\nRecorrido: Cumbres Mayores - Ribera del Sillo (circular).\n\nDistancia y Dificultad: Dificultad baja-media, ideal para disfrutar de la naturaleza en una mañana.\n\nAtractivo: La ruta sigue el curso de la Ribera del Sillo, donde podrás ver antiguos molinos harineros y un paisaje de bosque de ribera y dehesas. Es una zona de gran valor ecológico.\n\n🛣️ Cómo Llegar a Cumbres Mayores\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Tras pasar Jabugo y Cortegana, toma la A-470 en dirección a Cumbres Mayores (aprox. 1h 50min - 140 km).\n\nEn Autobús: La empresa Damas conecta Huelva con la sierra. Puede ser necesario hacer transbordo en Aracena o Cortegana.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) dirección Mérida. Coge la salida 722 hacia Santa Olalla del Cala y luego sigue la A-434 y la HU-9123 que te llevarán directamente a Cumbres Mayores (aprox. 1h 30min - 120 km). Es la ruta más directa y rápida.\n\nEn Autobús: No hay línea directa. La opción sería ir a Aracena y desde allí coordinar el transporte o buscar líneas interurbanas."
+  },
+  {
+    "id": "19",
+    "title": "Mercado del queso artesano de Aracena",
+    "description": `🧀 Aracena: La Capital del Queso Artesano en Huelva
+
+El Mercado del Queso Artesano de Aracena se ha consolidado como una de las citas gastronómicas más importantes del calendario andaluz y un referente a nivel nacional para los amantes de este manjar. Celebrado anualmente en la encantadora localidad onubense de Aracena, en pleno corazón del Parque Natural Sierra de Aracena y Picos de Aroche, este evento es mucho más que una feria: es una celebración de la tradición, la calidad y la diversidad quesera.
+
+Un Viaje Histórico al Sabor Tradicional
+Aunque la tradición quesera en la Sierra de Huelva es ancestral, ligada intrínsecamente a la ganadería caprina y ovina, el Mercado del Queso Artesano de Aracena como evento organizado tiene una historia relativamente reciente, pero intensa y exitosa.
+
+Surgió con la clara vocación de promocionar y valorizar el queso artesano, tanto el producido localmente como el de otras regiones de España. La Sierra de Aracena, conocida por su dehesa y sus excelentes productos derivados del cerdo ibérico, encontró en esta feria la plataforma perfecta para destacar también la calidad de sus productos lácteos, elaborados por pequeñas queserías familiares que mantienen vivos los métodos de elaboración tradicionales.
+
+A lo largo de sus más de dos décadas de existencia (la edición de 2023 fue la XXI), el Mercado se ha convertido en una cita ineludible, celebrándose habitualmente coincidiendo con el Puente de la Inmaculada y la Constitución (diciembre). Este enclave estratégico y su creciente popularidad lo han posicionado como un auténtico escaparate de la mejor producción quesera artesanal de la geografía española.
+
+Actividades que Dan Sabor a la Feria
+El Mercado del Queso Artesano se desarrolla en el Pabellón Ferial 'Ciudad de Aracena' y se extiende durante varios días, ofreciendo a sus miles de visitantes una experiencia completa que va más allá de la simple compra.
+
+1. Exposición y Venta de Quesos
+El Corazón del Mercado: Es el principal atractivo. Reúne a más de 20 queserías procedentes de distintas comunidades autónomas de España (Andalucía, Extremadura, Baleares, Cantabria, País Vasco, etc.), ofreciendo una gama inmensa de quesos de cabra, oveja y vaca, con distintas maduraciones y elaboraciones.
+
+Venta Directa: Los visitantes tienen la oportunidad de comprar directamente a los productores, conociendo de primera mano las historias y métodos detrás de cada queso.
+
+Bono-Degustación: Uno de los sistemas más populares es el bono-degustación, que permite a los asistentes probar una selección de diferentes quesos a un precio asequible, facilitando el descubrimiento de nuevos sabores.
+
+2. Talleres y Experiencias Culinarias
+Taller Culinario del Queso: Se organizan talleres y showcookings con chefs y maestros queseros. Estas actividades se centran en mostrar la versatilidad del queso en la cocina y su maridaje, a menudo con la colaboración de restaurantes locales.
+
+Demostraciones de Elaboración: Los visitantes pueden asistir a demostraciones sobre cómo se elabora el queso artesanalmente, desde la cuajada hasta el prensado.
+
+Degustaciones Especiales: Frecuentemente se incluyen degustaciones específicas, como la de quesos con la Marca "Parque Natural de Andalucía", poniendo en valor los productos de la región.
+
+3. Stands de Productos Complementarios y Artesanía
+Productos Artesanos: Junto a los quesos, la feria acoge otros stands de productos gourmet y artesanía local, como dulces, patés ibéricos, licores, y miel, complementando la oferta gastronómica de la Sierra.
+
+Servicio de Bar Benéfico: Es tradición que el servicio de bar esté a cargo de ONG locales, como Ibermed, destinando los beneficios a causas sociales.
+
+4. Sorteos y Reconocimientos
+Sorteo de Productos: El Mercado suele culminar con el sorteo de lotes de productos artesanos entre los participantes en las degustaciones, manteniendo el espíritu festivo hasta el final.
+
+El Mercado del Queso Artesano de Aracena es, en definitiva, una cita obligada para el paladar que aúna tradición, cultura gastronómica y un ambiente inigualable en un entorno natural privilegiado.`,
+    "town": "Aracena",
+    "date": "2025-12-05",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2023/12/queso-aracena-2023.jpeg",
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Aracena\nAracena es la capital de la comarca y un centro neurálgico que combina patrimonio, naturaleza y gastronomía.\n\nGruta de las Maravillas: Una de las cuevas turísticas más espectaculares de España. Un viaje subterráneo a través de lagos y formaciones calcáreas que te dejará sin palabras. ¡Imprescindible reservar con antelación!\n\nCastillo de Aracena e Iglesia Prioral: Domina el pueblo desde su cerro. Pasea por las murallas del castillo fortaleza y visita la iglesia gótico-mudéjar, el templo más antiguo y emblemático de la localidad.\n\nMuseo del Jamón: Un centro de interpretación dedicado al producto estrella de la sierra. Descubre todo el proceso de elaboración del jamón ibérico de bellota, desde la dehesa hasta tu plato.\n\nPlaza Alta y Plaza Marqués de Aracena: El corazón social y arquitectónico de la ciudad, con edificios modernistas como el Casino de Arias Montano y el Ayuntamiento.\n\n🥾 Ruta de Senderismo Sugerida: Aracena - Linares de la Sierra\nUna de las rutas más clásicas y bellas de la comarca.\n\nRecorrido: Aracena – Linares de la Sierra (lineal).\n\nDistancia y Dificultad: Unos 5 km (solo ida), de dificultad baja. Ideal para hacer en una mañana y comer en Linares.\n\nAtractivo: El camino, conocido como 'el camino de las pedrizas', es un antiguo sendero empedrado que serpentea entre dehesas de encinas y alcornoques, muros de piedra y arroyos. El paisaje es puramente serrano.\n\nConexión: Puedes volver por el mismo camino o coordinar un taxi para el regreso.\n\n🛣️ Cómo Llegar a Aracena\n\nDesde Huelva (Capital)\nEn Coche: La ruta más común es por la N-435 en dirección a Badajoz. Tras pasar la zona minera, encontrarás las indicaciones para tomar la carretera hacia Aracena (aprox. 1h 15min - 100 km).\n\nEn Autobús: La empresa Damas ofrece conexiones directas y frecuentes desde Huelva.\n\nDesde Sevilla\nEn Coche: Toma la autovía A-66 (Ruta de la Plata) dirección Mérida y coge la salida 75 hacia la N-433 (dirección Portugal). Sigue esta carretera y te llevará directamente a Aracena (aprox. 1h 10min - 90 km).\n\nEn Autobús: Damas ofrece servicios directos desde la Estación de Autobuses Plaza de Armas de Sevilla."
   }
 ];
 
