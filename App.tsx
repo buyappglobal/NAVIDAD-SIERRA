@@ -14,6 +14,8 @@ import ChangeRequestModal from './components/ChangeRequestModal';
 import { TOWNS, ICONS } from './constants';
 import EventMapModal from './components/EventMapModal';
 import Hero from './components/Hero';
+import InstallPwaModal from './components/InstallPwaModal';
+import Toast from './components/Toast';
 
 const initialEventsData: EventType[] = [
   {
@@ -167,14 +169,10 @@ Conexión: Puedes volver por el mismo camino o continuar hacia otros senderos de
 🛣️ Cómo Llegar a Galaroza
 
 Desde Huelva (Capital)
-En Coche: Toma la N-435 en dirección a Badajoz. Al llegar a la altura de Gibraleón, sigue las indicaciones de la N-435. Pasarás Jabugo antes de llegar a Galaroza (aprox. 1h 25min - 110 km).
-
-En Autobús: La empresa Damas conecta Huelva con Galaroza, siendo una de las paradas principales de la línea de la sierra.
+En Coche: Toma la N-435 en dirección a Badajoz. Al llegar a la altura de Gibraleón, sigue las indicaciones de la N-435. Pasarás Jabugo antes de llegar a Galaroza (aprox. 1h 25min - 110 km).\n\nEn Autobús: La empresa Damas conecta Huelva con Galaroza, siendo una de las paradas principales de la línea de la sierra.
 
 Desde Sevilla
-En Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue la N-433 pasando Aracena hasta llegar a Galaroza (aprox. 1h 25min - 115 km).
-
-En Autobús: Damas ofrece servicios desde Sevilla que pasan por Galaroza.`
+En Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue la N-433 pasando Aracena hasta llegar a Galaroza (aprox. 1h 25min - 115 km).\n\nEn Autobús: Damas ofrece servicios desde Sevilla que pasan por Galaroza.`
   },
   {
     "id": "17",
@@ -250,20 +248,13 @@ const App: React.FC = () => {
     try {
       const storedEventsString = localStorage.getItem('sierra-navidad-events');
 
-      // Si no hay eventos guardados, se usa la lista inicial.
       if (!storedEventsString) {
         return initialEventsData;
       }
 
       const storedEvents: EventType[] = JSON.parse(storedEventsString);
-
-      // Se crea un mapa con los eventos iniciales para facilitar la búsqueda.
       const initialEventsMap = new Map(initialEventsData.map(e => [e.id, e]));
-      
-      // Se filtran los eventos guardados para mantener solo los que ha añadido el usuario (los que no están en la lista inicial).
       const userAddedEvents = storedEvents.filter(e => !initialEventsMap.has(e.id));
-
-      // Se combinan los eventos iniciales (siempre actualizados desde el código) con los eventos añadidos por el usuario.
       const finalEvents = [...initialEventsData, ...userAddedEvents];
       
       return finalEvents;
@@ -294,6 +285,12 @@ const App: React.FC = () => {
   
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = React.useState(false);
   const [showScrollToTop, setShowScrollToTop] = React.useState(false);
+  
+  const [deferredPrompt, setDeferredPrompt] = React.useState<any | null>(null);
+  const [showInstallModal, setShowInstallModal] = React.useState(false);
+  const [installPromptTriggered, setInstallPromptTriggered] = React.useState(false);
+
+  const [toast, setToast] = React.useState<{ message: string; icon: React.ReactNode } | null>(null);
 
   const [theme, setTheme] = React.useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined' && localStorage.getItem('sierra-navidad-theme')) {
@@ -306,6 +303,11 @@ const App: React.FC = () => {
       const newTheme = theme === 'light' ? 'dark' : 'light';
       setTheme(newTheme);
   };
+
+  const showToast = (message: string, icon: React.ReactNode) => {
+    setToast({ message, icon });
+  };
+
 
   React.useEffect(() => {
       const root = window.document.documentElement;
@@ -328,6 +330,15 @@ const App: React.FC = () => {
     };
     window.addEventListener('scroll', checkScrollTop);
     return () => window.removeEventListener('scroll', checkScrollTop);
+  }, []);
+  
+  React.useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const handleLogin = (email: string, password: string) => {
@@ -366,7 +377,6 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
-
   const normalizeText = (text: string) => {
     return text
       .toLowerCase()
@@ -378,24 +388,19 @@ const App: React.FC = () => {
       return [...allEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [allEvents]);
 
-
   const filteredEvents = React.useMemo(() => {
     const normalizedQuery = normalizeText(searchQuery);
     return sortedEvents
       .filter(event => {
         const townMatch = selectedTown === 'Todos' || event.town === selectedTown;
-        
         const searchMatch =
           !searchQuery ||
           normalizeText(event.title).includes(normalizedQuery) ||
           normalizeText(event.description).includes(normalizedQuery);
-
         const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(event.category);
-        
         const eventDate = new Date(event.date + 'T00:00:00');
         const startMatch = !startDate || eventDate >= new Date(startDate + 'T00:00:00');
         const endMatch = !endDate || eventDate <= new Date(endDate + 'T23:59:59');
-
         return townMatch && searchMatch && categoryMatch && startMatch && endMatch;
       });
   }, [sortedEvents, selectedTown, searchQuery, selectedCategories, startDate, endDate]);
@@ -423,7 +428,6 @@ const App: React.FC = () => {
     setEndDate(null);
     scrollToTop();
   };
-
 
   const handleAddEvent = (eventData: Omit<EventType, 'id'>) => {
     const newEvent: EventType = {
@@ -464,21 +468,13 @@ const App: React.FC = () => {
 
   const sortedTownsForFilter = React.useMemo(() => {
     const townsWithEvents = new Set(allEvents.map(event => event.town));
-    
-    const activeTowns = TOWNS
-      .filter(town => townsWithEvents.has(town))
-      .sort((a, b) => a.localeCompare(b));
-
-    const inactiveTowns = TOWNS
-      .filter(town => !townsWithEvents.has(town))
-      .sort((a, b) => a.localeCompare(b));
-
+    const activeTowns = TOWNS.filter(town => townsWithEvents.has(town)).sort((a, b) => a.localeCompare(b));
+    const inactiveTowns = TOWNS.filter(town => !townsWithEvents.has(town)).sort((a, b) => a.localeCompare(b));
     const result = [...activeTowns];
     if (activeTowns.length > 0 && inactiveTowns.length > 0) {
       result.push('---SEPARATOR---');
     }
     result.push(...inactiveTowns);
-    
     return result;
   }, [allEvents]);
 
@@ -488,6 +484,30 @@ const App: React.FC = () => {
       setView(newView);
     }
   };
+  
+  const handleBackFromDetail = () => {
+    setSelectedEventId(null);
+    // This is the contextual trigger for the install prompt
+    if (deferredPrompt && !installPromptTriggered) {
+      setShowInstallModal(true);
+      setInstallPromptTriggered(true); // Ensure it only shows once per session
+    }
+  };
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      setDeferredPrompt(null);
+      setShowInstallModal(false);
+    }
+  };
+
+  const handleInstallModalClose = () => {
+    setShowInstallModal(false);
+  };
+
 
   if (selectedEvent) {
     return (
@@ -495,10 +515,11 @@ const App: React.FC = () => {
         <main className="container mx-auto p-4 sm:p-8">
             <EventDetail 
               event={selectedEvent} 
-              onBack={() => setSelectedEventId(null)}
+              onBack={handleBackFromDetail}
               isLoggedIn={isLoggedIn}
               onEdit={() => setEventToEdit(selectedEvent)}
               onCategoryFilterClick={handleCategoryFilterClick}
+              showToast={showToast}
             />
         </main>
         {eventToEdit && (
@@ -516,9 +537,9 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch(view) {
         case 'list':
-            return <EventList events={filteredEvents} onSelectEvent={setSelectedEventId} isLoggedIn={isLoggedIn} onEdit={setEventToEdit} onResetFilters={handleResetFilters} onCategoryFilterClick={handleCategoryFilterClick} isAnyFilterActive={isAnyFilterActive} />;
+            return <EventList events={filteredEvents} onSelectEvent={setSelectedEventId} onResetFilters={handleResetFilters} onCategoryFilterClick={handleCategoryFilterClick} isAnyFilterActive={isAnyFilterActive} />;
         case 'calendar':
-            return <EventCalendar events={filteredEvents} onSelectEvent={setSelectedEventId} isLoggedIn={isLoggedIn} onEdit={setEventToEdit} />;
+            return <EventCalendar events={filteredEvents} onSelectEvent={setSelectedEventId} />;
         default:
             return null;
     }
@@ -526,17 +547,17 @@ const App: React.FC = () => {
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen font-sans flex flex-col">
+      {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
       <Header
         view={view}
         setView={handleViewChange}
         isMapVisible={showMapModal}
         onMapClick={handleMapClick}
-        isLoggedIn={isLoggedIn}
-        onAddEventClick={() => setShowAddModal(true)}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
       <main className="container mx-auto flex-grow p-4">
         <div className="md:grid md:grid-cols-4 md:gap-8">
-            {/* Desktop Sidebar */}
             <aside className="hidden md:block md:col-span-1">
                 <div className="sticky top-24">
                     <FilterSidebar
@@ -554,9 +575,7 @@ const App: React.FC = () => {
                 </div>
             </aside>
 
-            {/* Content Area */}
             <div className="md:col-span-3">
-                {/* Mobile Filter Button and Sidebar Modal */}
                 <div className="md:hidden mb-6">
                     <button
                         onClick={() => setIsFilterSidebarOpen(true)}
@@ -611,8 +630,7 @@ const App: React.FC = () => {
         isLoggedIn={isLoggedIn} 
         onLoginClick={() => setShowLoginModal(true)}
         onLogoutClick={handleLogout}
-        theme={theme}
-        toggleTheme={toggleTheme}
+        onAddEventClick={() => setShowAddModal(true)}
       />
 
       {showScrollToTop && (
@@ -638,7 +656,7 @@ const App: React.FC = () => {
             onClose={() => setShowMapModal(false)}
         />
       )}
-      {showAddModal && <AddEventModal onClose={() => setShowAddModal(false)} onAddEvent={handleAddEvent} />}
+      {showAddModal && <AddEventModal onClose={() => setShowAddModal(false)} onAddEvent={handleAddEvent} showToast={showToast} />}
       {eventToEdit && (
         <EditEventModal
           event={eventToEdit}
@@ -658,6 +676,12 @@ const App: React.FC = () => {
         <ChangeRequestModal
             instruction={changeInstruction}
             onClose={() => setChangeInstruction(null)}
+        />
+      )}
+      {showInstallModal && deferredPrompt && (
+        <InstallPwaModal
+          onInstall={handleInstallClick}
+          onClose={handleInstallModalClose}
         />
       )}
     </div>

@@ -16,11 +16,9 @@ const categoryColors: Record<EventCategory, string> = {
 interface EventCalendarProps {
   events: EventType[];
   onSelectEvent: (eventId: string) => void;
-  isLoggedIn: boolean;
-  onEdit: (event: EventType) => void;
 }
 
-const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, isLoggedIn, onEdit }) => {
+const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) => {
   const [currentDate, setCurrentDate] = useState(new Date('2025-12-01T00:00:00'));
 
   useEffect(() => {
@@ -126,15 +124,6 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
                                 <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">{event.town}</p>
                             </div>
                             <div className="flex items-center gap-2 self-start sm:self-center">
-                                {isLoggedIn && (
-                                  <button
-                                    onClick={() => onEdit(event)}
-                                    className="p-2 rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
-                                    aria-label="Editar evento"
-                                  >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536l12.232-12.232z" /></svg>
-                                  </button>
-                                )}
                                 <button 
                                     onClick={() => onSelectEvent(event.id)} 
                                     className="text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 text-sm font-bold whitespace-nowrap"

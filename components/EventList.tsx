@@ -5,14 +5,12 @@ import EventCard from './EventCard';
 interface EventListProps {
   events: EventType[];
   onSelectEvent: (eventId: string) => void;
-  isLoggedIn: boolean;
-  onEdit: (event: EventType) => void;
   onResetFilters: () => void;
   onCategoryFilterClick: (category: EventCategory) => void;
   isAnyFilterActive: boolean;
 }
 
-const EventList: React.FC<EventListProps> = ({ events, onSelectEvent, isLoggedIn, onEdit, onResetFilters, onCategoryFilterClick, isAnyFilterActive }) => {
+const EventList: React.FC<EventListProps> = ({ events, onSelectEvent, onResetFilters, onCategoryFilterClick, isAnyFilterActive }) => {
   const renderFilterResetBanner = () => (
     <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in border border-slate-200 dark:border-slate-700">
       <p className="text-slate-600 dark:text-slate-300 text-center sm:text-left">
@@ -58,8 +56,6 @@ const EventList: React.FC<EventListProps> = ({ events, onSelectEvent, isLoggedIn
             <EventCard 
                 event={event} 
                 onSelectEvent={onSelectEvent}
-                isLoggedIn={isLoggedIn}
-                onEdit={onEdit}
                 onCategoryFilterClick={onCategoryFilterClick}
             />
           </div>

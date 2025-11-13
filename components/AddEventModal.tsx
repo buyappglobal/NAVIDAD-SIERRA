@@ -9,9 +9,10 @@ import { parseEventsFromText } from '../services/geminiService';
 interface AddEventModalProps {
   onClose: () => void;
   onAddEvent: (event: Omit<EventType, 'id'>) => void;
+  showToast: (message: string, icon: React.ReactNode) => void;
 }
 
-const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent }) => {
+const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent, showToast }) => {
   const [formData, setFormData] = useState<Omit<EventType, 'id'>>({
     title: '',
     description: '',
@@ -63,6 +64,14 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent }) =>
     onAddEvent(formData);
   };
   
+  const handleAiButtonClick = () => {
+    if (!navigator.onLine) {
+      showToast("Necesitas conexión a internet para usar esta función.", ICONS.wifiOff);
+      return;
+    }
+    setShowInstructionModal(true);
+  };
+
   const handleParseEvents = async (text: string) => {
     setIsParsing(true);
     setParseError(null);
@@ -102,7 +111,7 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent }) =>
           <div className="p-6 space-y-4 overflow-y-auto">
              <button
                 type="button"
-                onClick={() => setShowInstructionModal(true)}
+                onClick={handleAiButtonClick}
                 className="w-full flex items-center justify-center gap-2 bg-purple-600 text-white font-bold py-3 px-4 rounded-md hover:bg-purple-500 transition-colors mb-4"
               >
                 {ICONS.magic}

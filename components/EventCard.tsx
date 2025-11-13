@@ -16,12 +16,10 @@ const categoryColors: Record<EventCategory, string> = {
 interface EventCardProps {
   event: EventType;
   onSelectEvent: (eventId: string) => void;
-  isLoggedIn: boolean;
-  onEdit: (event: EventType) => void;
   onCategoryFilterClick: (category: EventCategory) => void;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn, onEdit, onCategoryFilterClick }) => {
+const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, onCategoryFilterClick }) => {
   const { id, title, description, town, date, category, imageUrl } = event;
 
   const eventDate = new Date(date + 'T00:00:00');
@@ -38,18 +36,14 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn,
 
   return (
     <article className="bg-white dark:bg-slate-800 md:rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row group transition-all duration-300 hover:shadow-2xl border border-slate-200 dark:border-slate-700/50">
-      <div className="md:w-2/5 flex-shrink-0 h-56 md:h-auto flex items-center justify-center p-4">
-        <div className="relative w-full h-full flex items-center justify-center">
-            <div className="w-full h-full flex items-center justify-center p-2">
-                <img
-                    src={imageUrl || IMAGE_PLACEHOLDER}
-                    alt={`Imagen para ${title}`}
-                    className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105 rounded-md shadow-lg"
-                    onError={handleImageError}
-                    loading="lazy"
-                />
-            </div>
-        </div>
+      <div className="md:w-2/5 flex-shrink-0 h-56 md:h-auto flex items-center justify-center bg-slate-100 dark:bg-slate-900/50 md:rounded-l-lg">
+        <img
+            src={imageUrl || IMAGE_PLACEHOLDER}
+            alt={`Imagen para ${title}`}
+            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+            onError={handleImageError}
+            loading="lazy"
+        />
       </div>
       <div className="p-6 flex flex-col justify-between flex-grow">
         <div>
@@ -70,17 +64,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, isLoggedIn,
             <p className="text-sm capitalize">{weekday}, {formattedDate}</p>
           </div>
           <div className="flex items-center gap-2">
-            {isLoggedIn && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(event);
-                }}
-                className="bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-bold py-2 px-4 rounded-md hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors text-sm"
-              >
-                Editar
-              </button>
-            )}
             <button
               onClick={() => onSelectEvent(id)}
               className="bg-amber-400 text-slate-900 font-bold py-2 px-6 rounded-md hover:bg-amber-500 dark:hover:bg-amber-300 transition-colors whitespace-nowrap"

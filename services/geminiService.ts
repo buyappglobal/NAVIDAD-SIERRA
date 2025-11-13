@@ -78,3 +78,46 @@ export const parseEventsFromText = async (text: string): Promise<Omit<EventType,
     return null;
   }
 };
+
+export const generateItinerary = async (event: EventType): Promise<string | null> => {
+  const systemInstruction = `
+    Eres un guía turístico amigable y entusiasta, experto en la Sierra de Aracena y su gastronomía.
+    Tu tarea es crear un plan de un día completo, agradable y realista para un visitante.
+    El plan debe girar en torno al evento principal proporcionado.
+    Utiliza la "Información de Interés" para sugerir otras actividades como rutas de senderismo o visitas a monumentos.
+    Importante: Incluye una sección llamada 'Dónde Comer' con una sugerencia de restaurante local, y otra sección llamada 'Dónde Alojarse' con una sugerencia de casa rural o alojamiento con encanto en la zona.
+    Haz hincapié en que son solo sugerencias y el usuario debería verificar la disponibilidad y las reseñas.
+    Organiza el plan con títulos claros para diferentes momentos del día (p. ej., 'Por la mañana', 'Hora de comer', 'Tarde de evento', 'Dónde Alojarse').
+    Usa un tono cercano y atractivo. La respuesta debe ser solo el plan, sin introducciones ni despedidas.
+    Formatea los títulos de las secciones con asteriscos, por ejemplo: **Por la mañana:**
+  `;
+
+  const prompt = `
+    Crea un plan de un día en ${event.town}.
+
+    Evento principal:
+    - Título: ${event.title}
+    - Descripción: ${event.description}
+    - Fecha: ${event.date}
+
+    Información de Interés sobre ${event.town}:
+    ---
+    ${event.interestInfo || 'No hay información adicional sobre este pueblo.'}
+    ---
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        systemInstruction,
+      },
+    });
+    
+    return response.text;
+  } catch (error) {
+    console.error("Error generating itinerary with Gemini API:", error);
+    return null;
+  }
+};

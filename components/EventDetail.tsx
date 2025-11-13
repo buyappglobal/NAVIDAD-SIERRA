@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { EventType, EventCategory } from '../types';
 import { ICONS, IMAGE_PLACEHOLDER } from '../constants';
 import InterestInfoModal from './InterestInfoModal';
+import PlanMyDayModal from './PlanMyDayModal';
 
 interface EventDetailProps {
   event: EventType;
@@ -9,6 +10,7 @@ interface EventDetailProps {
   isLoggedIn: boolean;
   onEdit: () => void;
   onCategoryFilterClick: (category: EventCategory) => void;
+  showToast: (message: string, icon: React.ReactNode) => void;
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
@@ -59,11 +61,12 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick }) => {
+const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast }) => {
   const { title, description, town, date, category, imageUrl, interestInfo } = event;
   const colors = categoryColors[category] || categoryColors[EventCategory.OTRO];
   const [isReading, setIsReading] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(false);
 
   const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('es-ES', {
     weekday: 'long',
@@ -102,6 +105,14 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     }
   };
 
+  const handlePlanMyDayClick = () => {
+    if (!navigator.onLine) {
+      showToast("Necesitas conexión a internet para usar esta función.", ICONS.wifiOff);
+      return;
+    }
+    setShowPlanModal(true);
+  };
+
   const shareUrl = window.location.href;
   const shareText = `¡No te pierdas "${title}" en ${town}! Echa un vistazo a este evento de la Sierra de Aracena:`;
   
@@ -132,16 +143,14 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
         </div>
 
         <article className="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-200 dark:border-slate-700/50">
-          {imageUrl && (
-            <div className="w-full h-48 sm:h-64 bg-slate-100 dark:bg-black/20">
-                <img 
-                  src={imageUrl} 
-                  alt={`Imagen de ${title}`} 
-                  className="w-full h-full object-contain" 
-                  onError={handleImageError}
-                />
-            </div>
-          )}
+          <div className="w-full h-48 sm:h-64 bg-slate-100 dark:bg-black/20">
+              <img 
+                src={imageUrl || IMAGE_PLACEHOLDER} 
+                alt={`Imagen de ${title}`} 
+                className="w-full h-full object-contain" 
+                onError={handleImageError}
+              />
+          </div>
           
           <div className={`p-6 sm:p-8 border-t-4 ${colors.border}`}>
             <button
@@ -169,6 +178,13 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
                   </div>
               </div>
               <div className="flex gap-2 flex-wrap">
+                  <button
+                     onClick={handlePlanMyDayClick}
+                     className="flex items-center justify-center gap-2 bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 font-bold py-2 px-4 rounded-md hover:bg-purple-200 dark:hover:bg-purple-900/80 transition-colors text-base"
+                   >
+                    {ICONS.magic}
+                     <span>Planificar mi día</span>
+                   </button>
                   {interestInfo && (
                        <button
                          onClick={() => setShowInfoModal(true)}
@@ -230,6 +246,13 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
           town={town}
           content={interestInfo}
           onClose={() => setShowInfoModal(false)}
+        />
+      )}
+
+      {showPlanModal && (
+        <PlanMyDayModal
+          event={event}
+          onClose={() => setShowPlanModal(false)}
         />
       )}
     </>
