@@ -11,7 +11,7 @@ const categoryColors: Record<EventCategory, string> = {
   [EventCategory.OTRO]: 'bg-gray-500 hover:bg-gray-600',
 };
 
-const unselectedClasses = 'bg-slate-700 hover:bg-slate-600 text-slate-300';
+const unselectedClasses = 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300';
 
 interface CategoryFilterProps {
   selectedCategories: string[];
@@ -29,7 +29,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategories, onC
           <button
             key={category}
             onClick={() => onCategoryToggle(category)}
-            className={`px-3 py-1 text-sm font-semibold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-amber-400
+            className={`px-3 py-1 text-sm font-semibold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-800 focus:ring-amber-400
               ${isSelected ? `${categoryColors[category]} text-white` : unselectedClasses}
             `}
           >

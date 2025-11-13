@@ -16,7 +16,7 @@ const TownFilter: React.FC<TownFilterProps> = ({ towns, selectedTown, onSelectTo
         if (town === '---SEPARATOR---') {
           return (
             <div key="separator" className="py-2 px-2">
-              <hr className="border-t border-slate-700" />
+              <hr className="border-t border-slate-200 dark:border-slate-700" />
             </div>
           );
         }
@@ -28,7 +28,7 @@ const TownFilter: React.FC<TownFilterProps> = ({ towns, selectedTown, onSelectTo
             className={`w-full text-left p-2 rounded-md transition-colors text-base ${
               selectedTown === town
                 ? 'bg-amber-400 text-slate-900 font-bold'
-                : 'text-slate-300 hover:bg-slate-700'
+                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
             }`}
           >
             {town}

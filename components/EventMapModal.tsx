@@ -17,12 +17,12 @@ const EventMapModal: React.FC<EventMapModalProps> = ({ events, onSelectEvent, on
       onClick={onClose}
     >
       <div 
-        className="bg-slate-800 rounded-lg shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col"
+        className="bg-white dark:bg-slate-800 rounded-lg shadow-2xl w-full max-w-4xl h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-4 border-b border-slate-700 flex-shrink-0">
-          <h2 className="text-2xl font-display text-amber-300">Mapa de Eventos</h2>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-white">{ICONS.close}</button>
+        <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+          <h2 className="text-2xl font-display text-orange-800 dark:text-amber-300">Mapa de Eventos</h2>
+          <button type="button" onClick={onClose} className="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white">{ICONS.close}</button>
         </div>
         <div className="flex-grow relative">
           <EventMap events={events} onSelectEvent={onSelectEvent} />

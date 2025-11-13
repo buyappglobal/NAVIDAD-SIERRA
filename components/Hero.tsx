@@ -7,7 +7,7 @@ const Hero: React.FC = () => {
                 href="http://www.turismohuelva.org/inicio/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="block rounded-lg overflow-hidden shadow-lg hover:opacity-90 transition-opacity border border-slate-700"
+                className="block rounded-lg overflow-hidden shadow-lg hover:opacity-90 transition-opacity border border-slate-200 dark:border-slate-700"
                 aria-label="Publicidad de Turismo Huelva"
             >
                 <img 

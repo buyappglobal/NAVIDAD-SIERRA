@@ -18,7 +18,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ query, onQueryChange }) => {
           type="search"
           name="search"
           id="search"
-          className="w-full p-2 pl-10 bg-slate-900 border border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400"
+          className="w-full p-2 pl-10 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400"
           placeholder="Ej: Belén, Zambombá..."
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}

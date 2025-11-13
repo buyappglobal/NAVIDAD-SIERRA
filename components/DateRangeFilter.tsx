@@ -41,35 +41,35 @@ const DateRangeFilter: React.FC<DateRangeFilterProps> = ({ startDate, endDate, o
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label htmlFor="start-date" className="block text-xs font-medium text-slate-400 mb-1">Desde</label>
+          <label htmlFor="start-date" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Desde</label>
           <input
             type="date"
             id="start-date"
             value={startDate || ''}
             onChange={(e) => onDateChange(e.target.value, endDate)}
-            className="w-full p-2 bg-slate-900 border border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400 text-sm"
+            className="w-full p-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400 text-sm"
           />
         </div>
         <div>
-          <label htmlFor="end-date" className="block text-xs font-medium text-slate-400 mb-1">Hasta</label>
+          <label htmlFor="end-date" className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Hasta</label>
           <input
             type="date"
             id="end-date"
             value={endDate || ''}
             onChange={(e) => onDateChange(startDate, e.target.value)}
-            className="w-full p-2 bg-slate-900 border border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400 text-sm"
+            className="w-full p-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400 text-sm"
           />
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
-          <button onClick={() => handlePresetClick('today')} className="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 transition-colors">Hoy</button>
-          <button onClick={() => handlePresetClick('weekend')} className="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 transition-colors">Fin de semana</button>
-          <button onClick={() => handlePresetClick('week')} className="text-xs px-2 py-1 rounded bg-slate-700 hover:bg-slate-600 transition-colors">Próximos 7 días</button>
+          <button onClick={() => handlePresetClick('today')} className="text-xs px-2 py-1 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Hoy</button>
+          <button onClick={() => handlePresetClick('weekend')} className="text-xs px-2 py-1 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Fin de semana</button>
+          <button onClick={() => handlePresetClick('week')} className="text-xs px-2 py-1 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">Próximos 7 días</button>
       </div>
        {(startDate || endDate) && (
         <button
           onClick={handleClear}
-          className="w-full text-center p-2 rounded-md transition-colors text-sm text-amber-300 hover:bg-slate-700"
+          className="w-full text-center p-2 rounded-md transition-colors text-sm text-amber-600 dark:text-amber-300 hover:bg-slate-200 dark:hover:bg-slate-700"
         >
           Limpiar Fechas
         </button>

@@ -82,9 +82,9 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
   const renderHeader = () => {
     return (
       <div className="flex justify-between items-center mb-6 gap-2">
-        <button onClick={() => changeWeek(-1)} className="py-2 px-3 rounded-md bg-slate-700 hover:bg-slate-600 transition-colors text-white text-sm">Semana Ant.</button>
-        <h2 className="text-xl sm:text-2xl text-amber-300 capitalize font-display text-center flex-grow">{getWeekDisplayRange(currentDate)}</h2>
-        <button onClick={() => changeWeek(1)} className="py-2 px-3 rounded-md bg-slate-700 hover:bg-slate-600 transition-colors text-white text-sm">Sig. Semana</button>
+        <button onClick={() => changeWeek(-1)} className="py-2 px-3 rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-slate-800 dark:text-white text-sm">Semana Ant.</button>
+        <h2 className="text-xl sm:text-2xl text-orange-800 dark:text-amber-300 capitalize font-display text-center flex-grow">{getWeekDisplayRange(currentDate)}</h2>
+        <button onClick={() => changeWeek(1)} className="py-2 px-3 rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-slate-800 dark:text-white text-sm">Sig. Semana</button>
       </div>
     );
   };
@@ -107,8 +107,8 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
       const dayHeader = dayForCell.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
 
       days.push(
-        <div key={dayForCell.toString()} className={`bg-slate-800/50 p-4 rounded-lg ${isToday ? 'border-l-4 border-amber-400' : ''}`}>
-           <h3 className={`text-xl font-display capitalize ${isToday ? 'text-amber-300' : 'text-slate-300'}`}>
+        <div key={dayForCell.toString()} className={`bg-white/50 dark:bg-slate-800/50 p-4 rounded-lg ${isToday ? 'border-l-4 border-amber-500 dark:border-amber-400' : ''}`}>
+           <h3 className={`text-xl font-display capitalize ${isToday ? 'text-orange-800 dark:text-amber-300' : 'text-slate-700 dark:text-slate-300'}`}>
               {dayHeader}
            </h3>
            <div className="mt-3">
@@ -117,19 +117,19 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
                     {dayEvents.map(event => {
                         const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.town + ', Huelva, España')}`;
                         return (
-                        <div key={event.id} className="bg-slate-900/50 p-3 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div key={event.id} className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-200 dark:border-slate-700/50">
                             <div>
                                 <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full mb-1 text-white ${categoryColors[event.category]}`}>
                                     {event.category}
                                 </span>
-                                <p className="font-bold text-amber-400">{event.title}</p>
-                                <p className="text-sm text-slate-400 font-semibold">{event.town}</p>
+                                <p className="font-bold text-orange-800 dark:text-amber-400">{event.title}</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">{event.town}</p>
                             </div>
                             <div className="flex items-center gap-2 self-start sm:self-center">
                                 {isLoggedIn && (
                                   <button
                                     onClick={() => onEdit(event)}
-                                    className="p-2 rounded-md bg-slate-700 hover:bg-slate-600 transition-colors"
+                                    className="p-2 rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
                                     aria-label="Editar evento"
                                   >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536l12.232-12.232z" /></svg>
@@ -137,7 +137,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
                                 )}
                                 <button 
                                     onClick={() => onSelectEvent(event.id)} 
-                                    className="text-amber-400 hover:text-amber-300 text-sm font-bold whitespace-nowrap"
+                                    className="text-amber-500 dark:text-amber-400 hover:text-amber-600 dark:hover:text-amber-300 text-sm font-bold whitespace-nowrap"
                                 >
                                     Saber más
                                 </button>
@@ -146,7 +146,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
                     )})}
                 </div>
             ) : (
-                <p className="text-slate-500 text-sm italic">No hay eventos programados.</p>
+                <p className="text-slate-500 dark:text-slate-500 text-sm italic">No hay eventos programados.</p>
             )}
            </div>
         </div>
@@ -158,7 +158,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent, is
 
 
   return (
-    <div className="bg-slate-900/50 p-2 sm:p-4 rounded-lg shadow-lg">
+    <div className="bg-slate-100 dark:bg-slate-900/50 p-2 sm:p-4 rounded-lg shadow-lg border border-slate-200 dark:border-slate-800">
       {renderHeader()}
       {renderWeekList()}
     </div>

@@ -4,7 +4,30 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Navidad en la Sierra de Aracena</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="/manifest.webmanifest">
+    
+    <!-- Apple/iOS PWA Tags -->
+    <link rel="apple-touch-icon" href="/icons/icon-180.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Sierra Navidad">
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Set dark mode based on localStorage before the page loads to prevent FOUC
+      if (localStorage.getItem('sierra-navidad-theme') === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+      // Configure Tailwind to use the 'class' strategy for dark mode
+      tailwind.config = {
+        darkMode: 'class',
+      };
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Mountains+of+Christmas:wght@400;700&display=swap" rel="stylesheet">
@@ -44,7 +67,7 @@
         animation-fill-mode: forwards;
       }
       
-      /* Estilos personalizados para Leaflet - TEMA CLARO */
+      /* Estilos personalizados para Leaflet - TEMA CLARO (por defecto) */
       .leaflet-popup-content-wrapper {
         background-color: #ffffff; /* white */
         color: #1e293b; /* slate-800 */
@@ -67,6 +90,21 @@
       .leaflet-container a.leaflet-popup-close-button {
         font-size: 20px;
       }
+
+      /* Estilos personalizados para Leaflet - TEMA OSCURO */
+      .dark .leaflet-popup-content-wrapper {
+        background-color: #1e293b; /* slate-800 */
+        color: #e2e8f0; /* slate-200 */
+      }
+      .dark .leaflet-popup-tip-container .leaflet-popup-tip {
+        background-color: #1e293b; /* slate-800 */
+      }
+      .dark .leaflet-popup-close-button {
+        color: #94a3b8 !important; /* slate-400 */
+      }
+      .dark .leaflet-popup-close-button:hover {
+        color: #f8fafc !important; /* slate-50 */
+      }
     </style>
 <script type="importmap">
 {
@@ -79,7 +117,7 @@
 }
 </script>
 </head>
-<body class="bg-slate-900 text-slate-200">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 transition-colors duration-300">
     <div id="root"></div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>

@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 import { EventType, EventCategory, ChangeInstruction } from './types';
 import Header from './components/Header';
@@ -298,6 +295,28 @@ const App: React.FC = () => {
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = React.useState(false);
   const [showScrollToTop, setShowScrollToTop] = React.useState(false);
 
+  const [theme, setTheme] = React.useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('sierra-navidad-theme')) {
+        return localStorage.getItem('sierra-navidad-theme') as 'light' | 'dark';
+    }
+    return 'dark'; // Default to dark
+  });
+
+  const toggleTheme = () => {
+      const newTheme = theme === 'light' ? 'dark' : 'light';
+      setTheme(newTheme);
+  };
+
+  React.useEffect(() => {
+      const root = window.document.documentElement;
+      if (theme === 'light') {
+          root.classList.remove('dark');
+      } else {
+          root.classList.add('dark');
+      }
+      localStorage.setItem('sierra-navidad-theme', theme);
+  }, [theme]);
+
   React.useEffect(() => {
     localStorage.setItem('sierra-navidad-events', JSON.stringify(allEvents));
   }, [allEvents]);
@@ -472,7 +491,7 @@ const App: React.FC = () => {
 
   if (selectedEvent) {
     return (
-      <div className="bg-slate-900 text-slate-200 min-h-screen font-sans">
+      <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen font-sans">
         <main className="container mx-auto p-4 sm:p-8">
             <EventDetail 
               event={selectedEvent} 
@@ -506,7 +525,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="bg-slate-900 text-slate-200 min-h-screen font-sans flex flex-col">
+    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen font-sans flex flex-col">
       <Header
         view={view}
         setView={handleViewChange}
@@ -541,16 +560,16 @@ const App: React.FC = () => {
                 <div className="md:hidden mb-6">
                     <button
                         onClick={() => setIsFilterSidebarOpen(true)}
-                        className="w-full flex items-center justify-center gap-3 bg-slate-800 p-3 rounded-lg shadow-md text-amber-300 font-bold"
+                        className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-md text-amber-600 dark:text-amber-300 font-bold border border-slate-200 dark:border-slate-700"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>
                         Filtros y Búsqueda
                     </button>
                     {isFilterSidebarOpen && (
                         <div className="fixed inset-0 bg-black/70 z-50 animate-fade-in">
-                            <div className="bg-slate-900 h-full w-4/5 max-w-sm p-6 overflow-y-auto">
+                            <div className="bg-slate-50 dark:bg-slate-900 h-full w-4/5 max-w-sm p-6 overflow-y-auto">
                                 <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-display text-amber-300">Filtros</h2>
+                                    <h2 className="text-2xl font-display text-amber-600 dark:text-amber-300">Filtros</h2>
                                     <button onClick={() => setIsFilterSidebarOpen(false)}>{ICONS.close}</button>
                                 </div>
                                 <FilterSidebar
@@ -592,12 +611,14 @@ const App: React.FC = () => {
         isLoggedIn={isLoggedIn} 
         onLoginClick={() => setShowLoginModal(true)}
         onLogoutClick={handleLogout}
+        theme={theme}
+        toggleTheme={toggleTheme}
       />
 
       {showScrollToTop && (
         <button
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 bg-amber-400 text-slate-900 p-3 rounded-full shadow-lg hover:bg-amber-300 transition-all duration-300 z-50 animate-fade-in"
+            className="fixed bottom-6 right-6 bg-amber-400 text-slate-900 p-3 rounded-full shadow-lg hover:bg-amber-500 dark:hover:bg-amber-300 transition-all duration-300 z-50 animate-fade-in"
             aria-label="Volver arriba"
         >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
