@@ -1,23 +1,69 @@
-import React from 'react';
-import { EventType, EventCategory, ChangeInstruction } from './types';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { EventType, EventCategory, ChangeInstruction, ChangeAction } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FilterSidebar from './components/FilterSidebar';
 import EventList from './components/EventList';
 import EventCalendar from './components/EventCalendar';
 import EventDetail from './components/EventDetail';
-import EventMap from './components/EventMap';
 import AddEventModal from './components/AddEventModal';
 import EditEventModal from './components/EditEventModal';
 import LoginModal from './components/LoginModal';
 import ChangeRequestModal from './components/ChangeRequestModal';
-import { TOWNS, ICONS } from './constants';
+import { TOWNS } from './constants';
 import EventMapModal from './components/EventMapModal';
 import Hero from './components/Hero';
 import InstallPwaModal from './components/InstallPwaModal';
 import Toast from './components/Toast';
+import { ICONS } from './constants';
+import FilterSidebarModal from './components/FilterSidebarModal';
 
 const initialEventsData: EventType[] = [
+  {
+    "id": "pueblo-almonaster",
+    "title": "Almonaster la Real",
+    "description": "Descubre Almonaster la Real, un pueblo con un encanto único, coronado por una mezquita milenaria y considerado uno de los más bonitos de España. Piérdete en sus calles empedradas y respira la historia que emana de cada rincón.",
+    "town": "Almonaster la Real",
+    "date": "2025-12-01",
+    "category": EventCategory.PUEBLO_DESTACADO,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-14-at-19.13.49.jpeg",
+    "sponsored": true,
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Almonaster la Real\nConsiderado uno de los pueblos más bonitos de España, Almonaster la Real es un tesoro de historia y arquitectura.\n\nMezquita de Almonaster: Un joya del Islam andalusí construida en el siglo X sobre una basílica visigoda. Es el único ejemplo de mezquita rural que se conserva casi intacta en España. Un lugar mágico y lleno de paz.\n\nCastillo de Almonaster: Rodeando la mezquita, las murallas del castillo ofrecen un paseo por la historia y unas vistas panorámicas impresionantes del pueblo y las dehesas circundantes.\n\nIglesia Parroquial de San Martín: Un templo gótico-mudéjar con una impresionante portada manuelina, única en la provincia de Huelva, que refleja la influencia portuguesa.\n\nTenerías y Puente de las Tres Fuentes: Pasea por las afueras del pueblo para descubrir sus antiguas tenerías y el puente de origen romano, testigos de la historia industrial y de comunicaciones de la localidad.\n\n🥾 Ruta de Senderismo Sugerida: Sendero del Cerro de San Cristóbal\nUna ruta circular que ofrece las mejores vistas del pueblo y su entorno.\n\nRecorrido: Almonaster la Real - Cerro de San Cristóbal.\n\nDistancia y Dificultad: Aproximadamente 6 km, de dificultad media por la subida al cerro.\n\nAtractivo: El sendero asciende entre bosques de castaños y alcornoques hasta la cima del Cerro de San Cristóbal, desde donde se obtienen unas vistas espectaculares de Almonaster con su mezquita en lo alto. Es una ruta paisajística y cultural.\n\n🛣️ Cómo Llegar a Almonaster la Real\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Tras pasar Jabugo, encontrarás el desvío hacia Almonaster (aprox. 1h 30min - 120 km).\n\nEn Autobús: La empresa Damas conecta Huelva con la sierra. Puede ser necesario hacer transbordo en Aracena.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue la N-433 y, después de Cortegana, toma el desvío hacia Almonaster la Real (aprox. 1h 40min - 130 km)."
+  },
+  {
+    "id": "pueblo-linares",
+    "title": "Linares de la Sierra",
+    "description": "Sumérgete en la tranquilidad de Linares de la Sierra, un oasis de paz con calles empedradas, casas encaladas y el murmullo constante del agua. Un lugar perfecto para desconectar y disfrutar de la esencia más pura de la Sierra.",
+    "town": "Linares de la Sierra",
+    "date": "2025-12-01",
+    "category": EventCategory.PUEBLO_DESTACADO,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-14-at-19.13.49.jpeg",
+    "sponsored": true,
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Linares de la Sierra\nLinares es un oasis de tranquilidad y belleza, un pueblo peatonal de calles empedradas y casas encaladas.\n\nPlaza de Toros: El corazón del pueblo. No es una plaza de toros al uso, sino la plaza principal del pueblo, con una fuente en el centro y una grada de piedra. Un espacio único y lleno de encanto.\n\nLavaderos Públicos: Unos de los lavaderos mejor conservados de la comarca, un lugar etnográfico que te transporta a la vida de antaño.\n\nIglesia de San Juan Bautista: Un pequeño y coqueto templo parroquial que se integra perfectamente en la arquitectura del pueblo.\n\nLas 'Llanas': Fíjate en el suelo de las calles. Los empedrados de Linares, conocidos como 'llanas', son verdaderas obras de arte popular, con dibujos y mosaicos hechos con cantos rodados.\n\n🥾 Ruta de Senderismo Sugerida: Linares de la Sierra - Alájar\nUna de las rutas más famosas y pintorescas de la Sierra.\n\nRecorrido: Linares de la Sierra – Alájar (lineal).\n\nDistancia y Dificultad: Unos 5 km (solo ida), de dificultad baja-media.\n\nAtractivo: El sendero, en gran parte empedrado, atraviesa un paisaje de dehesas, huertas y bosques de castaños. Es un camino histórico que conecta dos de los pueblos con más encanto de la comarca.\n\nConexión: Puedes volver por el mismo camino o coordinar un taxi desde Alájar.\n\n🛣️ Cómo Llegar a Linares de la Sierra\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 dirección Badajoz, y después de pasar por la zona minera, toma el desvío hacia Aracena. Desde Aracena, sigue las indicaciones hacia Linares de la Sierra (aprox. 1h 20min - 100 km).\n\nEn Autobús: No hay servicio directo. La mejor opción es ir a Aracena con Damas y desde allí tomar un taxi (unos 10 km).\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) y sal en la salida 75 hacia Aracena por la N-433. Una vez pasado Aracena, encontrarás el desvío hacia Linares de la Sierra (aprox. 1h 20min - 105 km)."
+  },
+    {
+    "id": "2",
+    "title": "Cabalgata de Reyes Magos de Higuera de la Sierra",
+    "description": "La Magia Viviente de Higuera: Descubre la Cabalgata de Reyes Magos Más Antigua de Andalucía\n\nUn Tesoro Histórico en la Sierra\nEn el corazón de la Sierra de Aracena y Picos de Aroche, un pequeño municipio onubense, Higuera de la Sierra, alberga un secreto que se desvela cada noche del 5 de enero: la Cabalgata de Reyes Magos más antigua de Andalucía y la segunda más antigua de España.\n\nNo es solo un desfile; es una máquina del tiempo que transporta a sus visitantes a los orígenes de esta tradición, declarada Fiesta de Interés Turístico Nacional de Andalucía y actualmente en trámite para obtener la catalogación de Interés Turístico Nacional.\n\n📜 Breve Retrospectiva Histórica\nLa historia de esta cabalgata se remonta a 1918. Nació del fervor y la ilusión popular, siendo promovida por la Sociedad de Amigos de los Reyes Magos. En una época de posguerra y dificultades económicas, los vecinos decidieron organizar un evento que mantuviera viva la ilusión de los más pequeños.\n\nLo que distingue a Higuera es que, desde su inicio, la cabalgata adoptó un formato completamente teatralizado y estático en sus escenas principales, diferenciándose de los desfiles puramente móviles de otras ciudades. Esta visión original ha perdurado más de un siglo, convirtiendo la población entera en un vasto escenario al aire libre donde las carrozas no solo desfilan, sino que representan pasajes bíblicos e históricos.\n\n🎨 Tipología y Escenografía: La Esencia de lo Estático\nLa característica más singular de la Cabalgata de Higuera de la Sierra reside en sus impresionantes carrozas. No se trata de simples plataformas decoradas; son auténticas escenas vivientes y alegóricas que se mantienen estáticas durante horas para que el público las recorra.\n\nCarrozas Temáticas y Alegóricas: La mayoría de las carrozas representan pasajes bíblicos o escenas históricas relacionadas con la Natividad. Estos cuadros son interpretados por vecinos del pueblo, creando una inmersión teatral.\n\nCarrozas de Sus Majestades: Melchor, Gaspar y Baltasar, junto a sus séquitos, ocupan las carrozas centrales. Estas son las únicas que realmente se mueven al inicio, para luego posicionarse y volverse estáticas, permitiendo a los Reyes recibir a los visitantes.\n\nEl Detalle Artesanal: Destaca el nivel de detalle en los vestuarios, la iluminación y la ambientación, todo realizado artesanalmente por los propios vecinos de Higuera a lo largo del año. La comunidad se vuelca en esta fiesta, con una implicación que alcanza a todas las generaciones.\n\n💡 Información Relevante para el Viajero\nSi desea vivir la magia de esta noche, aquí tiene todo lo que necesita saber:\n\n🗓️ Fecha y Horario Clave\n5 de Enero: La jornada comienza temprano, pero el momento cumbre es al caer la noche.\n\nInicio: Suele ser sobre las 20:00 horas (consultar el horario oficial cada año).\n\nFormato Único: A diferencia de otros lugares, las carrozas y sus actores permanecen estáticos y visibles hasta bien entrada la madrugada (a menudo hasta la 1:00 o 2:00 de la mañana). Esto permite a los visitantes recorrerlas con calma, evitando las aglomeraciones de un desfile en movimiento.\n\n🗺️ Logística y Recomendaciones\nLlegada y Aparcamiento: Higuera de la Sierra es un pueblo pequeño. Se recomienda llegar con mucha antelación (incluso a primera hora de la tarde) para asegurar el aparcamiento. La organización suele habilitar zonas especiales en los accesos.\n\nAlojamiento: Si planea pernoctar, la reserva en alojamientos rurales (tanto en Higuera como en pueblos cercanos como Aracena o Jabugo) debe hacerse con meses de antelación debido a la altísima demanda.\n\nClima: Enero en la Sierra de Huelva es frío. Es imprescindible vestir ropa de abrigo, gorro y guantes, ya que pasará varias horas a la intemperie.\n\nLa Experiencia: Prepárese para caminar y sumergirse en la multitud. El recorrido a pie por las carrozas estáticas es la mejor manera de apreciar la belleza de los cuadros escénicos y la dedicación de sus intérpretes.\n\nLa Cabalgata de Higuera de la Sierra es más que una tradición navideña; es un acto de devoción cultural y comunitaria que transforma un pequeño rincón andaluz en un portal mágico. Es la excusa perfecta para una escapada de turismo rural que fusiona historia, arte efímero y la calidez del pueblo andaluz en la noche más ilusionante del año.",
+    "town": "Higuera de la Sierra",
+    "date": "2026-01-05",
+    "category": EventCategory.CABALGATA,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-14-at-14.56.47.jpeg",
+    "sponsored": true,
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Higuera de la Sierra\nConocida por su cabalgata, la segunda más antigua de España, Higuera de la Sierra es un pueblo lleno de historia y sabor.\n\nCentro de Interpretación de la Cabalgata: Un espacio dedicado a la fiesta más importante del pueblo, donde podrás conocer su historia y ver las carrozas que desfilan cada 5 de enero.\n\nDestilerías Martes Santo: Visita una de las destilerías más antiguas de Andalucía y descubre el proceso de elaboración del anís y otros licores serranos. ¡No te vayas sin una degustación!\n\nIglesia Parroquial de San Sebastián: Un templo del siglo XVIII con un impresionante retablo barroco.\n\nPlaza de la Constitución: El corazón del pueblo, un lugar perfecto para tomar algo y disfrutar del ambiente local.\n\n🥾 Ruta de Senderismo Sugerida: Camino de las Tobas\nUn agradable paseo que te conectará con la naturaleza y el agua.\n\nRecorrido: Higuera de la Sierra - Cascada de la Lapa.\n\nDistancia y Dificultad: Ruta corta y de dificultad baja, ideal para toda la familia (aprox. 4 km ida y vuelta).\n\nAtractivo: El sendero sigue el curso del arroyo de la Lapa, llevándote a través de un bosque de ribera hasta una bonita cascada (con más agua en época de lluvias). Es un paseo refrescante y lleno de encanto.\n\n🛣️ Cómo Llegar a Higuera de la Sierra\n\nDesde Huelva (Capital)\nEn Coche: La ruta más directa es por la N-435 hacia Badajoz hasta el cruce de Zalamea la Real, y de ahí por la A-461 hacia la sierra. Pasado Campofrío, se toma la A-470 (aprox. 1h 10min - 87 km).\n\nEn Autobús: La empresa Damas opera rutas que conectan Huelva con Higuera de la Sierra.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Higuera de la Sierra es uno de los primeros pueblos de la sierra que encontrarás en esta carretera (aprox. 1h - 80 km).\n\nEn Autobús: Damas ofrece servicios directos desde la Estación de Plaza de Armas de Sevilla a Higuera de la Sierra."
+  },
+  {
+    "id": "ad-dino-goloso",
+    "title": "El Dinosaurio Goloso",
+    "description": "Tu paraíso dulce en Santa Olalla del Cala (Huelva). Te ofrecemos una explosión de sabor, desde tartas personalizadas, pasteles y bollería fresca hasta una variada selección de golosinas y chuches. Además, somos especialistas en crear mesas dulces inolvidables para eventos, con deliciosos helados y batidos.",
+    "town": "Santa Olalla del Cala",
+    "date": "2025-12-01", 
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-14-at-14.36.15.jpeg",
+    "externalUrl": "https://www.instagram.com/el_dino_goloso/",
+    "sponsored": false,
+    "interestInfo": ""
+  },
   {
     "id": "1",
     "title": "Belén Viviente de Alájar",
@@ -27,16 +73,6 @@ const initialEventsData: EventType[] = [
     "category": EventCategory.BELEN_VIVIENTE,
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/10/AGENDA-TURISTEANDO-ALAJAR-Rafael-Caballero-Vazquez.png",
     "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Alájar\nAlájar, uno de los pueblos con más encanto de la sierra, te invita a descubrir su patrimonio natural y cultural.\n\nPeña de Arias Montano: Un monumento natural y lugar de peregrinación que ofrece vistas panorámicas espectaculares de la sierra. Alberga la Ermita de Nuestra Señora de los Ángeles y la Cátedra de San Victor.\n\nMonumento Natural de Alájar: Un enclave de gran valor geológico y paisajístico, ideal para los amantes de la naturaleza.\n\nIglesia de San Marcos: Templo parroquial de estilo barroco situado en el corazón del pueblo, en la Plaza de España.\n\nErmita de la Reina de los Ángeles: Un lugar de devoción y belleza, centro de la romería más famosa de la comarca.\n\n🥾 Ruta de Senderismo Sugerida: Sendero Alájar - Linares de la Sierra\nUna ruta clásica que conecta dos de los pueblos más pintorescos de la Sierra.\n\nRecorrido: Alájar – Linares de la Sierra (circular o lineal).\n\nDistancia y Dificultad: Aproximadamente 10 km (ida y vuelta), de dificultad baja-media, ideal para una mañana.\n\nAtractivo: El camino discurre por senderos empedrados, dehesas y bosques de castaños y alcornoques. Es una oportunidad única para disfrutar del paisaje serrano y la arquitectura tradicional de sus pueblos.\n\n🛣️ Cómo Llegar a Alájar\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 dirección Badajoz, y después de pasar por la zona minera, toma el desvío hacia Aracena. Desde Aracena, sigue las indicaciones hacia Alájar por la HU-8121 (aprox. 1h 20min - 100 km).\n\nEn Autobús: La empresa Damas ofrece servicios que conectan Huelva con los pueblos de la sierra. Puede ser necesario hacer transbordo en Aracena.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) dirección Mérida y sal en la salida 75 hacia Aracena por la N-433. Una vez pasado Aracena, encontrarás el desvío hacia Alájar (aprox. 1h 20min - 105 km).\n\nEn Autobús: Damas también conecta Sevilla con Aracena, desde donde se puede tomar un bus de enlace o taxi hasta Alájar."
-  },
-  {
-    "id": "2",
-    "title": "Campanilleros de Higuera",
-    "description": "Coro de campanilleros que cantan villancicos por las calles del pueblo, manteniendo viva la tradición musical de la sierra.",
-    "town": "Higuera de la Sierra",
-    "date": "2025-12-24",
-    "category": EventCategory.CAMPANILLEROS,
-    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/belen-viviente-higuera.jpeg",
-    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Higuera de la Sierra\nConocida por su cabalgata, la segunda más antigua de España, Higuera de la Sierra es un pueblo lleno de historia y sabor.\n\nCentro de Interpretación de la Cabalgata: Un espacio dedicado a la fiesta más importante del pueblo, donde podrás conocer su historia y ver las carrozas que desfilan cada 5 de enero.\n\nDestilerías Martes Santo: Visita una de las destilerías más antiguas de Andalucía y descubre el proceso de elaboración del anís y otros licores serranos. ¡No te vayas sin una degustación!\n\nIglesia Parroquial de San Sebastián: Un templo del siglo XVIII con un impresionante retablo barroco.\n\nPlaza de la Constitución: El corazón del pueblo, un lugar perfecto para tomar algo y disfrutar del ambiente local.\n\n🥾 Ruta de Senderismo Sugerida: Camino de las Tobas\nUn agradable paseo que te conectará con la naturaleza y el agua.\n\nRecorrido: Higuera de la Sierra - Cascada de la Lapa.\n\nDistancia y Dificultad: Ruta corta y de dificultad baja, ideal para toda la familia (aprox. 4 km ida y vuelta).\n\nAtractivo: El sendero sigue el curso del arroyo de la Lapa, llevándote a través de un bosque de ribera hasta una bonita cascada (con más agua en época de lluvias). Es un paseo refrescante y lleno de encanto.\n\n🛣️ Cómo Llegar a Higuera de la Sierra\n\nDesde Huelva (Capital)\nEn Coche: La ruta más directa es por la N-435 hacia Badajoz hasta el cruce de Zalamea la Real, y de ahí por la A-461 hacia la sierra. Pasado Campofrío, se toma la A-470 (aprox. 1h 10min - 87 km).\n\nEn Autobús: La empresa Damas opera rutas que conectan Huelva con Higuera de la Sierra.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Higuera de la Sierra es uno de los primeros pueblos de la sierra que encontrarás en esta carretera (aprox. 1h - 80 km).\n\nEn Autobús: Damas ofrece servicios directos desde la Estación de Plaza de Armas de Sevilla a Higuera de la Sierra."
   },
   {
     "id": "3",
@@ -54,7 +90,7 @@ const initialEventsData: EventType[] = [
     "town": "Cortegana",
     "date": "2025-12-31",
     "category": EventCategory.FIESTA,
-    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Cortegana\nCortegana es un pueblo señorial dominado por su imponente fortaleza medieval, un lugar lleno de historia y leyendas.\n\nCastillo de Cortegana: Una impresionante fortaleza del siglo XIII que se alza sobre el pueblo. Es uno de los castillos mejor conservados de la provincia y ofrece unas vistas panorámicas espectaculares. Alberga el centro de interpretación de las Jornadas Medievales.\n\nIglesia del Divino Salvador: Un templo gótico-mudéjar con una impresionante portada de piedra y un valioso artesonado interior. Es el principal monumento religioso de la localidad.\n\nErmita de Nuestra Señora de la Piedad: Situada en un bello paraje, es el centro de la romería local y un agradable lugar para pasear.\n\nCasa Mudéjar y Lavaderos Públicos: Explora el casco antiguo y descubre rincones con encanto como esta casa tradicional o los antiguos lavaderos, que te transportarán a otra época.\n\n🥾 Ruta de Senderismo Sugerida: Camino de la Vía Verde\nUn sendero fácil que sigue el antiguo trazado del ferrocarril minero.\n\nRecorrido: Cortegana - La Corte.\n\nDistancia y Dificultad: Dificultad muy baja, ideal para un paseo familiar a pie o en bicicleta.\n\nAtractivo: El camino es llano y atraviesa paisajes de dehesa y bosques de ribera. Es una forma perfecta de disfrutar del entorno natural sin grandes esfuerzos, pasando por antiguos puentes y estaciones.\n\n🛣️ Cómo Llegar a Cortegana\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Al llegar a la altura de Gibraleón, sigue las indicaciones de la N-435. Pasarás Jabugo y Galaroza antes de llegar a Cortegana (aprox. 1h 30min - 115 km).\n\nEn Autobús: La empresa Damas conecta Huelva con Cortegana, siendo una de las paradas principales de la línea de la sierra.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue la N-433 pasando Aracena y Galaroza hasta llegar a Cortegana (aprox. 1h 30min - 120 km).\n\nEn Autobús: Damas ofrece servicios desde Sevilla que pasan por Cortegana."
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Cortegana\nCortegana es un pueblo señorial dominado por su imponente fortaleza medieval, un lugar lleno de historia y leyendas.\n\nCastillo de Cortegana: Una impresionante fortaleza del siglo XIII que se alza sobre el pueblo. Es uno de los castillos mejor conservados de la provincia y ofrece unas vistas panorámicas espectaculares. Alberga el centro de interpretación de las Jornadas Medievales.\n\nIglesia del Divino Salvador: Un templo gótico-mudéjar con una impresionante portada de piedra y un valioso artesonado interior. Es el principal monumento religioso de la localidad.\n\nErmita de Nuestra Señora de la Piedad: Situada en un bello paraje, es el centro de la romería local y un agradable lugar para pasear.\n\nCasa Mudéjar y Lavaderos Públicos: Explora el casco antiguo y descubre rincones com encanto como esta casa tradicional o los antiguos lavaderos, que te transportarán a otra época.\n\n🥾 Ruta de Senderismo Sugerida: Camino de la Vía Verde\nUn sendero fácil que sigue el antiguo trazado del ferrocarril minero.\n\nRecorrido: Cortegana - La Corte.\n\nDistancia y Dificultad: Dificultad muy baja, ideal para un paseo familiar a pie o en bicicleta.\n\nAtractivo: El camino es llano y atraviesa paisajes de dehesa y bosques de ribera. Es una forma perfecta de disfrutar del entorno natural sin grandes esfuerzos, pasando por antiguos puentes y estaciones.\n\n🛣️ Cómo Llegar a Cortegana\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Al llegar a la altura de Gibraleón, sigue las indicaciones de la N-435. Pasarás Jabugo y Galaroza antes de llegar a Cortegana (aprox. 1h 30min - 115 km).\n\nEn Autobús: La empresa Damas conecta Huelva con Cortegana, siendo una de las paradas principales de la línea de la sierra.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue la N-433 pasando Aracena y Galaroza hasta llegar a Cortegana (aprox. 1h 30min - 120 km).\n\nEn Autobús: Damas ofrece servicios desde Sevilla que pasan por Cortegana."
   },
   {
     "id": "5",
@@ -64,15 +100,6 @@ const initialEventsData: EventType[] = [
     "date": "2026-01-05",
     "category": EventCategory.CABALGATA,
     "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Zufre\nConocido como el 'balcón de la sierra', Zufre se asoma de forma espectacular al embalse y ofrece uno de los conjuntos urbanos más pintorescos y mejor conservados.\n\nEl 'Paseo' o Mirador de Zufre: Un balcón natural con vistas impresionantes al embalse de Zufre y a las dehesas. Es el lugar perfecto para contemplar el atardecer y sentir la inmensidad del paisaje.\n\nAyuntamiento y Plaza de la Iglesia: El centro neurálgico del pueblo. El edificio del Ayuntamiento, con su arquitectura renacentista, y la contigua Iglesia Parroquial de la Purísima Concepción, forman un conjunto monumental de gran belleza.\n\nRecorrido por sus calles: Lo mejor de Zufre es perderse por su laberinto de calles estrechas, empinadas y encaladas. Cada rincón es una postal, con arcos, pasadizos y casas que cuelgan sobre el barranco.\n\nFuente del Concejo: Una fuente histórica de mármol que ha sido un punto de encuentro para los vecinos durante siglos.\n\n🥾 Ruta de Senderismo Sugerida: Ruta de las Riberas\nUn sendero que te sumerge en los paisajes de agua que rodean Zufre.\n\nRecorrido: Zufre - Ribera de Huelva.\n\nDistancia y Dificultad: Dificultad media, debido a algunos desniveles. La distancia puede variar según el tramo que elijas.\n\nAtractivo: La ruta desciende desde el pueblo hacia la Ribera de Huelva, atravesando dehesas y olivares. El contraste entre el pueblo encalado en lo alto y el verde de la ribera es espectacular. Es una zona de gran riqueza de flora y fauna.\n\n🛣️ Cómo Llegar a Zufre\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Antes de llegar a Valverde del Camino, toma el desvío por la A-493 hacia La Palma del Condado y luego la A-461. Finalmente, coge la HU-7110 hasta Zufre (aprox. 1h 20min - 95 km).\n\nEn Autobús: Puede ser complicado llegar en transporte público directo. La mejor opción suele ser ir hasta Aracena con Damas y desde allí tomar un taxi.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) dirección Mérida. Coge la salida 782 hacia Zufre/Castillo de las Guardas. Sigue la SE-185 y luego la HU-8116 que te llevará directamente al pueblo (aprox. 1h - 80 km). Esta es la ruta más directa.\n\nEn Autobús: No hay línea directa. La opción sería ir a Aracena y desde allí coordinar el transporte."
-  },
-  {
-    "id": "6",
-    "title": "Cabalgata de Almonaster la Real",
-    "description": "La Cabalgata de Reyes Magos de Almonaster la Real comenzó su andadura histórica hace medio siglo. Era una Cabalgata  importante, los Reyes Magos iban a caballo, y se recogían entonces buenos regalos, normalmente en el porche de la Iglesia.\n\nComo curiosidad sobre 1986 la organizaban las Hermanas de la Providencia, junto a un grupo de personas. Entonces, todas las carrozas escenificaban pasajes de la vida de Jesús, siendo por tanto de temática bíblica.\n\nActualmente, la organiza un valiente e ilusionado grupo joven denominado Asociación Carbón Dulce, que comenzaron en 2019 su andadura con éxito tras la gran acogida del pueblo, padres y madres, y los niños como grandes protagonists.\n\nAnteriormente a este joven colectivo  fueron las madres del pueblo quiénes hicieron que la Cabalgata no desapareciera.\n\nA estos grupos y personas le ayudan de forma importante el Ayuntamiento de Almonaster y algunas empresas del municipio como las vinculadas con el sector minero.\n\nEl cortejo se compone de varias carrozas, durante estos últimos años en torno a seis, destacando los tronos de los tres Reyes Magos y el resto son de fantasía y animación que cada año van cambiando de temática.\n\nLa Cabalgata de Almonaster sale a las 18 horas desde el Polígono Industrial.\n\nSeguidamente, baja por el callejón de Carmona, llega a la plaza del Ayuntamiento, avanza por El Barrio hasta llegar a la Iglesia donde se realiza una ofrenda al Niño Jesús. Destacar que durante el recorrido la cabalgata es animada por una charanga.\n\nEl cortejo sigue de nuevo hacia la céntrica plaza donde se ubica el Ayuntamiento de Almonaster la Real, y allí se colocan  los Reyes Magos en sus tronos. A continuación, todos los niños del pueblo y presentes son recibidos por SS.MM para entregarles algún obsequio.\n\nComo curiosidad Almonaster la Real es el pueblo de Huelva con un mayor número de aldeas y además de la propia de Almonaster en muchas de ellas existen también Cabalgatas  (cuya salida suele ser el mismo día 5 por la tarde temprano) y otros actos típicos de la Navidad.",
-    "town": "Almonaster la Real",
-    "date": "2026-01-05",
-    "category": EventCategory.CABALGATA,
-    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Almonaster la Real\nAlmonaster la Real es un pueblo con una profunda herencia andalusí, declarado Conjunto Histórico-Artístico, que te transportará a otra época.\n\nMezquita del Castillo: La joya de Almonaster. Una mezquita rural del siglo X, increíblemente bien conservada, que se erige en la cima del cerro del Castillo. Es un lugar mágico, lleno de paz e historia, con vistas espectaculares.\n\nIglesia Parroquial de San Martín: Un templo gótico-mudéjar con una impresionante portada manuelina, única en la provincia de Huelva, que refleja la influencia portuguesa en la zona.\n\nPuente de las Tres Fuentes: Un puente romano que formaba parte de una antigua calzada. Un rincón con encanto a las afueras del pueblo.\n\nTenerías y Ermita de Santa Eulalia: Descubre las antiguas tenerías donde se curtía el cuero y visita la ermita, que acoge una popular romería.\n\n🥾 Ruta de Senderismo Sugerida: Subida al Cerro de San Cristóbal\nUn ascenso que te recompensará con las mejores vistas de la comarca.\n\nRecorrido: Almonaster - Cima del Cerro de San Cristóbal.\n\nDistancia y Dificultad: Unos 6 km (ida y vuelta), de dificultad media por la pendiente.\n\nAtractivo: Es el punto más alto de la provincia de Huelva. Desde la cima, en días claros, se puede ver hasta el mar. El camino atraviesa bosques de castaños y alcornoques, y el esfuerzo de la subida merece totalmente la pena.\n\n🛣️ Cómo Llegar a Almonaster la Real\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Pasarás por Jabugo y Galaroza. Poco después de Cortegana, encontrarás el desvío hacia Almonaster (aprox. 1h 35min - 120 km).\n\nEn Autobús: La empresa Damas tiene líneas que paran en Almonaster, aunque la frecuencia puede ser limitada.\n\nDesde Sevilla\nEn Coche: Coge la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) dirección Aracena/Portugal. Sigue por la N-433 hasta después de Cortegana, donde verás el desvío a Almonaster (aprox. 1h 40min - 130 km).\n\nEn Autobús: Damas ofrece servicios desde Sevilla, pero puede requerir transbordo."
   },
   {
     "id": "7",
@@ -99,13 +126,14 @@ const initialEventsData: EventType[] = [
     "description": "Si hay un evento que encapsula la esencia del otoño y la riqueza natural de la Sierra de Aracena y Picos de Aroche, esa es, sin duda, la Feria de la Castaña de Fuenteheridos. Este pintoresco municipio onubense, cuyo nombre evoca sus \"fuentes frías\", se convierte cada año en el epicentro de una celebración que rinde culto a uno de sus frutos más emblemáticos y a la cultura que lo rodea.\n\n📅 Información y Actividades de la Feria\nLa Feria de la Castaña, que cuenta con una trayectoria de más de 40 años, se celebra tradicionalmente coincidiendo con el Puente de la Inmaculada y la Constitución.\n\nEs una cita ineludible que atrae a miles de visitantes con una programación rica y diversa:\n\n🌰 Mercado de Productos de la Zona: El corazón de la feria, donde podrás adquirir castañas frescas, dulces y repostería elaborada con este fruto, miel, embutidos ibéricos y una amplia gama de productos artesanales y ecológicos de la Sierra.\n\n🚶‍♀️ Rutas de Senderismo: Se organizan recorridos que invitan a sumergirse en los espectaculares castañares que rodean Fuenteheridos, ofreciendo una paleta cromática inigualable propia del otoño. Son una oportunidad perfecta para comprender la importancia histórica y económica del castaño en la comarca.\n\n🎉 Talleres y Actividades Lúdicas: El programa se completa con talleres infantiles, música en vivo, bailes, exposiciones fotográficas y actividades de gastronomía para todas las edades.\n\n🔥 Tostaderos de Castañas Populares: No puede faltar el aroma inconfundible de las castañas asándose al fuego en la Plaza del Coso, el punto de encuentro social por excelencia.\n\nLa feria es un reflejo de la riqueza cultural, gastronómica y paisajística de la Sierra de Huelva, convirtiéndose en una fuente de generación de riqueza local.",
     "town": "Fuenteheridos",
     "date": "2025-12-05",
-    "category": EventCategory.FIESTA,
-    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Fuenteheridos\nFuenteheridos, declarado Conjunto Histórico-Artístico, es un pueblo de postal con casas encaladas y tejados curvos. Aprovecha tu visita a la Feria para recorrer sus rincones más icónicos:\n\nFuente de los Doce Caños: Símbolo de la localidad y origen de su nombre. Se dice que cada uno de sus caños representa un mes del año. Nace aquí el río Múrtiga, siendo un importante acuífero y fuente de vida.\n\nPlaza del Coso: El centro neurálgico del pueblo y escenario principal de la Feria. Su nombre se debe a que antiguamente se celebraban corridas de toros en este lugar. Es el corazón palpitante de la vida social.\n\nIglesia Parroquial del Espíritu Santo: Un bello templo cuya construcción se inició en el siglo XVI y fue reformado tras el terremoto de Lisboa de 1755, destacando su arquitectura y su campanario de finales del siglo XVIII.\n\nPaseo de los Poetas y Nacimiento del Múrtiga: Conocido también como el antiguo \"Camino del Regaó\", un lugar de paseo y descanso junto al nacimiento del río, embellecido con cascadas y lagos artificiales.\n\nMirador de la Era la Carrera: Un punto panorámico que ofrece vistas espectaculares del casco urbano y del entorno natural circundante, ideal para capturar la belleza de la sierra.\n\n🥾 Ruta de Senderismo Sugerida: El Bosque Encantado\nTe proponemos la Ruta del Bosque Encantado, uno de los senderos más populares y bellos del Parque Natural Sierra de Aracena y Picos de Aroche.\n\nRecorrido: Fuenteheridos – Galaroza (o viceversa).\n\nDistancia y Dificultad: La ruta es de dificultad baja-media.\n\nAtractivo: El sendero discurre a través de castañares centenarios y dehesas, ofreciendo un paisaje mágico, especialmente en otoño. A lo largo del camino, te encontrarás con la flora y fauna local (cerdos ibéricos, ovejas, bellotas, setas) y puntos de interés como la antigua Casa Monteblanco (lagar de uva) y la fuente de las Cañas.\n\nConexión: Esta ruta conecta dos de los pueblos más bonitos de la Sierra. Puedes hacerla circular o aprovechar el autobús interurbano para volver al punto de partida.\n\n🛣️ Cómo Llegar a Fuenteheridos\nFuenteheridos se encuentra en el corazón de la Sierra de Aracena, bien comunicado con las principales capitales cercanas.\n\nDesde Huelva (Capital)\nEn Coche: La forma más rápida es a través de la N-435 (dirección Badajoz) hasta la Cuenca Minera (Riotinto - Campofrio), para luego tomar dirección Aracena. Desde Aracena, sigue la N-433 y la HU-8120 hasta Fuenteheridos (aprox. 1h 25min - 106 km).\n\nEn Transporte Público: Puedes tomar el tren Huelva-Zafra (RENFE) hasta la estación de Jabugo-Galaroza (El Repilado), que se encuentra a unos 10 km de Fuenteheridos, y desde allí tomar un taxi o un autobús de enlace. También hay líneas de autobús (Damas) con transbordo, por ejemplo, en Galaroza.\n\nDesde Sevilla\nEn Coche: Toma la autovía A-66 (Ruta de la Plata) y luego la N-433 (Sevilla-Lisboa) a la altura de la Pañoleta/Aracena. Sigue esta carretera, pasando Aracena, hasta encontrar el desvío hacia Fuenteheridos (aprox. 1h 15min - 100 km).\n\nEn Autobús: La empresa Damas ofrece servicios directos desde la Estación de Autobuses Plaza de Armas de Sevilla a Fuenteheridos, con una duración aproximada de 1h 55min.\n\nDesde Extremadura (Badajoz/Zafra)\nEn Coche: Lo más directo es tomar la N-435 en dirección a Huelva, o la N-433 que pasa por Zafra, en dirección a Sevilla, que te llevará directamente a la Sierra de Aracena.\n\nEn Tren: La línea de tren Zafra-Huelva tiene parada en la estación de Jabugo-Galaroza (El Repilado), la más cercana a Fuenteheridos (a 10 km).\n\nEn Autobús: La empresa Damas (o líneas con transbordo) comunica la zona. Es posible que debas bajarte en Galaroza o Aracena y tomar un bus de enlace o taxi."
+    "category": EventCategory.FERIA_GASTRONOMICA,
+    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/WhatsApp-Image-2025-11-14-at-17.07.34.jpeg",
+    "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Fuenteheridos\nFuenteheridos, declarado Conjunto Histórico-Artístico, es un pueblo de postal con casas encaladas y tejados curvos. Aprovecha tu visita a la Feria para recorrer sus rincones más icónicos:\n\nFuente de los Doce Caños: Símbolo de la localidad y origen de su nombre. Se dice que cada uno de sus caños representa un mes del año. Nace aquí el río Múrtiga, siendo un importante acuífero y fuente de vida.\n\nPlaza del Coso: El centro neurálgico del pueblo y escenario principal de la Feria. Su nombre se debe a que antiguamente se celebraban corridas de toros en este lugar. Es el corazón palpitante de la vida social.\n\nIglesia Parroquial del Espíritu Santo: Un bello templo cuya construcción se inició en el siglo XVI y fue reformado tras el terremoto de Lisboa de 1755, destacando su arquitectura y su campanario de finales del siglo XVIII.\n\nPaseo de los Poetas y Nacimiento del Múrtiga: Conocido también como el antiguo \"Camino del Regaó\", un lugar de paseo y descanso junto al nacimiento del río, embellecido com cascadas y lagos artificiales.\n\nMirador de la Era la Carrera: Un punto panorámico que ofrece vistas espectaculares del casco urbano y del entorno natural circundante, ideal para capturar la belleza de la sierra.\n\n🥾 Ruta de Senderismo Sugerida: El Bosque Encantado\nTe proponemos la Ruta del Bosque Encantado, uno de los senderos más populares y bellos del Parque Natural Sierra de Aracena y Picos de Aroche.\n\nRecorrido: Fuenteheridos – Galaroza (o viceversa).\n\nDistancia y Dificultad: La ruta es de dificultad baja-media.\n\nAtractivo: El sendero discurre a través de castañares centenarios y dehesas, ofreciendo un paisaje mágico, especialmente en otoño. A lo largo del camino, te encontrarás con la flora y fauna local (cerdos ibéricos, ovejas, bellotas, setas) y puntos de interés como la antigua Casa Monteblanco (lagar de uva) y la fuente de las Cañas.\n\nConexión: Esta ruta conecta dos de los pueblos más bonitos de la Sierra. Puedes hacerla circular o aprovechar el autobús interurbano para volver al punto de partida.\n\n🛣️ Cómo Llegar a Fuenteheridos\nFuenteheridos se encuentra en el corazón de la Sierra de Aracena, bien comunicado con las principales capitales cercanas.\n\nDesde Huelva (Capital)\nEn Coche: La forma más rápida es a través de la N-435 (dirección Badajoz) hasta la Cuenca Minera (Riotinto - Campofrio), para luego tomar dirección Aracena. Desde Aracena, sigue la N-433 y la HU-8120 hasta Fuenteheridos (aprox. 1h 25min - 106 km).\n\nEn Transporte Público: Puedes tomar el tren Huelva-Zafra (RENFE) hasta la estación de Jabugo-Galaroza (El Repilado), que se encuentra a unos 10 km de Fuenteheridos, y desde allí tomar un taxi o un autobús de enlace. También hay líneas de autobús (Damas) con transbordo, por ejemplo, en Galaroza.\n\nDesde Sevilla\nEn Coche: Toma la autovía A-66 (Ruta de la Plata) y luego la N-433 (Sevilla-Lisboa) a la altura de la Pañoleta/Aracena. Sigue esta carretera, pasando Aracena, hasta encontrar el desvío hacia Fuenteheridos (aprox. 1h 15min - 100 km).\n\nEn Autobús: La empresa Damas ofrece servicios directos desde la Estación de Autobuses Plaza de Armas de Sevilla a Fuenteheridos, con una duración aproximada de 1h 55min.\n\nDesde Extremadura (Badajoz/Zafra)\nEn Coche: Lo más directo es tomar la N-435 en dirección a Huelva, o la N-433 que pasa por Zafra, en dirección a Sevilla, que te llevará directamente a la Sierra de Aracena.\n\nEn Tren: La línea de tren Zafra-Huelva tiene parada en la estación de Jabugo-Galaroza (El Repilado), la más cercana a Fuenteheridos (a 10 km).\n\nEn Autobús: La empresa Damas (o líneas con transbordo) comunica la zona. Es posible que debas bajarte en Galaroza o Aracena y tomar un bus de enlace o taxi."
   },
   {
     "id": "15",
     "title": "Migas Solidarias de La Umbría",
-    "description": "Las Migas Solidarias de La Umbría, pedanía de Aracena en Huelva, son una tradición gastronómica y benéfica que reúne cada año a centenares de personas durante el Puente de la Constitución, en un acto que combina la solidaridad con la cultura serrana.​\n\nHistoria y sentido solidario\nEsta actividad se celebra de forma ininterrumpida desde 1999, cuando la Asociación Cultural 'El Pilar' de La Umbría ideó reunir a vecinos y visitantes en torno a uno de los platos más tradicionales de la Sierra de Aracena: las migas. Año tras año, el evento se ha consolidado, constituyéndose en referente festivo y solidario no solo de la comarca sino de toda la provincia de Huelva. La recaudación, obtenida a precios populares por la venta de migas, productos ibéricos y dulces caseros, se destina a diversas causas sociales y necesidades de la propia aldea, simbolizando la unión y el compromiso de los vecinos.​\n\nDesarrollo y ambiente\nEl día de las Migas Solidarias la aldea de La Umbría se transforma por completo. El evento tiene lugar en el Pabellón Cubierto de la aldea, ubicado junto a la iglesia mudéjar de Nuestra Señora de la Antigua, lo que permite su celebración independientemente de la meteorología. Voluntarios y vecinos se encargan de la elaboración de las migas, acompañadas tradicionalmente por sardinas asadas, caldereta, pruebas de chorizo, jamón ibérico y vinos del condado, así como dulces caseros y una popular tómbola para los asistentes.​\n\nLa atmósfera está marcada por la hospitalidad, la convivencia entre vecinos y forasteros, y la satisfacción de contribuir a una causa solidaria. Además, el Ayuntamiento de Aracena suele habilitar un servicio especial de autobuses lanzadera que conecta la localidad principal con la pedanía para evitar colapsos de tráfico.​\n\nFechas y horarios 2025\nLa próxima edición —que en 2025 mantendrá el espíritu de sus más de 25 años de historia— se celebrará el domingo 7 de diciembre a partir de las 12:00 del mediodía, en el Pabellón Cubierto de La Umbría. El servicio de transporte gratuito funcionará durante toda la jornada hasta las 18:00 horas.​\n\nResumen de fechas y horarios 2025:\n\nDomingo 7 de diciembre\n\nDesde las 12:00 hasta agotar existencias\n\nPabellón Cubierto de La Umbría, Aracena\n\nServicio de autobuses gratuito entre Aracena y La Umbría, de 12:00 a 18:00 h.",
+    "description": "Las Migas Solidarias de La Umbría, pedanía de Aracena en Huelva, son una tradición gastronómica y benéfica que reúne cada año a centenares de personas durante el Puente de la Constitución, en un acto que combina la solidaridad con la cultura serrana.​\n\nHistoria y sentido solidario\nEsta actividad se celebra de forma ininterrumpida desde 1999, cuando la Asociación Cultural 'El Pilar' de La Umbría ideó reunir a vecinos y visitantes en torno a uno de los platos más tradicionales de la Sierra de Aracena: las migas. Año tras año, el evento se ha consolidado, constituyéndose en referente festivo y solidario no solo de la comarca sino de toda la provincia de Huelva. La recaudación, obtenida a precios populares por la venta de migas, productos ibéricos y dulces caseros, se destina a diversas causas sociais y necesidades de la propia aldea, simbolizando la unión y el compromiso de los vecinos.​\n\nDesarrollo y ambiente\nEl día de las Migas Solidarias la aldea de La Umbría se transforma por completo. El evento tiene lugar en el Pabellón Cubierto de la aldea, ubicado junto a la iglesia mudéjar de Nuestra Señora de la Antigua, lo que permite su celebración independientemente de la meteorología. Voluntarios y vecinos se encargan de la elaboración de las migas, acompañadas tradicionalmente por sardinas asadas, caldereta, pruebas de chorizo, jamón ibérico y vinos del condado, así como dulces caseros y una popular tómbola para los asistentes.​\n\nLa atmósfera está marcada por la hospitalidad, la convivencia entre vecinos y forasteros, y la satisfacción de contribuir a una causa solidaria. Además, el Ayuntamiento de Aracena suele habilitar un servicio especial de autobuses lanzadera que conecta la localidad principal con la pedanía para evitar colapsos de tráfico.​\n\nFechas y horarios 2025\nLa próxima edición —que en 2025 mantendrá el espíritu de sus más de 25 años de historia— se celebrará el domingo 7 de diciembre a partir de las 12:00 del mediodía, en el Pabellón Cubierto de La Umbría. El servicio de transporte gratuito funcionará durante toda la jornada hasta las 18:00 horas.​\n\nResumen de fechas y horarios 2025:\n\nDomingo 7 de diciembre\n\nDesde las 12:00 hasta agotar existencias\n\nPabellón Cubierto de La Umbría, Aracena\n\nServicio de autobuses gratuito entre Aracena y La Umbría, de 12:00 a 18:00 h.",
     "town": "Aracena",
     "date": "2025-12-07",
     "category": EventCategory.OTRO,
@@ -177,7 +205,7 @@ En Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) direcció
   {
     "id": "17",
     "title": "Los Rehiletes de Aracena",
-    "description": "En el corazón de la Sierra de Aracena, Huelva, justo en la víspera de la festividad de la Inmaculada Concepción, el calendario se detiene y la noche se ilumina con una de las tradiciones más espectaculares y queridas por sus habitantes: La Noche de los Rehiletes. Más que una simple celebración, es un ritual purificador, un cierre de ciclo agrícola y una fascinante muestra de la cultura serrana.\n\n📜 Historia y Simbología: El Triángulo de la Tradición\nEl origen exacto de los Rehiletes se pierde en la bruma del tiempo, lo que añade un aura de misterio y arraigo a la fiesta. Sin embargo, tres pilares fundamentales se entrelazan para dar sentido a esta ancestral celebración:\n\nEl Cierre del Ciclo Agrícola: La fiesta está íntimamente ligada al castañar, el motor económico y paisajístico de la Sierra. El 7 de diciembre marca, tradicionalmente, el final de la cosecha de la castaña y la caída masiva de la hoja. La quema del rehilete, compuesto por estas hojas secas, se interpreta como un acto de \"limpieza\" del campo, permitiendo que la tierra descanse y se prepare para las lluvias invernales.\n\nEl Fuego Purificador (Pagano): En la mayoría de las culturas, el fuego es un elemento de purificación y renovación. Quemar los rehiletes en grandes candelas (hogueras) en cada barrio es un rito ancestral para alejar los malos espíritus, purificar el año que termina y dar la bienvenida a la etapa siguiente con energías renovadas.\n\nLa Víspera Religiosa: La celebración ocurre la tarde-noche del 7 de diciembre, justo antes de la festividad de la Purísima Concepción o \"La Pura\" (8 de diciembre). Esta cercanía alude a la luz y la pureza del fuego en contraposición a las tinieblas de la noche, mezclando el carácter popular y pagano con la tradición cristiana.\n\n🔥 ¿Qué son exactamente los Rehiletes?\nEl protagonista absoluto de la noche es el Rehilete. No es una antorcha cualquiera, sino una ingeniosa y sencilla creación artesanal:\n\nComposición: Se elabora ensartando y prensando las hojas secas de los castaños en una fina vara de olivo.\n\nEl Sello: En el extremo, se utiliza una castaña o a veces un trozo de corcho para sellar y sujetar firmemente la ristra de hojas.\n\nEl ritual es sencillo y emocionante: se prende fuego al rehilete en las grandes candelas de barrio y, con un movimiento circular del brazo, se hace girar en el aire. La combinación de las hojas secas y el giro produce un efecto visual hipnótico: una estela de fuego y miles de chispas rojas y doradas que \"dibujan\" círculos y espirales en la oscuridad de la noche serrana.\n\nCuriosidad: Los días previos al 7 de diciembre, los niños y niñas de Aracena salen al castañar con sus varas de olivo para recoger y confeccionar personalmente sus propios rehiletes. Este acto, el de su fabricación, ya es parte del ceremonial.\n\n🌰 La Gastronomía de la Noche\nLa Noche de los Rehiletes es también una noche de intensa convivencia social y gastronomía serrana que se disfruta al calor de las brasas:\n\nEl Tostón de Castañas: El producto estrella de la noche. Las castañas se asan en grandes tostaós sobre las brasas de las candelas. A menudo, se organiza un Tostón Solidario de Castañas para recaudar fondos para causas sociales.\n\nSabor Ibérico: El fuego de las candelas se aprovecha para asar carnes ibéricas (chorizos, lomos, presa) de la excelente calidad que caracteriza a la Sierra.\n\nAcompañamiento: Todo esto se riega con el tradicional mosto serrano de la zona y se endulza con los buñuelos y dulces típicos de las asociaciones de mujeres del municipio.\n\nUn consejo experto: Vístase con ropa de abrigo, ya que las noches de diciembre en la Sierra son frías, pero ¡no olvide la calidez de las hogueras y la gente de Aracena le harán olvidarse del frío!",
+    "description": "En el corazón de la Sierra de Aracena, Huelva, justo en la víspera de la festividad de la Inmaculada Concepción, el calendario se detiene y la noche se ilumina con una de las tradiciones más espectaculares y queridas por sus habitantes: La Noche de los Rehiletes. Más que una simple celebración, es un ritual purificador, un cierre de ciclo agrícola y una fascinante muestra de la cultura serrana.\n\n📜 Historia y Simbología: El Triángulo de la Tradición\nEl origen exacto de los Rehiletes se pierde en la bruma del tiempo, lo que añade un aura de misterio y arraigo a la fiesta. Sin embargo, tres pilares fundamentales se entrelazan para dar sentido a esta ancestral celebración:\n\nEl Cierre del Ciclo Agrícola: La fiesta está íntimamente ligada al castañar, el motor económico y paisajístico de la Sierra. El 7 de diciembre marca, tradicionalmente, el final de la cosecha de la castaña y la caída masiva de la hoja. La quema del rehilete, compuesto por estas hojas secas, se interpreta como un acto de \"limpieza\" del campo, permitiendo que la tierra descanse y se prepare para las lluvias invernales.\n\nEl Fuego Purificador (Pagano): En la mayoría de las culturas, el fuego es un elemento de purificación y renovación. Quemar los rehiletes en grandes candelas (hogueras) en cada barrio es un rito ancestral para alejar los malos espíritus, purificar el año que termina y dar la bienvenida a la etapa siguiente con energías renovadas.\n\nLa Víspera Religiosa: La celebración ocurre la tarde-noche del 7 de diciembre, justo antes de la festividad de la Purísima Concepción o \"La Pura\" (8 de diciembre). Esta cercanía alude a la luz y la pureza del fuego en contraposición a las tinieblas de la noche, mezclando el carácter popular y pagano con la tradición cristiana.\n\n🔥 ¿Qué son exactamente los Rehiletes?\nEl protagonista absoluto de la noche es el Rehilete. No es una antorcha cualquiera, sino una ingeniosa y sencilla creación artesanal:\n\nComposición: Se elabora ensartando y prensando las hojas secas de los castaños en una fina vara de olivo.\n\nEl Sello: En el extremo, se utiliza una castaña o a veces un trozo de corcho para sellar y sujetar firmemente la ristra de hojas.\n\nEl ritual es sencillo y emocionante: se prende fuego al rehilete en las grandes candelas de barrio y, con un movimiento circular del brazo, se hace girar en el aire. La combinación de las hojas secas y el giro produce un efecto visual hipnótico: una estela de fuego y miles de chispas rojas y doradas que \"dibujan\" círculos y espirales en la oscuridad de la noche serrana.\n\nCuriosidad: Los días previos al 7 de diciembre, los niños y niñas de Aracena salen al castañar con sus varas de olivo para recoger y confeccionar personalmente sus propios rehiletes. Este acto, el de su fabricación, ya es parte del ceremonial.\n\n🌰 La Gastronomía de la Noche\nLa Noche de los Rehiletes es también una noche de intensa convivencia social y gastronomía serrana que se disfruta al calor de las brasas:\n\nEl Tostón de Castañas: El producto estrella de la noche. Las castañas se asan en grandes tostaós sobre las brasas de las candelas. A menudo, se organiza un Tostón Solidario de Castañas para recaudar fondos para causas sociais.\n\nSabor Ibérico: El fuego de las candelas se aprovecha para asar carnes ibéricas (chorizos, lomos, presa) de la excelente calidad que caracteriza a la Sierra.\n\nAcompañamiento: Todo esto se riega con el tradicional mosto serrano de la zona y se endulza con los buñuelos y dulces típicos de las asociaciones de mujeres del municipio.\n\nUn consejo experto: Vístase con ropa de abrigo, ya que las noches de diciembre en la Sierra son frías, pero ¡no olvide la calidez de las hogueras y la gente de Aracena le harán olvidarse del frío!",
     "town": "Aracena",
     "date": "2025-12-07",
     "category": EventCategory.OTRO,
@@ -187,10 +215,10 @@ En Coche: Toma la A-66 (Ruta de la Plata) y luego la N-433 (salida 75) direcció
   {
     "id": "18",
     "title": "Saborea Cumbres Mayores",
-    "description": "Cumbres Mayores: Donde la Tradición se Saborea\nCumbres Mayores, un pintoresco municipio en el corazón de la Sierra de Huelva, es célebre no solo por su imponente castillo medieval, sino también por ser cuna de una arraigada cultura gastronómica que tiene en el cerdo ibérico a su máximo exponente. Desde tiempos inmemoriales, la vida en Cumbres Mayores ha estado ligada al ciclo de la dehesa y a la maestría en la elaboración de productos curados, transmitida de generación en generación.\n\nEsta profunda conexión con sus raíces culinarias dio origen a un evento que hoy es referente en el calendario gastronómico andaluz: \"Saborea Cumbres Mayores\". Lo que comenzó como una iniciativa local para destacar y promover la calidad de sus productos, especialmente los derivados del cerdo ibérico de bellota, ha evolucionado hasta convertirse en una feria consolidada que atrae a miles de visitantes cada año. Es un reflejo de la pasión y el orgullo de un pueblo por su patrimonio, que se ha sabido mantener y potenciar a lo largo del tiempo.\n\nUn Festín para los Sentidos: Actividades de la Feria\n\"Saborea Cumbres Mayores\" es mucho más que una feria gastronómica; es una experiencia completa que celebra la cultura, la historia y, por supuesto, el inigualable sabor de la Sierra. A lo largo de sus jornadas, los asistentes pueden disfrutar de un variado programa de actividades diseñadas para deleitar y educar:\n\nDegustaciones y Mercado de Productos Locales: El corazón de la feria. Aquí, productores locales ofrecen sus exquisitos jamones, paletas, embutidos y quesos, permitiendo a los visitantes probar y adquirir directamente estas joyas gastronómicas. Es una oportunidad única para conocer de cerca la calidad y el mimo con el que se elaboran.\n\nTalleres y Demostraciones Culinarias: Chefs y maestros cortadores de jamón comparten sus secretos, enseñando a los asistentes las técnicas de corte perfecto y las mejores formas de disfrutar los productos ibéricos. También se suelen impartir talleres sobre elaboración artesanal de embutidos y otros productos típicos.\n\nCatas Dirigidas: Expertos guían a los participantes a través de catas de jamón, vino y aceite de oliva de la región, ayudándoles a apreciar los matices y la complejidad de estos productos.\n\nActividades Culturales y Artesanales: La feria se complementa con exposiciones de artesanía local, demostraciones de oficios tradicionales y actuaciones musicales y folclóricas, que enriquecen la experiencia y muestran la riqueza cultural de Cumbres Mayores.\n\nRutas Gastronómicas y Turísticas: Se organizan paseos y visitas guiadas por el pueblo y sus alrededores, incluyendo el castillo y las bodegas y secaderos, para que los visitantes puedan sumergirse completamente en el entorno y el proceso de producción.\n\nEste año, la XIV FERIA CULTURAL Y GASTRONÓMICA \"SABOREA CUMBRES MAYORES\" tendrá lugar del 5 al 8 de Diciembre. ¡No te pierdas esta fantástica oportunidad de sumergirte en la tradición y el sabor de la Sierra de Huelva!",
+    "description": "Cumbres Mayores: Donde la Tradición se Saborea\nCumbres Mayores, un pintoresco municipio en el corazón de la Sierra de Huelva, es célebre no solo por su imponente castillo medieval, sino también por ser cuna de una arraigada cultura gastronómica que tiene en el cerdo ibérico a su máximo exponente. Desde tiempos inmemoriales, la vida en Cumbres Mayores ha estado ligada al ciclo de la dehesa y a la maestría en la elaboración de productos curados, transmitida de generación en generación.\n\nEsta profunda conexión con sus raíces culinarias dio origen a un evento que hoy es referente en el calendario gastronómico andaluz: \"Saborea Cumbres Mayores\". Lo que comenzó como una iniciativa local para destacar y promover la calidad de sus productos, especialmente los derivados del cerdo ibérico de bellota, ha evolucionado hasta convertirse en una feria consolidada que atrae a miles de visitantes cada año. Es un reflejo de la pasión y el orgullo de un pueblo por su patrimonio, que se ha sabido mantener y potenciar a lo largo del tiempo.\n\nUn Festín para los Sentidos: Actividades de la Feria\n\"Saborea Cumbres Mayores\" es mucho más que una feria gastronómica; es una experiencia completa que celebra la cultura, la historia y, por supuesto, el inigualable sabor de la Sierra. A lo largo de sus jornadas, los asistentes pueden disfrutar de un variado programa de actividades diseñadas para deleitar y educar:\n\nDegustaciones y Mercado de Productos Locales: El corazón de la feria. Aquí, productores locales ofrecen sus exquisitos jamones, paletas, embutidos y quesos, permitiendo a los visitantes probar y adquirir directamente estas joyas gastronómicas. Es una oportunidad única para conocer de cerca la calidad y el mimo con el que se elaboran.\n\nTalleres y Demostraciones Culinarias: Chefs y maestros cortadores de jamón comparten sus secretos, enseñando a los asistentes las técnicas de corte perfecto y las mejores formas de disfrutar los productos ibéricos. También se suelen impartir talleres sobre elaboración artesanal de embutidos y otros productos típicos.\n\nCatas Dirigidas: Expertos guían a los participantes a través de catas de jamón, vino y aceite de oliva de la región, ayudándoles a apreciar los matices y la complejidad de estos productos.\n\nActividades Culturales y Artesanais: La feria se complementa con exposiciones de artesanía local, demostraciones de oficios tradicionales y actuaciones musicales y folclóricas, que enriquecen la experiencia y muestran la riqueza cultural de Cumbres Mayores.\n\nRutas Gastronómicas y Turísticas: Se organizan paseos y visitas guiadas por el pueblo y sus alrededores, incluyendo el castillo y las bodegas y secaderos, para que los visitantes puedan sumergirse completamente en el entorno y el proceso de producción.\n\nEste año, la XIV FERIA CULTURAL Y GASTRONÓMICA \"SABOREA CUMBRES MAYORES\" tendrá lugar del 5 al 8 de Diciembre. ¡No te pierdas esta fantástica oportunidad de sumergirte en la tradición y el sabor de la Sierra de Huelva!",
     "town": "Cumbres Mayores",
     "date": "2025-12-05",
-    "category": EventCategory.OTRO,
+    "category": EventCategory.FERIA_GASTRONOMICA,
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-ALAJAR-2-Rafael-Caballero-Vazquez.png",
     "interestInfo": "🏞️ Lugares Emblemáticos que Debes Visitar en Cumbres Mayores\nDominado por su imponente castillo, Cumbres Mayores es un pueblo con un rico patrimonio histórico y gastronómico.\n\nCastillo de Sancho IV: Una impresionante fortaleza del siglo XIII, declarada Monumento Nacional. Sus murallas y torres ofrecen un viaje al pasado y unas vistas espectaculares de las dehesas circundantes. Es uno de los castillos más importantes de la comarca.\n\nIglesia de San Miguel Arcángel: Un templo de origen gótico-mudéjar que destaca por su robusta torre y sus valiosas obras de arte sacro en el interior.\n\nConvento de las Clarisas (Nuestra Señora de las Llagas): Un convento de clausura del siglo XVII, un remanso de paz con una bella iglesia barroca.\n\nErmitas: No dejes de visitar la Ermita de Nuestra Señora del Amparo y la Ermita de la Candelaria, centros de devoción local situados en parajes con encanto.\n\n🥾 Ruta de Senderismo Sugerida: Ruta de la Ribera del Sillo\nUn sendero que te conecta con el paisaje de agua y dehesa.\n\nRecorrido: Cumbres Mayores - Ribera del Sillo (circular).\n\nDistancia y Dificultad: Dificultad baja-media, ideal para disfrutar de la naturaleza en una mañana.\n\nAtractivo: La ruta sigue el curso de la Ribera del Sillo, donde podrás ver antiguos molinos harineros y un paisaje de bosque de ribera y dehesas. Es una zona de gran valor ecológico.\n\n🛣️ Cómo Llegar a Cumbres Mayores\n\nDesde Huelva (Capital)\nEn Coche: Toma la N-435 en dirección a Badajoz. Tras pasar Jabugo y Cortegana, toma la A-470 en dirección a Cumbres Mayores (aprox. 1h 50min - 140 km).\n\nEn Autobús: La empresa Damas conecta Huelva con la sierra. Puede ser necesario hacer transbordo en Aracena o Cortegana.\n\nDesde Sevilla\nEn Coche: Toma la A-66 (Ruta de la Plata) dirección Mérida. Coge la salida 722 hacia Santa Olalla del Cala y luego sigue la A-434 y la HU-9123 que te llevarán directamente a Cumbres Mayores (aprox. 1h 30min - 120 km). Es la ruta más directa y rápida.\n\nEn Autobús: No hay línea directa. La opción sería ir a Aracena y desde allí coordinar el transporte o buscar líneas interurbanas."
   },
@@ -228,7 +256,7 @@ Degustaciones Especiales: Frecuentemente se incluyen degustaciones específicas,
 3. Stands de Productos Complementarios y Artesanía
 Productos Artesanos: Junto a los quesos, la feria acoge otros stands de productos gourmet y artesanía local, como dulces, patés ibéricos, licores, y miel, complementando la oferta gastronómica de la Sierra.
 
-Servicio de Bar Benéfico: Es tradición que el servicio de bar esté a cargo de ONG locales, como Ibermed, destinando los beneficios a causas sociales.
+Servicio de Bar Benéfico: Es tradición que el servicio de bar esté a cargo de ONG locales, como Ibermed, destinando los beneficios a causas sociais.
 
 4. Sorteos y Reconocimientos
 Sorteo de Productos: El Mercado suele culminar con el sorteo de lotes de productos artesanos entre los participantes en las degustaciones, manteniendo el espíritu festivo hasta el final.
@@ -242,118 +270,199 @@ El Mercado del Queso Artesano de Aracena es, en definitiva, una cita obligada pa
   }
 ];
 
-
 const App: React.FC = () => {
-  const [allEvents, setAllEvents] = React.useState<EventType[]>(() => {
-    try {
-      const storedEventsString = localStorage.getItem('sierra-navidad-events');
-
-      if (!storedEventsString) {
-        return initialEventsData;
-      }
-
-      const storedEvents: EventType[] = JSON.parse(storedEventsString);
-      const initialEventsMap = new Map(initialEventsData.map(e => [e.id, e]));
-      const userAddedEvents = storedEvents.filter(e => !initialEventsMap.has(e.id));
-      const finalEvents = [...initialEventsData, ...userAddedEvents];
-      
-      return finalEvents;
-
-    } catch (e) {
-      console.error("Fallo al procesar eventos de localStorage, se usará la lista de eventos inicial.", e);
-      return initialEventsData;
-    }
-  });
-
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [showLoginModal, setShowLoginModal] = React.useState(false);
-  const [loginError, setLoginError] = React.useState<string | null>(null);
-
-  const [view, setView] = React.useState<'list' | 'calendar'>('list');
-  const [showMapModal, setShowMapModal] = React.useState(false);
-  const [selectedEventId, setSelectedEventId] = React.useState<string | null>(null);
-
-  const [selectedTown, setSelectedTown] = React.useState('Todos');
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
-  const [startDate, setStartDate] = React.useState<string | null>(null);
-  const [endDate, setEndDate] = React.useState<string | null>(null);
-
-  const [showAddModal, setShowAddModal] = React.useState(false);
-  const [eventToEdit, setEventToEdit] = React.useState<EventType | null>(null);
-  const [changeInstruction, setChangeInstruction] = React.useState<ChangeInstruction | null>(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [view, setView] = useState<'list' | 'calendar'>('list');
   
-  const [isFilterSidebarOpen, setIsFilterSidebarOpen] = React.useState(false);
-  const [showScrollToTop, setShowScrollToTop] = React.useState(false);
+  // Login and Admin State
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  // Modals State
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<EventType | null>(null);
+  const [showChangeRequestModal, setShowChangeRequestModal] = useState<ChangeInstruction | null>(null);
+  const [showMapModal, setShowMapModal] = useState(false);
+  const [showInstallPwaModal, setShowInstallPwaModal] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   
-  const [deferredPrompt, setDeferredPrompt] = React.useState<any | null>(null);
-  const [showInstallModal, setShowInstallModal] = React.useState(false);
-  const [installPromptTriggered, setInstallPromptTriggered] = React.useState(false);
+  // Filter State
+  const [selectedTown, setSelectedTown] = useState<string>('Todos');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<{ start: string | null, end: string | null }>({ start: null, end: null });
 
-  const [toast, setToast] = React.useState<{ message: string; icon: React.ReactNode } | null>(null);
+  // PWA Install Prompt
+  const deferredPrompt = useRef<any>(null);
+  const listWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [theme, setTheme] = React.useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('sierra-navidad-theme')) {
-        return localStorage.getItem('sierra-navidad-theme') as 'light' | 'dark';
-    }
-    return 'dark'; // Default to dark
-  });
-
-  const toggleTheme = () => {
-      const newTheme = theme === 'light' ? 'dark' : 'light';
-      setTheme(newTheme);
-  };
+  // Toast State
+  const [toast, setToast] = useState<{ message: string; icon: React.ReactNode } | null>(null);
 
   const showToast = (message: string, icon: React.ReactNode) => {
     setToast({ message, icon });
   };
-
-
-  React.useEffect(() => {
-      const root = window.document.documentElement;
-      if (theme === 'light') {
-          root.classList.remove('dark');
-      } else {
-          root.classList.add('dark');
-      }
-      localStorage.setItem('sierra-navidad-theme', theme);
-  }, [theme]);
-
-  React.useEffect(() => {
-    localStorage.setItem('sierra-navidad-events', JSON.stringify(allEvents));
-  }, [allEvents]);
-
-  React.useEffect(() => {
-    const checkScrollTop = () => {
-      const offset = window.pageYOffset || document.documentElement.scrollTop;
-      setShowScrollToTop(offset > 300);
-    };
-    window.addEventListener('scroll', checkScrollTop);
-    return () => window.removeEventListener('scroll', checkScrollTop);
-  }, []);
   
-  React.useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+  // FIX: Moved filtering logic before useEffect hooks to resolve the "used before declaration" error.
+  // --- FILTERING LOGIC ---
+
+  const isAnyFilterActive = useMemo(() => {
+    return selectedTown !== 'Todos' || searchQuery !== '' || selectedCategories.length > 0 || dateRange.start !== null || dateRange.end !== null;
+  }, [selectedTown, searchQuery, selectedCategories, dateRange]);
+
+  const activeFilterCount = useMemo(() => {
+    return (
+        (selectedTown !== 'Todos' ? 1 : 0) +
+        (searchQuery ? 1 : 0) +
+        selectedCategories.length +
+        (dateRange.start || dateRange.end ? 1 : 0)
+    );
+  }, [selectedTown, searchQuery, selectedCategories, dateRange]);
+
+
+  const filteredEvents = useMemo(() => {
+    let eventsToFilter = events;
+
+    // By search query
+    if (searchQuery) {
+      eventsToFilter = eventsToFilter.filter(event => 
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        event.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // By town
+    if (selectedTown !== 'Todos') {
+      eventsToFilter = eventsToFilter.filter(event => event.town === selectedTown);
+    }
+
+    // By category
+    if (selectedCategories.length > 0) {
+      eventsToFilter = eventsToFilter.filter(event => selectedCategories.includes(event.category));
+    }
+    
+    // By date range
+    if (dateRange.start || dateRange.end) {
+        eventsToFilter = eventsToFilter.filter(event => {
+            const eventDate = new Date(event.date + 'T00:00:00');
+            const startDate = dateRange.start ? new Date(dateRange.start + 'T00:00:00') : null;
+            const endDate = dateRange.end ? new Date(dateRange.end + 'T00:00:00') : null;
+            if (startDate && eventDate < startDate) return false;
+            if (endDate && eventDate > endDate) return false;
+            return true;
+        });
+    }
+
+    return eventsToFilter;
+  }, [events, selectedTown, searchQuery, selectedCategories, dateRange]);
+
+  const selectedEvent = useMemo(() => {
+    if (!selectedEventId) return null;
+    return events.find(event => event.id === selectedEventId);
+  }, [selectedEventId, events]);
+
+  // --- EFFECTS ---
+
+  // Load and sort events on initial mount
+  useEffect(() => {
+    const sponsored = initialEventsData.filter(e => e.sponsored);
+    const regular = initialEventsData.filter(e => !e.sponsored);
+
+    // Shuffle sponsored events for random order on each visit
+    const shuffledSponsored = sponsored.sort(() => 0.5 - Math.random());
+    
+    // Sort regular events by date
+    const sortedRegular = regular.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    setEvents([...shuffledSponsored, ...sortedRegular]);
   }, []);
 
-  const handleLogin = (email: string, password: string) => {
-    if (email === 'admin@sierranavidad.es' && password === '123456') {
-      setIsLoggedIn(true);
-      setShowLoginModal(false);
-      setLoginError(null);
+  // Theme management effect
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('sierra-navidad-theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      setTheme(savedTheme);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('sierra-navidad-theme', 'dark');
     } else {
-      setLoginError('Email o contraseña incorrectos.');
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('sierra-navidad-theme', 'light');
+    }
+  }, [theme]);
+  
+  // PWA Install prompt listener
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      deferredPrompt.current = e;
+      // Show the install modal only once per session, after a small delay
+      if (!sessionStorage.getItem('pwa-install-prompted')) {
+          setTimeout(() => {
+              setShowInstallPwaModal(true);
+              sessionStorage.setItem('pwa-install-prompted', 'true');
+          }, 5000); // Show after 5 seconds
+      }
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  // Scroll to top of list on filter or view change
+  useEffect(() => {
+    // When filters change, scroll to the top of the list so the user can see the new results.
+    // This runs when filteredEvents or the view (list/calendar) changes.
+    if (!selectedEventId && listWrapperRef.current) {
+        // A small delay ensures the DOM has updated before we calculate positions.
+        setTimeout(() => {
+            if (listWrapperRef.current) {
+                const header = document.querySelector('header');
+                const headerHeight = header ? header.offsetHeight : 80; // Default height as a fallback
+                const elementTopPosition = listWrapperRef.current.getBoundingClientRect().top + window.scrollY;
+                
+                window.scrollTo({
+                    top: elementTopPosition - headerHeight - 16, // 1rem margin below sticky header
+                    behavior: 'smooth',
+                });
+            }
+        }, 50);
+    }
+  }, [view, filteredEvents]);
+
+
+  // --- HANDLERS ---
+  
+  const handleSelectEvent = (eventId: string) => {
+    setSelectedEventId(eventId);
+    setView('list'); // Switch to list view to show details
+    setShowMapModal(false);
+  };
+  
+  const handleBackToList = () => {
+    setSelectedEventId(null);
+  };
+
+  const handlePwaInstall = () => {
+    setShowInstallPwaModal(false);
+    if (deferredPrompt.current) {
+        deferredPrompt.current.prompt();
+        deferredPrompt.current.userChoice.then((choiceResult: { outcome: string }) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt');
+            }
+            deferredPrompt.current = null;
+        });
     }
   };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-  };
+  
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
   
   const handleCategoryToggle = (category: EventCategory) => {
     setSelectedCategories(prev =>
@@ -361,331 +470,175 @@ const App: React.FC = () => {
         ? prev.filter(c => c !== category)
         : [...prev, category]
     );
-    scrollToTop();
-  };
-
-  const handleCategoryFilterClick = (category: EventCategory) => {
-    setView('list'); // Switch to list view
-    setSelectedEventId(null); // Go back from detail view if open
-    setSelectedCategories([category]); // Set only this category
-    // Reset other filters for a clean search
-    setSelectedTown('Todos');
-    setSearchQuery('');
-    setStartDate(null);
-    setEndDate(null);
-    // Scroll to top instantly
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  };
-
-  const normalizeText = (text: string) => {
-    return text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
   };
   
-  const sortedEvents = React.useMemo(() => {
-      return [...allEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [allEvents]);
-
-  const filteredEvents = React.useMemo(() => {
-    const normalizedQuery = normalizeText(searchQuery);
-    return sortedEvents
-      .filter(event => {
-        const townMatch = selectedTown === 'Todos' || event.town === selectedTown;
-        const searchMatch =
-          !searchQuery ||
-          normalizeText(event.title).includes(normalizedQuery) ||
-          normalizeText(event.description).includes(normalizedQuery);
-        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(event.category);
-        const eventDate = new Date(event.date + 'T00:00:00');
-        const startMatch = !startDate || eventDate >= new Date(startDate + 'T00:00:00');
-        const endMatch = !endDate || eventDate <= new Date(endDate + 'T23:59:59');
-        return townMatch && searchMatch && categoryMatch && startMatch && endMatch;
-      });
-  }, [sortedEvents, selectedTown, searchQuery, selectedCategories, startDate, endDate]);
-
-  const isAnyFilterActive = React.useMemo(() => {
-    return selectedTown !== 'Todos' ||
-           searchQuery !== '' ||
-           selectedCategories.length > 0 ||
-           startDate !== null ||
-           endDate !== null;
-  }, [selectedTown, searchQuery, selectedCategories, startDate, endDate]);
-  
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
-  
-  const handleResetFilters = () => {
+  const resetFilters = () => {
     setSelectedTown('Todos');
     setSearchQuery('');
     setSelectedCategories([]);
-    setStartDate(null);
-    setEndDate(null);
-    scrollToTop();
+    setDateRange({ start: null, end: null });
+  };
+  
+  const handleDateChange = (start: string | null, end: string | null) => {
+    setDateRange({ start, end });
+  };
+  
+  // Admin Handlers
+  const handleLogin = (email: string, password: string) => {
+    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+      setIsLoggedIn(true);
+      setShowLoginModal(false);
+      setLoginError(null);
+      showToast("Sesión iniciada correctamente", ICONS.eye);
+    } else {
+      setLoginError("Email o contraseña incorrectos.");
+    }
   };
 
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    showToast("Sesión cerrada", ICONS.logout);
+  };
+
+  const createChangeRequest = (action: ChangeAction, data: Partial<EventType>) => {
+    const instruction: ChangeInstruction = { action, data };
+    setShowChangeRequestModal(instruction);
+  };
+  
   const handleAddEvent = (eventData: Omit<EventType, 'id'>) => {
     const newEvent: EventType = {
       ...eventData,
-      id: `evt-${new Date().getTime()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `evt-${new Date().getTime()}-${Math.random()}`
     };
-    setAllEvents(prev => [...prev, newEvent]);
+    setEvents(prev => [newEvent, ...prev]);
     setShowAddModal(false);
-    if (isLoggedIn) {
-      setChangeInstruction({ action: 'CREATE', data: newEvent });
-    }
+    createChangeRequest('CREATE', newEvent);
   };
 
   const handleUpdateEvent = (updatedEvent: EventType) => {
-    setAllEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
-    setEventToEdit(null);
-    if (isLoggedIn) {
-      setChangeInstruction({ action: 'UPDATE', data: updatedEvent });
-    }
+    setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+    setEditingEvent(null);
+    createChangeRequest('UPDATE', updatedEvent);
   };
-
+  
   const handleDeleteEvent = (eventId: string) => {
-    const eventToDelete = allEvents.find(e => e.id === eventId);
-    setAllEvents(prev => prev.filter(e => e.id !== eventId));
-    setEventToEdit(null);
-    if (isLoggedIn && eventToDelete) {
-      setChangeInstruction({ action: 'DELETE', data: { id: eventToDelete.id } });
-    }
+    setEvents(prev => prev.filter(e => e.id !== eventId));
+    setEditingEvent(null);
+    createChangeRequest('DELETE', { id: eventId });
   };
 
-  const selectedEvent = React.useMemo(() => {
-    return selectedEventId ? allEvents.find(e => e.id === selectedEventId) ?? null : null;
-  }, [selectedEventId, allEvents]);
-  
-  const handleMapClick = () => {
-      setShowMapModal(true);
-  }
-
-  const sortedTownsForFilter = React.useMemo(() => {
-    const townsWithEvents = new Set(allEvents.map(event => event.town));
-    const activeTowns = TOWNS.filter(town => townsWithEvents.has(town)).sort((a, b) => a.localeCompare(b));
-    const inactiveTowns = TOWNS.filter(town => !townsWithEvents.has(town)).sort((a, b) => a.localeCompare(b));
-    const result = [...activeTowns];
-    if (activeTowns.length > 0 && inactiveTowns.length > 0) {
-      result.push('---SEPARATOR---');
-    }
-    result.push(...inactiveTowns);
-    return result;
-  }, [allEvents]);
-
-  const handleViewChange = (newView: 'list' | 'calendar') => {
-    if (view !== newView) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-      setView(newView);
-    }
-  };
-  
-  const handleBackFromDetail = () => {
-    setSelectedEventId(null);
-    // This is the contextual trigger for the install prompt
-    if (deferredPrompt && !installPromptTriggered) {
-      setShowInstallModal(true);
-      setInstallPromptTriggered(true); // Ensure it only shows once per session
-    }
-  };
-
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User response to the install prompt: ${outcome}`);
-      setDeferredPrompt(null);
-      setShowInstallModal(false);
-    }
-  };
-
-  const handleInstallModalClose = () => {
-    setShowInstallModal(false);
-  };
-
-
-  if (selectedEvent) {
-    return (
-      <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen font-sans">
-        <main className="container mx-auto p-4 sm:p-8">
-            <EventDetail 
-              event={selectedEvent} 
-              onBack={handleBackFromDetail}
-              isLoggedIn={isLoggedIn}
-              onEdit={() => setEventToEdit(selectedEvent)}
-              onCategoryFilterClick={handleCategoryFilterClick}
-              showToast={showToast}
-            />
-        </main>
-        {eventToEdit && (
-            <EditEventModal
-                event={eventToEdit}
-                onClose={() => setEventToEdit(null)}
-                onUpdate={handleUpdateEvent}
-                onDelete={handleDeleteEvent}
-            />
-        )}
-      </div>
-    );
-  }
-
-  const renderContent = () => {
-    switch(view) {
-        case 'list':
-            return <EventList events={filteredEvents} onSelectEvent={setSelectedEventId} onResetFilters={handleResetFilters} onCategoryFilterClick={handleCategoryFilterClick} isAnyFilterActive={isAnyFilterActive} />;
-        case 'calendar':
-            return <EventCalendar events={filteredEvents} onSelectEvent={setSelectedEventId} />;
-        default:
-            return null;
-    }
-  }
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen font-sans flex flex-col">
-      {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+    <div className="bg-slate-50 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-200 font-sans">
       <Header
         view={view}
-        setView={handleViewChange}
+        setView={setView}
         isMapVisible={showMapModal}
-        onMapClick={handleMapClick}
+        onMapClick={() => {
+            setShowMapModal(true);
+            setSelectedEventId(null);
+        }}
         theme={theme}
         toggleTheme={toggleTheme}
       />
-      <main className="container mx-auto flex-grow p-4">
-        <div className="md:grid md:grid-cols-4 md:gap-8">
-            <aside className="hidden md:block md:col-span-1">
-                <div className="sticky top-24">
-                    <FilterSidebar
-                        towns={sortedTownsForFilter}
-                        selectedTown={selectedTown}
-                        onSelectTown={(town) => {setSelectedTown(town); scrollToTop();}}
-                        searchQuery={searchQuery}
-                        onSearchQueryChange={(query) => {setSearchQuery(query); scrollToTop();}}
-                        selectedCategories={selectedCategories}
-                        onCategoryToggle={handleCategoryToggle}
-                        startDate={startDate}
-                        endDate={endDate}
-                        onDateChange={(start, end) => { setStartDate(start); setEndDate(end); scrollToTop(); }}
-                    />
-                </div>
+      
+      <main className="container mx-auto px-4 relative">
+        {!selectedEventId && <Hero />}
+        
+        {selectedEvent ? (
+          <EventDetail
+            event={selectedEvent}
+            onBack={handleBackToList}
+            isLoggedIn={isLoggedIn}
+            onEdit={() => setEditingEvent(selectedEvent)}
+            onCategoryFilterClick={(category) => {
+                setSelectedEventId(null);
+                setSelectedCategories([category]);
+            }}
+            showToast={showToast}
+          />
+        ) : (
+          <div className="md:grid md:grid-cols-12 md:gap-8" ref={listWrapperRef}>
+            <aside className="hidden md:block md:col-span-3 mb-8 md:mb-0">
+              <div className="sticky top-28">
+                <FilterSidebar
+                  towns={TOWNS}
+                  selectedTown={selectedTown}
+                  onSelectTown={setSelectedTown}
+                  searchQuery={searchQuery}
+                  onSearchQueryChange={setSearchQuery}
+                  selectedCategories={selectedCategories}
+                  onCategoryToggle={handleCategoryToggle}
+                  startDate={dateRange.start}
+                  endDate={dateRange.end}
+                  onDateChange={handleDateChange}
+                />
+              </div>
             </aside>
+            <div className="md:col-span-9">
+               <div className="md:hidden mb-6">
+                 <button 
+                     onClick={() => setShowMobileFilters(true)}
+                     className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-lg shadow border border-slate-200 dark:border-slate-700"
+                 >
+                     {ICONS.filter}
+                     <span>Filtros</span>
+                     {activeFilterCount > 0 && (
+                         <span className="bg-amber-400 text-slate-900 text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">{activeFilterCount}</span>
+                     )}
+                 </button>
+              </div>
 
-            <div className="md:col-span-3">
-                <div className="md:hidden mb-6">
-                    <button
-                        onClick={() => setIsFilterSidebarOpen(true)}
-                        className="w-full flex items-center justify-center gap-3 bg-white dark:bg-slate-800 p-3 rounded-lg shadow-md text-amber-600 dark:text-amber-300 font-bold border border-slate-200 dark:border-slate-700"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" /></svg>
-                        Filtros y Búsqueda
-                    </button>
-                    {isFilterSidebarOpen && (
-                        <div className="fixed inset-0 bg-black/70 z-50 animate-fade-in">
-                            <div className="bg-slate-50 dark:bg-slate-900 h-full w-4/5 max-w-sm p-6 overflow-y-auto">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-2xl font-display text-amber-600 dark:text-amber-300">Filtros</h2>
-                                    <button onClick={() => setIsFilterSidebarOpen(false)}>{ICONS.close}</button>
-                                </div>
-                                <FilterSidebar
-                                    towns={sortedTownsForFilter}
-                                    selectedTown={selectedTown}
-                                    onSelectTown={(town) => { 
-                                        setSelectedTown(town); 
-                                        scrollToTop(); 
-                                        setIsFilterSidebarOpen(false); 
-                                    }}
-                                    searchQuery={searchQuery}
-                                    onSearchQueryChange={setSearchQuery}
-                                    selectedCategories={selectedCategories}
-                                    onCategoryToggle={(category) => {
-                                        handleCategoryToggle(category);
-                                        setIsFilterSidebarOpen(false);
-                                    }}
-                                    startDate={startDate}
-                                    endDate={endDate}
-                                    onDateChange={(start, end) => {
-                                        setStartDate(start);
-                                        setEndDate(end);
-                                        scrollToTop();
-                                        setIsFilterSidebarOpen(false);
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {view === 'list' && <Hero />}
-                
-                {renderContent()}
+              {view === 'list' && (
+                <EventList
+                  events={filteredEvents}
+                  onSelectEvent={handleSelectEvent}
+                  onResetFilters={resetFilters}
+                  onCategoryFilterClick={(category) => setSelectedCategories([category])}
+                  isAnyFilterActive={isAnyFilterActive}
+                />
+              )}
+              {view === 'calendar' && (
+                <EventCalendar events={filteredEvents} onSelectEvent={handleSelectEvent} />
+              )}
             </div>
-        </div>
-    </main>
-      <Footer 
-        isLoggedIn={isLoggedIn} 
+          </div>
+        )}
+      </main>
+      
+      <Footer
+        isLoggedIn={isLoggedIn}
         onLoginClick={() => setShowLoginModal(true)}
         onLogoutClick={handleLogout}
         onAddEventClick={() => setShowAddModal(true)}
       />
-
-      {showScrollToTop && (
-        <button
-            onClick={scrollToTop}
-            className="fixed bottom-6 right-6 bg-amber-400 text-slate-900 p-3 rounded-full shadow-lg hover:bg-amber-500 dark:hover:bg-amber-300 transition-all duration-300 z-50 animate-fade-in"
-            aria-label="Volver arriba"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-        </button>
-      )}
-
-      {/* Modals */}
-      {showMapModal && (
-         <EventMapModal
-            events={sortedEvents}
-            onSelectEvent={(id) => {
-                setShowMapModal(false);
-                setSelectedEventId(id);
-            }}
-            onClose={() => setShowMapModal(false)}
-        />
-      )}
+      
+      {/* --- MODALS & TOASTS --- */}
+      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} onLogin={handleLogin} error={loginError} />}
       {showAddModal && <AddEventModal onClose={() => setShowAddModal(false)} onAddEvent={handleAddEvent} showToast={showToast} />}
-      {eventToEdit && (
-        <EditEventModal
-          event={eventToEdit}
-          onClose={() => setEventToEdit(null)}
-          onUpdate={handleUpdateEvent}
-          onDelete={handleDeleteEvent}
-        />
-      )}
-      {showLoginModal && (
-        <LoginModal 
-          onClose={() => setShowLoginModal(false)}
-          onLogin={handleLogin}
-          error={loginError}
-        />
-      )}
-      {changeInstruction && (
-        <ChangeRequestModal
-            instruction={changeInstruction}
-            onClose={() => setChangeInstruction(null)}
-        />
-      )}
-      {showInstallModal && deferredPrompt && (
-        <InstallPwaModal
-          onInstall={handleInstallClick}
-          onClose={handleInstallModalClose}
+      {editingEvent && <EditEventModal event={editingEvent} onClose={() => setEditingEvent(null)} onUpdate={handleUpdateEvent} onDelete={handleDeleteEvent} />}
+      {showChangeRequestModal && <ChangeRequestModal instruction={showChangeRequestModal} onClose={() => setShowChangeRequestModal(null)} />}
+      {showMapModal && <EventMapModal events={filteredEvents} onSelectEvent={handleSelectEvent} onClose={() => setShowMapModal(false)} />}
+      {showInstallPwaModal && <InstallPwaModal onInstall={handlePwaInstall} onClose={() => setShowInstallPwaModal(false)} />}
+      {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+      {showMobileFilters && (
+        <FilterSidebarModal
+          onClose={() => setShowMobileFilters(false)}
+          resultsCount={filteredEvents.length}
+          towns={TOWNS}
+          selectedTown={selectedTown}
+          onSelectTown={setSelectedTown}
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          selectedCategories={selectedCategories}
+          onCategoryToggle={handleCategoryToggle}
+          startDate={dateRange.start}
+          endDate={dateRange.end}
+          onDateChange={handleDateChange}
         />
       )}
     </div>
   );
-}
+};
 
 export default App;

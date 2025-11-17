@@ -4,11 +4,13 @@ import { ICONS } from '../constants';
 
 // Copied from EventCard.tsx for consistency
 const categoryColors: Record<EventCategory, string> = {
+  [EventCategory.PUEBLO_DESTACADO]: 'bg-teal-500',
   [EventCategory.BELEN_VIVIENTE]: 'bg-green-500',
   [EventCategory.CAMPANILLEROS]: 'bg-yellow-500',
   [EventCategory.CABALGATA]: 'bg-purple-500',
   [EventCategory.FIESTA]: 'bg-red-500',
   [EventCategory.MERCADO]: 'bg-blue-500',
+  [EventCategory.FERIA_GASTRONOMICA]: 'bg-orange-500',
   [EventCategory.OTRO]: 'bg-gray-500',
 };
 
@@ -21,19 +23,21 @@ interface EventCalendarProps {
 const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) => {
   const [currentDate, setCurrentDate] = useState(new Date('2025-12-01T00:00:00'));
 
+  const eventsForCalendar = useMemo(() => events.filter(e => !e.externalUrl && e.category !== EventCategory.PUEBLO_DESTACADO), [events]);
+
   useEffect(() => {
-    if (events.length > 0) {
-      const firstEventDate = events[0].date;
+    if (eventsForCalendar.length > 0) {
+      const firstEventDate = eventsForCalendar[0].date;
       setCurrentDate(new Date(`${firstEventDate}T00:00:00`));
     } else {
       setCurrentDate(new Date('2025-12-01T00:00:00'));
     }
-  }, [events]);
+  }, [eventsForCalendar]);
 
 
   const eventsByDate = useMemo(() => {
     const grouped: { [key: string]: EventType[] } = {};
-    events.forEach(event => {
+    eventsForCalendar.forEach(event => {
       const eventDate = new Date(event.date + 'T00:00:00');
       const key = eventDate.toISOString().split('T')[0];
       if (!grouped[key]) {
@@ -42,7 +46,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) 
       grouped[key].push(event);
     });
     return grouped;
-  }, [events]);
+  }, [eventsForCalendar]);
 
   const changeWeek = (offset: number) => {
     setCurrentDate(prev => {

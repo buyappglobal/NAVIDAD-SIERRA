@@ -1,5 +1,3 @@
-
-
 import React, { useState } from 'react';
 import { EventType, EventCategory } from '../types';
 import { TOWNS, ICONS } from '../constants';
@@ -20,6 +18,8 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent, show
     date: '',
     category: EventCategory.OTRO,
     imageUrl: '',
+    sponsored: false,
+    externalUrl: '',
   });
 
   const [showInstructionModal, setShowInstructionModal] = useState(false);
@@ -28,8 +28,14 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent, show
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+        const { checked } = e.target as HTMLInputElement;
+        setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,6 +161,26 @@ const AddEventModal: React.FC<AddEventModalProps> = ({ onClose, onAddEvent, show
                 <select name="category" id="category" value={formData.category} onChange={handleChange} className="w-full p-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400" required>
                 {Object.values(EventCategory).map(cat => <option key={cat} value={cat}>{cat}</option>)}
                 </select>
+            </div>
+            
+            <div>
+              <label htmlFor="externalUrl" className="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">URL Externa (Opcional)</label>
+              <input type="url" name="externalUrl" id="externalUrl" value={formData.externalUrl || ''} onChange={handleChange} className="w-full p-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400" placeholder="https://..." />
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Si se rellena, la tarjeta será un banner publicitario que enlazará a esta URL.</p>
+            </div>
+
+            <div className="flex items-center">
+                <input
+                    id="sponsored"
+                    name="sponsored"
+                    type="checkbox"
+                    checked={!!formData.sponsored}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-amber-500 focus:ring-amber-400"
+                />
+                <label htmlFor="sponsored" className="ml-2 block text-sm text-slate-700 dark:text-slate-300">
+                    Marcar como evento destacado
+                </label>
             </div>
 
             <div>

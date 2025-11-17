@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { EventType } from '../types';
 import { townCoordinates } from '../data/townCoordinates';
 
@@ -15,6 +15,8 @@ const EventMap: React.FC<EventMapProps> = ({ events, onSelectEvent }) => {
     const mapRef = useRef<any | null>(null);
     const markersRef = useRef<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    
+    const eventsForMap = useMemo(() => events.filter(e => !e.externalUrl), [events]);
 
     // Initialize map effect
     useEffect(() => {
@@ -57,7 +59,7 @@ const EventMap: React.FC<EventMapProps> = ({ events, onSelectEvent }) => {
 
             const markerBounds: [number, number][] = [];
 
-            events.forEach(event => {
+            eventsForMap.forEach(event => {
                 const coords = townCoordinates[event.town];
                 if (coords) {
                     const popupContent = `
@@ -96,7 +98,7 @@ const EventMap: React.FC<EventMapProps> = ({ events, onSelectEvent }) => {
 
         return () => clearTimeout(timer);
 
-    }, [events, onSelectEvent]);
+    }, [eventsForMap, onSelectEvent]);
 
     return (
         <div className="h-full w-full relative">
@@ -117,7 +119,7 @@ const EventMap: React.FC<EventMapProps> = ({ events, onSelectEvent }) => {
             )}
             
             {/* "No events" overlay */}
-            {!isLoading && events.length === 0 && (
+            {!isLoading && eventsForMap.length === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/50 z-[1000] pointer-events-none animate-fade-in">
                     <div className="text-center p-4 bg-white/80 rounded-lg shadow-2xl">
                         <h3 className="text-xl font-bold text-slate-600 font-display">No hay eventos que mostrar</h3>

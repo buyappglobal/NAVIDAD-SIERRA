@@ -4,7 +4,7 @@ import React from 'react';
 export const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScybkxSjeMujSSimNL0c2FrMQq_eCVio9OSov_9RBjcUTvJVg/viewform?usp=sf_link";
 
 // Placeholder para imágenes rotas o que no cargan.
-export const IMAGE_PLACEHOLDER = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDQwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMxZTI5M2IiLz48cGF0aCBkPSJNMCAyMDAgVjE0MCBMODAgMTYwIEwxNTAgMTIwIEwyMjAgMTcwIEwzMDAgMTMwIEw0MDAgMTgwIFYyMDAgWiIgZmlsbD0iIzQ3NTU2OSIvPjxwYXRoIGQ9Ik0zMDAgNDAgTDMyMCA2MCBMMzAwIDgwIEwyODAgNjAgWiIgZmlsbD0iI2ZjZDM0ZCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjcwIiByPSIzIiBmaWxsPSIjZmNkMzRkIiBvcGFjaXR5PSIwLjciLz48Y2lyY2xlIGN4PSIzNTAiIGN5PSIxMDAiIHI9IjIiIGZpbGw9IiNmY2QzNGQiIG9wYWNpdHk9IjAuNyIvPjwvc3ZnPg==`;
+export const IMAGE_PLACEHOLDER = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDQwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMxZTI5M2IiLz48cGF0aCBkPSJNMCAyMDAgVjE0MCBMODAgMTYwIEwxNTAgMTIwIEwyMjAgMTcwIEwzMDAgMTMwIEw0MDAgMTgwIFYyMDAgWiIgZmlsbD0iIzQ3NTU2OSIvPjxwYXRoIGQ9Ik0zMDAgNDAgTDMyMCA2MCBMMzAwIDgwIEwyODAgNjAgWiIgZmlsbD0iI2ZjZDM0ZCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjcwIiByPSIzIiBmaWxsPSIjZmNkMzRkIiBvcGFjaXR5PSIwLjciLz48Y2lyY2xlIGN4PSIzNTAiIGN5PSIxMDAiIHI9IjIiIGZpbGw9IiNmY2QzNGQiIG9acGFjaXR5PSIwLjciLz48L3N2Zz4=`;
 
 export const TOWNS = [
   "Alájar", "Almonaster la Real", "Aracena", "Aroche", "Cala", "Castaño del Robledo",
@@ -50,4 +50,5 @@ export const ICONS = {
     wifiOff: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12.182 12.182A3 3 0 0112 12a3 3 0 01.182.001M15.424 15.424a7 7 0 01-8.848 0M18.667 18.667a11 11 0 01-13.334 0M21.909 21.909a15 15 0 01-17.818 0M4.636 4.636L19.364 19.364" /></svg>,
     logout: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
     more: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>,
+    filter: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>,
 };

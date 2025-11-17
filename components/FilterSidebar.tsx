@@ -17,6 +17,7 @@ interface FilterSidebarProps {
   startDate: string | null;
   endDate: string | null;
   onDateChange: (start: string | null, end: string | null) => void;
+  onFilterAndClose?: () => void;
 }
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ 
@@ -30,7 +31,22 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     startDate,
     endDate,
     onDateChange,
+    onFilterAndClose,
 }) => {
+
+  const handleSelectTownAndClose = (town: string) => {
+    onSelectTown(town);
+    onFilterAndClose?.();
+  };
+
+  const handleCategoryToggleAndClose = (category: EventCategory) => {
+    onCategoryToggle(category);
+    onFilterAndClose?.();
+  };
+
+  const townSelectHandler = onFilterAndClose ? handleSelectTownAndClose : onSelectTown;
+  const categoryToggleHandler = onFilterAndClose ? handleCategoryToggleAndClose : onCategoryToggle;
+
   return (
     <div className="space-y-4 md:space-y-8">
       <CollapsibleFilterSection title="Buscar Evento">
@@ -46,11 +62,11 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
       <CollapsibleFilterSection title="Categorías">
         <CategoryFilter 
           selectedCategories={selectedCategories}
-          onCategoryToggle={onCategoryToggle}
+          onCategoryToggle={categoryToggleHandler}
         />
       </CollapsibleFilterSection>
       <CollapsibleFilterSection title="Pueblos">
-        <TownFilter towns={towns} selectedTown={selectedTown} onSelectTown={onSelectTown} />
+        <TownFilter towns={towns} selectedTown={selectedTown} onSelectTown={townSelectHandler} />
       </CollapsibleFilterSection>
     </div>
   );

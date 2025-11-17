@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { EventType, EventCategory } from '../types';
 import { TOWNS, ICONS } from '../constants';
@@ -22,8 +20,14 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ event, onClose, onUpdat
   }, [event]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type } = e.target;
+    
+    if (type === 'checkbox') {
+        const { checked } = e.target as HTMLInputElement;
+        setFormData(prev => ({ ...prev, [name]: checked }));
+    } else {
+        setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,6 +81,20 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ event, onClose, onUpdat
               <label htmlFor="description" className="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">Descripción</label>
               <textarea name="description" id="description" rows={3} value={formData.description} onChange={handleChange} className="w-full p-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400" required></textarea>
             </div>
+
+            <div className="flex items-center">
+                <input
+                    id="sponsoredEdit"
+                    name="sponsored"
+                    type="checkbox"
+                    checked={!!formData.sponsored}
+                    onChange={handleChange}
+                    className="h-4 w-4 rounded border-slate-300 dark:border-slate-600 text-amber-500 focus:ring-amber-400"
+                />
+                <label htmlFor="sponsoredEdit" className="ml-2 block text-sm text-slate-700 dark:text-slate-300">
+                    Marcar como evento destacado
+                </label>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -99,35 +117,40 @@ const EditEventModal: React.FC<EditEventModalProps> = ({ event, onClose, onUpdat
                     </select>
                 </div>
                 <div>
-                  <label className="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">Imagen del Evento (Opcional)</label>
-                  <div className="mt-2 flex items-center gap-4">
-                    {imagePreview ? (
-                        <img src={imagePreview} alt="Previsualización" className="h-20 w-20 rounded-md object-cover" />
-                    ) : (
-                        <div className="h-20 w-20 rounded-md bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        </div>
-                    )}
-                    <div className="flex flex-col gap-2">
-                        <input
-                            id="imageUploadEdit"
-                            name="imageUploadEdit"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange}
-                            className="hidden"
-                        />
-                        <label htmlFor="imageUploadEdit" className="cursor-pointer bg-slate-500 dark:bg-slate-600 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-600 dark:hover:bg-slate-500 transition-colors text-sm">
-                            Cambiar Archivo
-                        </label>
-                        {imagePreview && (
-                            <button type="button" onClick={handleRemoveImage} className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 text-sm font-semibold text-left">
-                                Quitar Imagen
-                            </button>
-                        )}
-                    </div>
-                  </div>
+                  <label htmlFor="externalUrl" className="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">URL Externa (Opcional)</label>
+                  <input type="url" name="externalUrl" id="externalUrl" value={formData.externalUrl || ''} onChange={handleChange} className="w-full p-2 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400" placeholder="https://..." />
+                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Si se rellena, la tarjeta enlazará a esta URL.</p>
                 </div>
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">Imagen del Evento (Opcional)</label>
+              <div className="mt-2 flex items-center gap-4">
+                {imagePreview ? (
+                    <img src={imagePreview} alt="Previsualización" className="h-20 w-20 rounded-md object-cover" />
+                ) : (
+                    <div className="h-20 w-20 rounded-md bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-400 dark:text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    </div>
+                )}
+                <div className="flex flex-col gap-2">
+                    <input
+                        id="imageUploadEdit"
+                        name="imageUploadEdit"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                    />
+                    <label htmlFor="imageUploadEdit" className="cursor-pointer bg-slate-500 dark:bg-slate-600 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-600 dark:hover:bg-slate-500 transition-colors text-sm">
+                        Cambiar Archivo
+                    </label>
+                    {imagePreview && (
+                        <button type="button" onClick={handleRemoveImage} className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 text-sm font-semibold text-left">
+                            Quitar Imagen
+                        </button>
+                    )}
+                </div>
+              </div>
             </div>
         </div>
 

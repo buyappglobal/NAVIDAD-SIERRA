@@ -14,11 +14,13 @@ interface EventDetailProps {
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
+  [EventCategory.PUEBLO_DESTACADO]: { bg: 'bg-teal-100 dark:bg-teal-900/50', text: 'text-teal-800 dark:text-teal-300', border: 'border-teal-500' },
   [EventCategory.BELEN_VIVIENTE]: { bg: 'bg-green-100 dark:bg-green-900/50', text: 'text-green-800 dark:text-green-300', border: 'border-green-500' },
   [EventCategory.CAMPANILLEROS]: { bg: 'bg-yellow-100 dark:bg-yellow-900/50', text: 'text-yellow-800 dark:text-yellow-300', border: 'border-yellow-500' },
   [EventCategory.CABALGATA]: { bg: 'bg-purple-100 dark:bg-purple-900/50', text: 'text-purple-800 dark:text-purple-300', border: 'border-purple-500' },
   [EventCategory.FIESTA]: { bg: 'bg-red-100 dark:bg-red-900/50', text: 'text-red-800 dark:text-red-300', border: 'border-red-500' },
   [EventCategory.MERCADO]: { bg: 'bg-blue-100 dark:bg-blue-900/50', text: 'text-blue-800 dark:text-blue-300', border: 'border-blue-500' },
+  [EventCategory.FERIA_GASTRONOMICA]: { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300', border: 'border-orange-500' },
   [EventCategory.OTRO]: { bg: 'bg-gray-200 dark:bg-gray-700/50', text: 'text-gray-800 dark:text-gray-300', border: 'border-gray-500' },
 };
 
@@ -67,6 +69,8 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
   const [isReading, setIsReading] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
+
+  const isPuebloDestacado = category === EventCategory.PUEBLO_DESTACADO;
 
   const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('es-ES', {
     weekday: 'long',
@@ -147,7 +151,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
               <img 
                 src={imageUrl || IMAGE_PLACEHOLDER} 
                 alt={`Imagen de ${title}`} 
-                className="w-full h-full object-contain" 
+                className="w-full h-full object-cover" 
                 onError={handleImageError}
               />
           </div>
@@ -170,12 +174,14 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
                     </svg>
                     <span className="text-xl font-bold">{town}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span className="text-lg font-semibold capitalize">{formattedDate}</span>
-                  </div>
+                  {!isPuebloDestacado && (
+                    <div className="flex items-center gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-lg font-semibold capitalize">{formattedDate}</span>
+                    </div>
+                  )}
               </div>
               <div className="flex gap-2 flex-wrap">
                   <button

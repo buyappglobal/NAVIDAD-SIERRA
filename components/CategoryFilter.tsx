@@ -3,11 +3,14 @@ import { EventCategory } from '../types';
 
 // Copied from EventCard.tsx for consistency
 const categoryColors: Record<EventCategory, string> = {
+  // FIX: Added missing PUEBLO_DESTACADO category to resolve TypeScript error.
+  [EventCategory.PUEBLO_DESTACADO]: 'bg-teal-500 hover:bg-teal-600',
   [EventCategory.BELEN_VIVIENTE]: 'bg-green-500 hover:bg-green-600',
   [EventCategory.CAMPANILLEROS]: 'bg-yellow-500 hover:bg-yellow-600',
   [EventCategory.CABALGATA]: 'bg-purple-500 hover:bg-purple-600',
   [EventCategory.FIESTA]: 'bg-red-500 hover:bg-red-600',
   [EventCategory.MERCADO]: 'bg-blue-500 hover:bg-blue-600',
+  [EventCategory.FERIA_GASTRONOMICA]: 'bg-orange-500 hover:bg-orange-600',
   [EventCategory.OTRO]: 'bg-gray-500 hover:bg-gray-600',
 };
 
