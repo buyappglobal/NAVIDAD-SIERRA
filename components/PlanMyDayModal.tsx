@@ -1,7 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { ICONS } from '../constants';
 import { EventType } from '../types';
-import { generateItinerary } from '../services/geminiService';
 
 interface PlanMyDayModalProps {
   event: EventType;
@@ -30,50 +30,38 @@ const AIFormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const loadingMessages = [
-  "Creando un plan mágico para ti...",
-  "Consultando con guías locales...",
-  "Buscando los mejores restaurantes de la zona...",
-  "Encontrando alojamientos con encanto...",
-  "Dando los últimos toques al itinerario..."
-];
-
 const PlanMyDayModal: React.FC<PlanMyDayModalProps> = ({ event, onClose }) => {
   const [plan, setPlan] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   useEffect(() => {
-    const fetchItinerary = async () => {
-      try {
-        const result = await generateItinerary(event);
-        if (result) {
-          setPlan(result);
-        } else {
-          setError('No se pudo generar un plan. Inténtalo de nuevo.');
+    const loadItinerary = async () => {
+      // UX: Latencia Artificial
+      // Añadimos un pequeño retraso para simular que el sistema está "preparando"
+      // el plan personalizado. Esto aumenta el valor percibido por el usuario.
+      await new Promise(resolve => setTimeout(resolve, 1500)); 
+
+      if (event.itinerary) {
+        setPlan(event.itinerary);
+        
+        // Track in Analytics
+        if (window.gtag) {
+            window.gtag('event', 'plan_my_day', {
+                'event_category': 'engagement',
+                'event_label': event.town,
+                'event_id': event.id
+            });
         }
-      } catch (e) {
-        setError('Ocurrió un error al contactar con el servicio de IA.');
-      } finally {
-        setIsLoading(false);
+      } else {
+        // Fallback por si algún evento no tiene itinerario cargado en el JSON
+        setPlan("**Planificación no disponible**\n\nLo sentimos, en este momento no tenemos un itinerario detallado para este evento específico. Te recomendamos consultar la sección de 'Información de Interés' para ver sugerencias sobre qué hacer en el pueblo.");
       }
+      
+      setIsLoading(false);
     };
 
-    fetchItinerary();
+    loadItinerary();
   }, [event]);
-
-  useEffect(() => {
-    if (isLoading) {
-      const intervalId = setInterval(() => {
-        setCurrentMessageIndex(prevIndex =>
-          (prevIndex + 1) % loadingMessages.length
-        );
-      }, 2000); // Cambia el mensaje cada 2 segundos
-
-      return () => clearInterval(intervalId);
-    }
-  }, [isLoading]);
 
   const handleAddToGoogleCalendar = () => {
     if (!plan) return;
@@ -152,19 +140,11 @@ const PlanMyDayModal: React.FC<PlanMyDayModalProps> = ({ event, onClose }) => {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <div className="mt-4 h-12 flex items-center justify-center"> {/* Contenedor para evitar saltos de diseño */}
-            <p key={currentMessageIndex} className="text-slate-600 dark:text-slate-400 text-lg font-display animate-fade-in">
-              {loadingMessages[currentMessageIndex]}
+          <div className="mt-6 flex items-center justify-center">
+            <p className="text-slate-600 dark:text-slate-400 text-lg font-display animate-fade-in">
+              Creando itinerario personalizado con IA...
             </p>
           </div>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="text-center p-8">
-          <p className="text-red-500 dark:text-red-400 bg-red-100 dark:bg-red-900/50 p-4 rounded-md">{error}</p>
         </div>
       );
     }
@@ -174,7 +154,7 @@ const PlanMyDayModal: React.FC<PlanMyDayModalProps> = ({ event, onClose }) => {
         <div className="p-6 text-slate-700 dark:text-slate-300 leading-relaxed overflow-y-auto">
           <AIFormattedText text={plan} />
           <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-6">
-            *Este plan es una sugerencia generada por IA. ¡Siéntete libre de adaptarlo a tu gusto!
+              *Este plan es una sugerencia personalizada. ¡Siéntete libre de adaptarlo a tu gusto!
           </p>
         </div>
       );

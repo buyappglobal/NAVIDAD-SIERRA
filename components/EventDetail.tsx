@@ -1,8 +1,12 @@
+
 import React, { useEffect, useState } from 'react';
 import { EventType, EventCategory } from '../types';
 import { ICONS, IMAGE_PLACEHOLDER } from '../constants';
 import InterestInfoModal from './InterestInfoModal';
 import PlanMyDayModal from './PlanMyDayModal';
+import ResourceGalleryModal from './ResourceGalleryModal';
+import WeatherModal from './WeatherModal';
+import { townCoordinates } from '../data/townCoordinates';
 
 interface EventDetailProps {
   event: EventType;
@@ -11,6 +15,7 @@ interface EventDetailProps {
   onEdit: () => void;
   onCategoryFilterClick: (category: EventCategory) => void;
   showToast: (message: string, icon: React.ReactNode) => void;
+  onEngagement: () => void;
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
@@ -63,21 +68,31 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast }) => {
-  const { title, description, town, date, category, imageUrl, interestInfo } = event;
+const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement }) => {
+  const { title, description, town, date, category, imageUrl, interestInfo, galleryUrls } = event;
   const colors = categoryColors[category] || categoryColors[EventCategory.OTRO];
   const [isReading, setIsReading] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [showWeatherModal, setShowWeatherModal] = useState(false);
 
   const isPuebloDestacado = category === EventCategory.PUEBLO_DESTACADO;
+  const hasCoordinates = !!townCoordinates[town];
 
-  const formattedDate = new Date(date + 'T00:00:00').toLocaleDateString('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formatDateDisplay = () => {
+      const start = new Date(date + 'T00:00:00');
+      const startStr = start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+      
+      if (event.endDate) {
+          const end = new Date(event.endDate + 'T00:00:00');
+          const endStr = end.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+          return `Del ${startStr} al ${endStr}`;
+      }
+      return `${startStr}, ${start.getFullYear()}`;
+  };
+
+  const formattedDate = formatDateDisplay();
 
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(town + ', Huelva, España')}`;
 
@@ -117,6 +132,38 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     setShowPlanModal(true);
   };
 
+  // LOGIC: Determine relevant date for Weather Forecast
+  const getRelevantWeatherDate = () => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const todayStr = `${year}-${month}-${day}`;
+
+    // 1. If event is in the future (Start Date > Today), show Start Date
+    if (date > todayStr) {
+        return date;
+    }
+
+    // 2. If event has started...
+    if (event.endDate) {
+        // If it is currently ongoing (Start <= Today <= End), show TODAY
+        if (todayStr >= date && todayStr <= event.endDate) {
+            return todayStr; 
+        }
+        // If it has ended, show End Date (The modal will handle "past event" message)
+        if (todayStr > event.endDate) {
+            return event.endDate;
+        }
+    }
+    
+    // Default fallback (e.g. single day event that is today or past)
+    return date;
+  };
+
+  const weatherTargetDate = getRelevantWeatherDate();
+
+
   const shareUrl = window.location.href;
   const shareText = `¡No te pierdas "${title}" en ${town}! Echa un vistazo a este evento de la Sierra de Aracena:`;
   
@@ -131,7 +178,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
         <div className="flex justify-between items-center mb-6">
             <button onClick={onBack} className="flex items-center gap-2 text-amber-600 dark:text-amber-300 hover:text-amber-500 dark:hover:text-amber-200 font-bold transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7 7-7" />
                 </svg>
                 Volver
             </button>
@@ -165,51 +212,68 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
             </button>
             <h1 className="text-3xl sm:text-4xl font-display text-orange-800 dark:text-amber-300 mb-4">{title}</h1>
             
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between flex-wrap gap-y-4 gap-x-8 text-slate-700 dark:text-slate-300 mb-6 border-y border-slate-200 dark:border-slate-700/50 py-4">
-              <div className='flex flex-col sm:flex-row sm:items-center gap-x-8 gap-y-4'>
-                  <div className="flex items-center gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span className="text-xl font-bold">{town}</span>
-                  </div>
-                  {!isPuebloDestacado && (
-                    <div className="flex items-center gap-3">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span className="text-lg font-semibold capitalize">{formattedDate}</span>
-                    </div>
-                  )}
+            <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-y-4 gap-x-8 text-slate-700 dark:text-slate-300 mb-6 border-y border-slate-200 dark:border-slate-700/50 py-4">
+              <div className="flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-xl font-bold">{town}</span>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                  <button
-                     onClick={handlePlanMyDayClick}
-                     className="flex items-center justify-center gap-2 bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 font-bold py-2 px-4 rounded-md hover:bg-purple-200 dark:hover:bg-purple-900/80 transition-colors text-base"
+              {!isPuebloDestacado && (
+                <div className="flex items-center gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500 dark:text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-lg font-semibold capitalize">{formattedDate}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+              {interestInfo && (
+                   <button
+                     onClick={() => setShowInfoModal(true)}
+                     className="w-full flex items-center justify-center gap-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors duration-300"
                    >
-                    {ICONS.magic}
-                     <span>Planificar mi día</span>
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                     <span>Info del Pueblo</span>
                    </button>
-                  {interestInfo && (
-                       <button
-                         onClick={() => setShowInfoModal(true)}
-                         className="flex items-center justify-center gap-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-2 px-4 rounded-md hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors text-base"
-                       >
-                         {ICONS.map}
-                         <span>Info del Pueblo</span>
-                       </button>
-                  )}
-                  <a 
-                      href={mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 bg-sky-600 text-white font-bold py-2 px-4 rounded-md hover:bg-sky-500 transition-colors text-base"
+              )}
+              <a 
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-3 bg-sky-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-sky-700 transition-all duration-300 shadow-sm"
+              >
+                  {ICONS.map}
+                  <span>Cómo llegar</span>
+              </a>
+               <button
+                 onClick={handlePlanMyDayClick}
+                 className="w-full flex items-center justify-center gap-3 bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 font-bold py-3 px-4 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors duration-300"
+               >
+                {ICONS.magic}
+                 <span>Planificar mi día</span>
+               </button>
+              {galleryUrls && galleryUrls.length > 0 && (
+                  <button
+                    onClick={() => setIsGalleryOpen(true)}
+                    className="w-full flex items-center justify-center gap-3 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors duration-300"
                   >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 16.382V5.618a1 1 0 00-1.447-.894L15 7m-6 10l6-3m0 0l-6-3m6 3V7" /></svg>
-                      <span>Cómo llegar</span>
-                  </a>
-              </div>
+                    {ICONS.gallery}
+                    <span>Programación</span>
+                  </button>
+              )}
+              {hasCoordinates && !isPuebloDestacado && (
+                  <button
+                    onClick={() => setShowWeatherModal(true)}
+                    className="w-full flex items-center justify-center gap-3 bg-sky-100 dark:bg-sky-900/30 text-sky-800 dark:text-sky-200 font-bold py-3 px-4 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-800/50 transition-colors duration-300"
+                  >
+                    {ICONS.cloudSun}
+                    <span>Previsión del Tiempo</span>
+                  </button>
+              )}
             </div>
             
             <div className="text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-relaxed mb-8">
@@ -251,14 +315,38 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
         <InterestInfoModal
           town={town}
           content={interestInfo}
-          onClose={() => setShowInfoModal(false)}
+          onClose={() => {
+            setShowInfoModal(false);
+            onEngagement();
+          }}
         />
       )}
 
       {showPlanModal && (
         <PlanMyDayModal
           event={event}
-          onClose={() => setShowPlanModal(false)}
+          onClose={() => {
+            setShowPlanModal(false);
+            onEngagement();
+          }}
+        />
+      )}
+
+      {isGalleryOpen && galleryUrls && (
+        <ResourceGalleryModal
+          event={event}
+          onClose={() => {
+            setIsGalleryOpen(false);
+            onEngagement();
+          }}
+        />
+      )}
+
+      {showWeatherModal && (
+        <WeatherModal
+          town={town}
+          date={weatherTargetDate}
+          onClose={() => setShowWeatherModal(false)}
         />
       )}
     </>

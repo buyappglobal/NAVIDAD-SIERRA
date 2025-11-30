@@ -1,14 +1,26 @@
+
 import React from 'react';
-import { GOOGLE_FORM_URL, ICONS } from '../constants';
+import { ICONS } from '../constants';
 
 interface FooterProps {
   isLoggedIn: boolean;
   onLoginClick: () => void;
   onLogoutClick: () => void;
   onAddEventClick: () => void;
+  onManageCookies: () => void;
+  onSuggestClick: () => void;
+  onExportClick?: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick, onAddEventClick }) => {
+const Footer: React.FC<FooterProps> = ({ 
+    isLoggedIn, 
+    onLoginClick, 
+    onLogoutClick, 
+    onAddEventClick, 
+    onManageCookies,
+    onSuggestClick,
+    onExportClick
+}) => {
   const currentYear = new Date().getFullYear();
 
   const friendLinks = [
@@ -33,11 +45,12 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
             <div className="flex flex-col items-center md:items-start">
               <h3 className="text-xl font-display text-orange-800 dark:text-amber-300">La Sierra en Navidad</h3>
               <p className="mt-1 text-xs">Una guía de eventos para no perderte nada.</p>
-              <svg className="w-24 h-auto mt-4 text-amber-500 dark:text-amber-400 opacity-50" viewBox="0 0 100 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 50L20 20L40 40L60 15L80 35L100 10V50H0Z" fill="currentColor" fillOpacity="0.3"/>
-                <path d="M5 45L25 25L45 45L65 20L85 40L100 20V50H5L5 45Z" fill="currentColor" fillOpacity="0.5"/>
-                <path d="M70 10L68 12L70 14L72 12L70 10Z" fill="#FCD34D"/>
-              </svg>
+              <img 
+                src="https://solonet.es/wp-content/uploads/2025/11/Copia-de-HUELVALATE.ES_.png" 
+                alt="Logo Huelva Late" 
+                className="w-48 h-auto mt-4 object-contain"
+                loading="lazy"
+              />
             </div>
 
             {/* Columna 2: Webs Amigas */}
@@ -65,6 +78,14 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
                     </a>
                   </li>
                 ))}
+                <li>
+                    <button 
+                        onClick={onManageCookies}
+                        className="hover:text-amber-500 dark:hover:text-amber-300 transition-colors text-left"
+                    >
+                        Gestionar Cookies
+                    </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -77,14 +98,12 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
                </p>
                 <p className="mt-2">
                  Hecho con ❤️ para la Sierra. ¿Falta algún evento o ves algún error?{' '}
-                 <a
-                   href={GOOGLE_FORM_URL}
-                   target="_blank"
-                   rel="noopener noreferrer"
+                 <button
+                   onClick={onSuggestClick}
                    className="font-semibold text-amber-600 dark:text-amber-300 hover:text-amber-500 dark:hover:text-amber-200 transition-colors"
                  >
                    Ayúdanos a mejorar
-                 </a>
+                 </button>
                  .
                </p>
              </div>
@@ -100,10 +119,20 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
         <div className="sticky bottom-0 z-40 bg-slate-900/80 dark:bg-slate-900/80 backdrop-blur-sm p-2 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.2)] border-t border-slate-700">
             <div className="container mx-auto flex justify-between items-center gap-4">
                 <p className="text-sm font-bold text-amber-300">Modo Administrador</p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-x-auto">
+                     {onExportClick && (
+                        <button
+                            onClick={onExportClick}
+                            className="flex items-center gap-2 bg-blue-600 text-white font-bold py-2 px-3 rounded-md hover:bg-blue-500 transition-colors text-sm whitespace-nowrap"
+                            title="Descargar datos en CSV"
+                        >
+                            {ICONS.download}
+                            <span className="hidden sm:inline">Descargar CSV</span>
+                        </button>
+                     )}
                      <button
                         onClick={onAddEventClick}
-                        className="flex items-center gap-2 bg-green-600 text-white font-bold py-2 px-3 rounded-md hover:bg-green-500 transition-colors text-sm"
+                        className="flex items-center gap-2 bg-green-600 text-white font-bold py-2 px-3 rounded-md hover:bg-green-500 transition-colors text-sm whitespace-nowrap"
                         title="Añadir un nuevo evento"
                     >
                         {ICONS.add}
@@ -111,7 +140,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn, onLoginClick, onLogoutClick
                     </button>
                     <button 
                         onClick={onLogoutClick}
-                        className="flex items-center gap-2 bg-slate-600 text-white font-bold py-2 px-3 rounded-md hover:bg-slate-500 transition-colors text-sm"
+                        className="flex items-center gap-2 bg-slate-600 text-white font-bold py-2 px-3 rounded-md hover:bg-slate-500 transition-colors text-sm whitespace-nowrap"
                         title="Cerrar Sesión"
                     >
                        {ICONS.logout}

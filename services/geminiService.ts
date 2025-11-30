@@ -1,14 +1,19 @@
-import { GoogleGenAI, Type } from "@google/genai";
+
+
+import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { EventType, EventCategory } from '../types';
 
-// FIX: Per coding guidelines, initialize GoogleGenAI without type assertion.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const parseEventsFromText = async (text: string): Promise<Omit<EventType, 'id'>[] | null> => {
-  // FIX: Per coding guidelines, the API key is assumed to be present in the environment.
-  // The check has been removed.
+  // This function still relies on an environment key, as it's an admin-only feature.
+  const apiKey = (process.env.API_KEY || "").trim();
+  if (!apiKey) {
+      console.error("API Key is missing or empty in process.env for parseEventsFromText");
+      return null;
+  }
+  
+  // Initialize the client inside the function
+  const ai = new GoogleGenAI({ apiKey });
 
-  // FIX: Separated system instruction from the user prompt for clarity and best practices.
   const systemInstruction = `
     Eres un asistente experto en extraer información de eventos a partir de texto.
     Analiza el siguiente texto y extrae todos los eventos que encuentres.
@@ -63,47 +68,44 @@ export const parseEventsFromText = async (text: string): Promise<Omit<EventType,
           },
         },
       },
-    });
+    }) as GenerateContentResponse;
 
-    // FIX: Use response.text to get the JSON string as per documentation.
-    const jsonString = response.text.trim();
+    const jsonString = response.text?.trim();
     if (jsonString) {
       const parsedEvents = JSON.parse(jsonString);
       return parsedEvents as Omit<EventType, 'id'>[];
     }
     return [];
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error calling Gemini API:", error);
-    // FIX: Removed alert. Error is handled gracefully in the UI.
+    // Propagate specific errors
+    if (["API_KEY_INVALID", "API_KEY_LEAKED", "QUOTA_EXCEEDED"].includes(error.message)) {
+        throw error;
+    }
     return null;
   }
 };
 
-export const generateItinerary = async (event: EventType): Promise<string | null> => {
-  const systemInstruction = `
-    Eres un guía turístico amigable y entusiasta, experto en la Sierra de Aracena y su gastronomía.
-    Tu tarea es crear un plan de un día completo, agradable y realista para un visitante.
-    El plan debe girar en torno al evento principal proporcionado.
-    Utiliza la "Información de Interés" para sugerir otras actividades como rutas de senderismo o visitas a monumentos.
-    Importante: Incluye una sección llamada 'Dónde Comer' con una sugerencia de restaurante local, y otra sección llamada 'Dónde Alojarse' con una sugerencia de casa rural o alojamiento con encanto en la zona.
-    Haz hincapié en que son solo sugerencias y el usuario debería verificar la disponibilidad y las reseñas.
-    Organiza el plan con títulos claros para diferentes momentos del día (p. ej., 'Por la mañana', 'Hora de comer', 'Tarde de evento', 'Dónde Alojarse').
-    Usa un tono cercano y atractivo. La respuesta debe ser solo el plan, sin introducciones ni despedidas.
-    Formatea los títulos de las secciones con asteriscos, por ejemplo: **Por la mañana:**
-  `;
+// Nueva función para autocompletar detalles (Interest Info e Itinerary)
+export const generateEventDetails = async (title: string, town: string, description: string, date: string): Promise<{ interestInfo: string, itinerary: string } | null> => {
+  const apiKey = (process.env.API_KEY || "").trim();
+  if (!apiKey) return null;
+
+  const ai = new GoogleGenAI({ apiKey });
 
   const prompt = `
-    Crea un plan de un día en ${event.town}.
+    Necesito completar la información para un evento en la Sierra de Aracena.
+    
+    Evento: ${title}
+    Pueblo: ${town}
+    Fecha: ${date}
+    Descripción: ${description}
 
-    Evento principal:
-    - Título: ${event.title}
-    - Descripción: ${event.description}
-    - Fecha: ${event.date}
+    Genera un JSON con dos campos:
+    1. "interestInfo": Información turística breve sobre ${town}, lugares emblemáticos, una ruta de senderismo sugerida y cómo llegar desde Huelva/Sevilla. Usa emojis.
+    2. "itinerary": Un plan de día completo (mañana, comida, tarde, alojamiento) centrado en asistir a este evento. Usa formato Markdown con negritas (**Texto**) para los títulos.
 
-    Información de Interés sobre ${event.town}:
-    ---
-    ${event.interestInfo || 'No hay información adicional sobre este pueblo.'}
-    ---
+    Responde SOLO con el JSON.
   `;
 
   try {
@@ -111,13 +113,78 @@ export const generateItinerary = async (event: EventType): Promise<string | null
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
-        systemInstruction,
-      },
-    });
-    
-    return response.text;
+        responseMimeType: "application/json",
+      }
+    }) as GenerateContentResponse;
+
+    const jsonString = response.text?.trim();
+    if (jsonString) {
+      return JSON.parse(jsonString);
+    }
+    return null;
   } catch (error) {
-    console.error("Error generating itinerary with Gemini API:", error);
+    console.error("Error generating event details:", error);
     return null;
   }
+};
+
+export const generatePlanFromQuery = async (query: string, apiKey: string, events: EventType[]): Promise<string> => {
+    if (!apiKey) {
+        console.error("AI Assistant Error: API Key was not provided.");
+        throw new Error("API_KEY_MISSING");
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
+    const systemInstruction = `
+        Eres un asistente de viajes experto y amigable, especializado en la Sierra de Aracena y Picos de Aroche (Huelva).
+        Tu misión es crear planes de viaje personalizados para los usuarios basándote EXCLUSIVAMENTE en la lista de eventos en formato JSON que te proporciono.
+        - NO uses conocimiento externo. NO busques en internet. Toda tu información debe provenir del JSON.
+        - Analiza la petición del usuario para entender las fechas y los intereses.
+        - Filtra la lista de eventos para encontrar los que coincidan con la petición.
+        - Utiliza los campos 'itinerary' e 'interestInfo' de los eventos para enriquecer el plan.
+        - Organiza el plan día por día en formato Markdown, usando negritas (**texto**) para resaltar los nombres de los eventos y lugares.
+        - Si no encuentras ningún evento en el JSON que coincida con la petición del usuario, informa amablemente de que no tienes datos para esas fechas o consulta.
+        - No menciones que estás usando un JSON. Habla como un experto local.
+    `;
+
+    const eventsJsonString = JSON.stringify(events, null, 2);
+
+    const prompt = `
+      Petición del usuario: "${query}"
+
+      Contexto (datos de eventos disponibles en formato JSON):
+      ---
+      ${eventsJsonString}
+      ---
+    `;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+                systemInstruction,
+            },
+        }) as GenerateContentResponse;
+
+        return response.text?.trim() || "No he podido generar un plan en este momento. Inténtalo de nuevo.";
+
+    } catch (error: any) {
+        console.error("Error in generatePlanFromQuery:", error);
+        const message = error.message || "";
+        if (message.includes("API key not valid")) {
+            throw new Error("API_KEY_INVALID");
+        }
+        // Re-throw other errors to be handled by the UI
+        throw error;
+    }
+};
+
+
+// Función antigua (ya no se usa en producción para el usuario final, pero la mantenemos por compatibilidad si es necesario)
+export const generateItinerary = async (event: EventType): Promise<string | null> => {
+    // Esta función se mantiene como legacy o fallback, pero la lógica principal ahora es precargar los datos.
+    // Retornamos null para forzar el uso de datos estáticos o mostrar mensaje de error si no hay datos.
+    return null;
 };

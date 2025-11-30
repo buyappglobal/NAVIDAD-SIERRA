@@ -1,11 +1,9 @@
-const CACHE_NAME = 'sierra-navidad-cache-v4';
+
+const CACHE_NAME = 'sierra-navidad-cache-v15';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/manifest.webmanifest',
-  '/icons/icon-180.svg',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg'
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => {

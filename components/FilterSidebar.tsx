@@ -6,10 +6,15 @@ import DateRangeFilter from './DateRangeFilter';
 import { EventCategory } from '../types';
 import CollapsibleFilterSection from './CollapsibleFilterSection';
 
+interface Town {
+  id: string;
+  name: string;
+}
+
 interface FilterSidebarProps {
-  towns: string[];
-  selectedTown: string;
-  onSelectTown: (town: string) => void;
+  towns: Town[];
+  selectedTowns: string[]; // Changed to array
+  onSelectTown: (townId: string) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   selectedCategories: string[];
@@ -18,11 +23,13 @@ interface FilterSidebarProps {
   endDate: string | null;
   onDateChange: (start: string | null, end: string | null) => void;
   onFilterAndClose?: () => void;
+  availableCategories?: EventCategory[];
+  eventCounts?: Record<string, number>;
 }
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ 
     towns, 
-    selectedTown, 
+    selectedTowns, 
     onSelectTown, 
     searchQuery, 
     onSearchQueryChange,
@@ -32,20 +39,26 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     endDate,
     onDateChange,
     onFilterAndClose,
+    availableCategories,
+    eventCounts
 }) => {
 
-  const handleSelectTownAndClose = (town: string) => {
-    onSelectTown(town);
-    onFilterAndClose?.();
+  const handleSelectTownAndClose = (townId: string) => {
+    onSelectTown(townId);
+    // Don't close immediately on town selection in multi-select mode to allow picking more
+    // But if it's the desktop sidebar, onFilterAndClose is undefined anyway.
+    // If it's modal, maybe we want to keep it open? 
+    // Let's keep it open for multi-select experience.
+    // onFilterAndClose?.(); 
   };
 
   const handleCategoryToggleAndClose = (category: EventCategory) => {
     onCategoryToggle(category);
-    onFilterAndClose?.();
+    // onFilterAndClose?.(); // Keep open for multi select feel
   };
 
-  const townSelectHandler = onFilterAndClose ? handleSelectTownAndClose : onSelectTown;
-  const categoryToggleHandler = onFilterAndClose ? handleCategoryToggleAndClose : onCategoryToggle;
+  const townSelectHandler = onSelectTown; // Always use direct handler, let user close modal manually with button
+  const categoryToggleHandler = onCategoryToggle;
 
   return (
     <div className="space-y-4 md:space-y-8">
@@ -59,14 +72,20 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           onDateChange={onDateChange}
         />
       </CollapsibleFilterSection>
-      <CollapsibleFilterSection title="Categorías">
+      <CollapsibleFilterSection title="Categorías" defaultOpen={true}>
         <CategoryFilter 
           selectedCategories={selectedCategories}
           onCategoryToggle={categoryToggleHandler}
+          availableCategories={availableCategories}
         />
       </CollapsibleFilterSection>
-      <CollapsibleFilterSection title="Pueblos">
-        <TownFilter towns={towns} selectedTown={selectedTown} onSelectTown={townSelectHandler} />
+      <CollapsibleFilterSection title="Pueblos" defaultOpen={true}>
+        <TownFilter 
+            towns={towns} 
+            selectedTowns={selectedTowns} 
+            onSelectTown={townSelectHandler} 
+            eventCounts={eventCounts}
+        />
       </CollapsibleFilterSection>
     </div>
   );

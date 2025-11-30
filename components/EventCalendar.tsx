@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { EventType, EventCategory } from '../types';
 import { ICONS } from '../constants';
@@ -21,32 +22,58 @@ interface EventCalendarProps {
 }
 
 const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) => {
-  const [currentDate, setCurrentDate] = useState(new Date('2025-12-01T00:00:00'));
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const eventsForCalendar = useMemo(() => events.filter(e => !e.externalUrl && e.category !== EventCategory.PUEBLO_DESTACADO), [events]);
 
   useEffect(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     if (eventsForCalendar.length > 0) {
-      const firstEventDate = eventsForCalendar[0].date;
-      setCurrentDate(new Date(`${firstEventDate}T00:00:00`));
+      // Create a sorted copy to find the chronological start, 
+      // ignoring the shuffled order of the main list
+      const sortedByDate = [...eventsForCalendar].sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      // Find first event that is today or in the future
+      // Check date OR endDate
+      const upcomingEvent = sortedByDate.find(e => {
+          const start = new Date(e.date + 'T00:00:00');
+          const end = e.endDate ? new Date(e.endDate + 'T00:00:00') : start;
+          return end >= today;
+      });
+
+      if (upcomingEvent) {
+          // If the event started before today but ends after today, show today.
+          // Otherwise show the start date.
+          const start = new Date(upcomingEvent.date + 'T00:00:00');
+          setCurrentDate(start < today ? today : start);
+      } else {
+        // If all events are in the past, show the last one so the user sees some data
+        const lastEvent = sortedByDate[sortedByDate.length - 1];
+        if (lastEvent) {
+             setCurrentDate(new Date(lastEvent.date + 'T00:00:00'));
+        } else {
+            setCurrentDate(today);
+        }
+      }
     } else {
-      setCurrentDate(new Date('2025-12-01T00:00:00'));
+      // No events to show, default to today
+      setCurrentDate(today);
     }
   }, [eventsForCalendar]);
 
 
-  const eventsByDate = useMemo(() => {
-    const grouped: { [key: string]: EventType[] } = {};
-    eventsForCalendar.forEach(event => {
-      const eventDate = new Date(event.date + 'T00:00:00');
-      const key = eventDate.toISOString().split('T')[0];
-      if (!grouped[key]) {
-        grouped[key] = [];
-      }
-      grouped[key].push(event);
-    });
-    return grouped;
-  }, [eventsForCalendar]);
+  const getEventsForDay = (dateStr: string) => {
+      const targetDate = new Date(dateStr + 'T00:00:00');
+      return eventsForCalendar.filter(event => {
+          const start = new Date(event.date + 'T00:00:00');
+          const end = event.endDate ? new Date(event.endDate + 'T00:00:00') : start;
+          return targetDate >= start && targetDate <= end;
+      });
+  };
 
   const changeWeek = (offset: number) => {
     setCurrentDate(prev => {
@@ -103,7 +130,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) 
     for (let i = 0; i < 7; i++) {
       const dayForCell = new Date(day);
       const formattedDate = dayForCell.toISOString().split('T')[0];
-      const dayEvents = eventsByDate[formattedDate] || [];
+      const dayEvents = getEventsForDay(formattedDate);
       const isToday = new Date().toDateString() === dayForCell.toDateString();
       
       const dayHeader = dayForCell.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -117,7 +144,6 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) 
             {dayEvents.length > 0 ? (
                 <div className="space-y-3">
                     {dayEvents.map(event => {
-                        const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.town + ', Huelva, España')}`;
                         return (
                         <div key={event.id} className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-slate-200 dark:border-slate-700/50">
                             <div>
@@ -126,6 +152,7 @@ const EventCalendar: React.FC<EventCalendarProps> = ({ events, onSelectEvent }) 
                                 </span>
                                 <p className="font-bold text-orange-800 dark:text-amber-400">{event.title}</p>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold">{event.town}</p>
+                                {event.endDate && <p className="text-xs text-slate-400 italic">Evento de varios días</p>}
                             </div>
                             <div className="flex items-center gap-2 self-start sm:self-center">
                                 <button 

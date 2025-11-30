@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { EventType, EventCategory } from '../types';
 import { IMAGE_PLACEHOLDER } from '../constants';
@@ -20,16 +21,30 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, onCategoryFilterClick }) => {
-  const { id, title, description, town, date, category, imageUrl, sponsored, externalUrl } = event;
+  const { id, title, description, town, date, endDate, category, imageUrl, sponsored, externalUrl } = event;
 
   const isPuebloDestacado = category === EventCategory.PUEBLO_DESTACADO;
 
-  const eventDate = new Date(date + 'T00:00:00');
-  const formattedDate = eventDate.toLocaleDateString('es-ES', {
-    day: 'numeric',
-    month: 'long',
-  });
-  const weekday = eventDate.toLocaleDateString('es-ES', { weekday: 'long' });
+  // Use fallback color if category doesn't match exactly (prevents UI breaking)
+  const badgeColor = categoryColors[category] || 'bg-slate-500';
+
+  const formatEventDate = () => {
+    const start = new Date(date + 'T00:00:00');
+    const startDay = start.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+    
+    if (endDate) {
+        const end = new Date(endDate + 'T00:00:00');
+        const endDay = end.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+        
+        // Si es el mismo mes y año, se podría abreviar, pero por simplicidad mostramos completo
+        return `Del ${startDay} al ${endDay}`;
+    }
+
+    const weekday = start.toLocaleDateString('es-ES', { weekday: 'long' });
+    return `${weekday}, ${startDay}`;
+  };
+
+  const dateDisplay = formatEventDate();
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.onerror = null;
@@ -51,21 +66,22 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, onCategoryF
         <div>
           <div className="flex flex-wrap items-center gap-2 mb-2">
              {externalUrl ? (
-                <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full text-white ${categoryColors[category]}`}>
+                <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full text-white ${badgeColor}`}>
                   Publicidad
                 </span>
               ) : (
                 <button
                     onClick={(e) => { e.stopPropagation(); onCategoryFilterClick(category); }}
-                    className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full text-white ${categoryColors[category]} transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:ring-amber-400`}
+                    className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full text-white ${badgeColor} transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:ring-amber-400`}
                 >
                   {category}
                 </button>
             )}
-            {sponsored && (
-                <span className="flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/50 px-2 py-0.5 rounded-full">
+            {/* Solo mostramos la etiqueta de patrocinado si NO es una URL externa (anuncio) */}
+            {sponsored && !externalUrl && (
+                <span className="flex items-center gap-1 text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-100 dark:bg-teal-900/50 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                    <span>Destacado</span>
+                    <span>Pueblo Destacado</span>
                 </span>
             )}
           </div>
@@ -75,7 +91,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, onCategoryF
         <div className="mt-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="text-slate-700 dark:text-slate-300">
             <p className="font-bold text-lg">{town}</p>
-            {!isPuebloDestacado && !externalUrl && <p className="text-sm capitalize">{weekday}, {formattedDate}</p>}
+            {!isPuebloDestacado && !externalUrl && <p className="text-sm capitalize font-medium text-amber-700 dark:text-amber-500">{dateDisplay}</p>}
           </div>
           <div className="flex items-center gap-2">
             {externalUrl ? (

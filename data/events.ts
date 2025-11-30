@@ -1,0 +1,36 @@
+
+import { ARACENA_EVENTS } from './pueblos/aracena';
+import { LINARES_EVENTS } from './pueblos/linares';
+import { HIGUERA_EVENTS } from './pueblos/higuera';
+import { ALAJAR_EVENTS } from './pueblos/alajar';
+import { ALMONASTER_EVENTS } from './pueblos/almonaster';
+import { PUERTO_MORAL_EVENTS } from './pueblos/puertomoral';
+import { FUENTEHERIDOS_EVENTS } from './pueblos/fuenteheridos';
+import { GALAROZA_EVENTS } from './pueblos/galaroza';
+import { CUMBRES_MAYORES_EVENTS } from './pueblos/cumbresmayores';
+import { LOS_MARINES_EVENTS } from './pueblos/losmarines';
+import { ENCINASOLA_EVENTS } from './pueblos/encinasola';
+import { AROCHE_EVENTS } from './pueblos/aroche';
+import { VALDELARCO_EVENTS } from './pueblos/valdelarco';
+import { ROSAL_EVENTS } from './pueblos/rosal';
+import { CORTEGANA_EVENTS } from './pueblos/cortegana';
+import { OTHER_EVENTS } from './pueblos/otros';
+
+export const ALL_EVENTS = [
+    ...ARACENA_EVENTS,
+    ...LINARES_EVENTS,
+    ...HIGUERA_EVENTS,
+    ...ALAJAR_EVENTS,
+    ...ALMONASTER_EVENTS,
+    ...PUERTO_MORAL_EVENTS,
+    ...FUENTEHERIDOS_EVENTS,
+    ...GALAROZA_EVENTS,
+    ...CUMBRES_MAYORES_EVENTS,
+    ...LOS_MARINES_EVENTS,
+    ...ENCINASOLA_EVENTS,
+    ...AROCHE_EVENTS,
+    ...VALDELARCO_EVENTS,
+    ...ROSAL_EVENTS,
+    ...CORTEGANA_EVENTS,
+    ...OTHER_EVENTS
+];
