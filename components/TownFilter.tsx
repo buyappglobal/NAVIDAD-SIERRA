@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 
 interface Town {
@@ -33,7 +34,7 @@ const TownFilter: React.FC<TownFilterProps> = ({ towns, selectedTowns, onSelectT
   const totalCount = eventCounts ? Object.values(eventCounts).reduce((a: number, b: number) => a + b, 0) : 0;
 
   return (
-    <div className="flex flex-col gap-1 pr-2 pb-2">
+    <div className="flex flex-col gap-1 pr-2 pb-2 md:max-h-[60vh] md:overflow-y-auto">
       {sortedOptions.map(option => {
         const count = option.id === 'all' 
             ? totalCount

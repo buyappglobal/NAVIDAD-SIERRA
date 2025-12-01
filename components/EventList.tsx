@@ -12,6 +12,7 @@ interface EventListProps {
   isAnyFilterActive: boolean;
   isLoading?: boolean;
   selectedTownIds: string[]; // Changed to array
+  onUpdateEvent: (updatedEvent: EventType) => void; // New prop for syncing interaction
 }
 
 const EventList: React.FC<EventListProps> = ({ 
@@ -21,7 +22,8 @@ const EventList: React.FC<EventListProps> = ({
     onCategoryFilterClick, 
     isAnyFilterActive, 
     isLoading,
-    selectedTownIds
+    selectedTownIds,
+    onUpdateEvent
 }) => {
   
   // Logic to determine what town name(s) to show
@@ -150,6 +152,7 @@ const EventList: React.FC<EventListProps> = ({
                 event={event} 
                 onSelectEvent={onSelectEvent}
                 onCategoryFilterClick={onCategoryFilterClick}
+                onUpdateEvent={onUpdateEvent}
             />
           </div>
         ))}

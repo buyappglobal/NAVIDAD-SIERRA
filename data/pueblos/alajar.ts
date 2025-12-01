@@ -18,5 +18,20 @@ export const ALAJAR_EVENTS: EventType[] = [
     ],
     "interestInfo": INFO_ALAJAR,
     "itinerary": "**☕ Desayuno:**\nToma un desayuno energético en el bar de la plaza antes de subir a la Peña. Prueba el pan de pueblo con manteca colorá si te atreves.\n\n**🚶 Actividad Principal:**\nSube a la **Peña de Arias Montano**. Es el balcón de la Sierra. Visita la ermita, las cuevas y el arco de los novios. Las vistas son imprescindibles.\n\n**🍽️ Almuerzo:**\nBaja al pueblo y come en el **Mesón El Corcho** (cocina tradicional) o unas pizzas artesanas increíbles en **El Padrino** (famoso en la zona).\n\n**✨ Tarde de Belén:**\nPasea por el barrio de La Vegueta y sus calles estrechas. A la hora indicada, entra en el **Belén Viviente** alrededor de la Iglesia. Es uno de los más bonitos por el entorno natural de sus calles.\n\n**🛏️ Hospedaje:**\nAlójate en la **Posada San Marcos** (ecológica y sostenible) o en el **Hotel Rural Molino del Bombo**."
+  },
+  {
+    "id": "belen-playmobil-alajar",
+    "title": "Belén de Playmóvil",
+    "description": "No te pierdas el I Belén de Playmobil 🌟\nAlájar se prepara para vivir una Navidad diferente y llena de encanto con una iniciativa que fusiona la tradición y el juguete más entrañable: la primera edición del Belén de Playmobil en la localidad onubense.\n\nUna cita ineludible para toda la familia y, especialmente, para los amantes de las icónicas figuras. Este espectacular diorama navideño abrirá sus puertas al público durante un fin de semana completo, convirtiéndose en el plan perfecto para comenzar el puente de diciembre.\n\n🗓️ Fechas y Horarios para Visitar la Exposición\nMarca en tu calendario los días 6, 7 y 8 de diciembre. La exposición contará con horarios accesibles para que nadie se quede sin visitarla:\n\nMañanas: De 12:00h a 14:00h.\n\nTardes: De 16:00h a 19:00h.\n\n📍 ¿Dónde Encontrar el Belén?\nEsta singular representación se ubicará en un lugar emblemático de Alájar: el Edificio Pintor Manuel López. Un marco incomparable para acoger a Sus Majestades los Reyes Magos y a toda la escena del Nacimiento recreada con el inimitable estilo Playmobil.\n\n🤝 Una Entrada Solidaria\nAdemás de disfrutar de un montaje único, tu visita tendrá un fin benéfico. La entrada a la exposición tendrá un coste simbólico de 1€. Este euro se destinará íntegramente a una causa muy especial: la Cabalgata de Reyes Magos de Alájar, ayudando a asegurar que la noche más mágica del año siga brillando con todo su esplendor para los niños de la localidad.\n\n¡No te lo pienses! Ven a Alájar, sumérgete en el espíritu navideño y revive la ilusión de la infancia con un Belén que te hará volver a ser un niño. ¡Te esperamos del 6 al 8 de diciembre!",
+    "town": "Alájar",
+    "date": "2025-12-06",
+    "endDate": "2025-12-08",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-00-8.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-11-24-at-20.44.03.jpeg"
+    ],
+    "interestInfo": INFO_ALAJAR,
+    "itinerary": "**☕ Mañana:**\nDesayuna churros o tostadas en la Plaza de España. Después, sube a la **Peña de Arias Montano** para disfrutar de las vistas.\n\n**🧸 12:00 - Belén Playmobil:**\nVisita el **Edificio Pintor Manuel López** para ver el curioso Belén de Playmobil. ¡Es solidario!\n\n**🍽️ Almuerzo:**\nPrueba las migas o el cerdo ibérico en los restaurantes locales.\n\n**✨ Tarde:**\nPasea por las calles empedradas y, si coincide horario, no te pierdas el **Belén Viviente** del pueblo."
   }
 ];

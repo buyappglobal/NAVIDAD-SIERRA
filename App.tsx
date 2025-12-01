@@ -27,10 +27,11 @@ import BottomNav from './components/BottomNav';
 import InfoAppModal from './components/InfoAppModal';
 import FaqModal from './components/FaqModal';
 import HowItWorksModal from './components/HowItWorksModal';
+import { getEventMetrics } from './services/interactionService';
 
 const AiAssistantModal = lazy(() => import('./components/AiAssistantModal'));
 
-// VERSION: v9.2 (Fixed CSV Export)
+// VERSION: v9.3 (Real-time Interaction Sync)
 
 // Helper para normalizar cadenas para comparación (SUPER BLINDADO)
 const normalizeString = (str: string | undefined | null) => {
@@ -57,7 +58,7 @@ const CATEGORY_KEYWORDS: Record<EventCategory, string> = {
 };
 
 const App: React.FC = () => {
-  const [events, setEvents] = useState<EventType[]>(ALL_EVENTS);
+  const [events, setEvents] = useState<EventType[]>([]); // Init empty to load metrics
   
   // Use array for multi-select. Empty array means "All"
   const [selectedTownIds, setSelectedTownIds] = useState<string[]>([]);
@@ -87,7 +88,10 @@ const App: React.FC = () => {
   const [isCookieConsentOpen, setIsCookieConsentOpen] = useState(false);
   const [showAiAssistant, setShowAiAssistant] = useState(false);
   const [isAdminTestMode, setIsAdminTestMode] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
+  
+  // New States for Sorting and Personal Filters
+  const [sortBy, setSortBy] = useState<'date' | 'popularity'>('date');
+  const [filterType, setFilterType] = useState<'all' | 'favorites' | 'attending'>('all');
   
   // Modal states for BottomNav
   const [showInfoAppModal, setShowInfoAppModal] = useState(false);
@@ -101,10 +105,10 @@ const App: React.FC = () => {
       const match = hash.match(/^#\/evento\/(.+)$/);
       if (match && match[1]) {
         const eventId = match[1];
-        if (ALL_EVENTS.find(e => e.id === eventId)) {
+        // We check against ALL_EVENTS for validity, but the UI will pull from state 'events' later
+        if (ALL_EVENTS.find(e => e.id === eventId) || ADS.find(e => e.id === eventId)) {
           setSelectedEventId(eventId);
         } else {
-          // If event ID from hash is invalid, clear it
           history.replaceState(null, '', ' ');
           setSelectedEventId(null);
         }
@@ -185,11 +189,12 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // 3. Load Events (STATIC ONLY)
+  // 3. Load Events (With Interactions)
   useEffect(() => {
     setIsLoading(true);
-    // Cargar datos locales inmediatamente
-    setEvents(ALL_EVENTS); 
+    // Combine static data with local metrics
+    const eventsWithMetrics = ALL_EVENTS.map(event => getEventMetrics(event));
+    setEvents(eventsWithMetrics); 
     setIsLoading(false);
   }, []);
 
@@ -266,10 +271,8 @@ const App: React.FC = () => {
 
     setSelectedTownIds(prev => {
         if (prev.includes(townId)) {
-            // Remove town
             return prev.filter(id => id !== townId);
         } else {
-            // Add town
             return [...prev, townId];
         }
     });
@@ -302,10 +305,21 @@ const App: React.FC = () => {
   };
 
   const handleUpdateEvent = (updatedEvent: EventType) => {
-    setEvents(prev => prev.map(e => e.id === updatedEvent.id ? updatedEvent : e));
+    // Optimistic Update locally
+    setEvents(prev => prev.map(e => e.id === updatedEvent.id ? { ...e, ...updatedEvent } : e));
     setEditingEvent(null);
-    setPendingChange({ action: 'UPDATE', data: updatedEvent });
-    setShowChangeRequestModal(true);
+    // Only send instruction if it's an admin edit, not a social interaction
+    if (isLoggedIn) {
+        setPendingChange({ action: 'UPDATE', data: updatedEvent });
+        setShowChangeRequestModal(true);
+    }
+  };
+  
+  // Real-time interaction handler (for Likes/Attending from users)
+  const handleInteractionUpdate = (updatedEvent: EventType) => {
+      setEvents(prevEvents => prevEvents.map(e => 
+          e.id === updatedEvent.id ? updatedEvent : e
+      ));
   };
 
   const handleDeleteEvent = (eventId: string) => {
@@ -336,18 +350,12 @@ const App: React.FC = () => {
     today.setHours(0, 0, 0, 0); // Start of today
 
     events.forEach(event => {
-      // Don't count ads or promo category if needed, but usually we count everything
-      // Only count if event is future or ongoing
       const eventDate = new Date(event.date);
       const endDate = event.endDate ? new Date(event.endDate) : eventDate;
-      
-      // Check if event end date is today or later
       const endInclusive = new Date(endDate);
       endInclusive.setHours(23, 59, 59, 999);
 
       if (endInclusive >= today) {
-         // Find town ID from Name (Events use Name, Filter uses ID)
-         // Usamos normalizeString para asegurar coincidencia insensible a mayúsculas/acentos/espacios
          const normalizedEventTown = normalizeString(event.town);
          let townId = null;
 
@@ -355,7 +363,6 @@ const App: React.FC = () => {
          if (townObj) {
              townId = townObj.id;
          } else {
-             // Fallback ID generation for counting, aligned with filtering logic
              townId = normalizedEventTown.replace(/\s/g, '');
          }
 
@@ -382,7 +389,6 @@ const App: React.FC = () => {
               if (townObj) {
                   matchesTown = selectedTownIds.includes(townObj.id);
               } else {
-                  // Fallback
                   matchesTown = selectedTownIds.includes(normalizedEventTown.replace(/\s/g, ''));
               }
          }
@@ -404,7 +410,6 @@ const App: React.FC = () => {
              const eventStart = new Date(event.date);
              const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
              
-             // Check overlap
              matchesDate = (eventStart <= filterEnd) && (eventEnd >= filterStart);
          }
 
@@ -423,25 +428,25 @@ const App: React.FC = () => {
     const queryTerms = normalizeString(searchQuery).split(" ").filter(Boolean);
 
     return events.filter(event => {
-      // 1. Filtro de Pueblo Estricto (ID vs Generated ID)
+      // 1. Personal Filter (Updated to ensure reactivity)
+      if (filterType === 'favorites' && !event.isFavorite) return false;
+      if (filterType === 'attending' && !event.isAttending) return false;
+
+      // 2. Filtro de Pueblo Estricto
       let matchesTown = true;
       if (!isAllTowns) {
           const normalizedEventTown = normalizeString(event.town);
-          
-          // Intento 1: Buscar el pueblo en la constante TOWNS por nombre normalizado
           const townObj = TOWNS.find(t => normalizeString(t.name) === normalizedEventTown);
           
           if (townObj) {
-              // Si encontramos el pueblo oficial, comparamos si su ID está en la selección
               matchesTown = selectedTownIds.includes(townObj.id);
           } else {
-              // Fallback: Generar ID manual quitando espacios (para casos extremos)
               const generatedId = normalizedEventTown.replace(/\s/g, '');
               matchesTown = selectedTownIds.includes(generatedId);
           }
       }
       
-      // 2. Smart Search Logic
+      // 3. Smart Search Logic
       let matchesSearch = true;
       if (queryTerms.length > 0) {
           const keywords = CATEGORY_KEYWORDS[event.category] || "";
@@ -451,8 +456,7 @@ const App: React.FC = () => {
           matchesSearch = queryTerms.every(term => searchableText.includes(term));
       }
         
-      // 3. Filtro de Categoría (UPDATED LOGIC for Pueblo Destacado)
-      // Si la categoría seleccionada es "Pueblo Destacado", mostramos TODOS los eventos SPONSORED
+      // 4. Filtro de Categoría
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.some(cat => {
           if (cat === EventCategory.PUEBLO_DESTACADO) {
               return event.sponsored;
@@ -460,11 +464,11 @@ const App: React.FC = () => {
           return event.category === cat;
       });
       
-      // 4. Filtro de Fecha (Interval Overlap)
+      // 5. Filtro de Fecha
       let matchesDate = true;
       if (startDate) {
         const filterStart = new Date(startDate);
-        const filterEnd = endDate ? new Date(endDate) : new Date('2030-12-31'); // Far future if only start date
+        const filterEnd = endDate ? new Date(endDate) : new Date('2030-12-31');
         const eventStart = new Date(event.date);
         const eventEnd = event.endDate ? new Date(event.endDate) : eventStart;
 
@@ -473,13 +477,13 @@ const App: React.FC = () => {
 
       return matchesTown && matchesSearch && matchesCategory && matchesDate;
     });
-  }, [events, selectedTownIds, searchQuery, selectedCategories, startDate, endDate]);
+  }, [events, selectedTownIds, searchQuery, selectedCategories, startDate, endDate, filterType]);
 
   const finalEventsList = useMemo(() => {
     // Los eventos en 'filteredEvents' son SOLO contenido (ya que events.ts ya no tiene ADS)
     const contentEvents = filteredEvents;
 
-    // 1. Deduplicación inteligente
+    // 1. Deduplicación inteligente (Pueblos Destacados vs Eventos Normales)
     const townsWithSpecificEvents = new Set(
         contentEvents
             .filter(e => e.category !== EventCategory.PUEBLO_DESTACADO)
@@ -494,43 +498,44 @@ const App: React.FC = () => {
         return true;
     });
 
-    // 2. Separar Destacados y Normales
-    const highlighted = dedupedContent.filter(e => e.sponsored || e.category === EventCategory.PUEBLO_DESTACADO);
-    const standard = dedupedContent.filter(e => !e.sponsored && e.category !== EventCategory.PUEBLO_DESTACADO);
-
-    // 3. SHUFFLE RANDOM para destacados
-    const shuffledHighlighted = [...highlighted].sort(() => Math.random() - 0.5);
+    // 2. SORTING LOGIC
+    let sortedContent = [...dedupedContent];
     
-    // 4. Orden CRONOLÓGICO para el resto
-    const sortedStandard = [...standard].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    const contentToRender = [...shuffledHighlighted, ...sortedStandard];
-
-    // REGLA DE ORO: Si hay filtro de pueblo activo, DEVOLVER CONTENIDO LIMPIO SIN PUBLICIDAD
-    if (selectedTownIds.length > 0) {
-        return contentToRender;
+    if (sortBy === 'popularity') {
+        // Sort by Views (Descending)
+        sortedContent.sort((a, b) => (b.views || 0) - (a.views || 0));
+    } else {
+        // Standard Date Sort with Shuffle for Highlights
+        const highlighted = sortedContent.filter(e => e.sponsored || e.category === EventCategory.PUEBLO_DESTACADO);
+        const standard = sortedContent.filter(e => !e.sponsored && e.category !== EventCategory.PUEBLO_DESTACADO);
+        
+        // Shuffle highlighted to give fair rotation
+        const shuffledHighlighted = [...highlighted].sort(() => Math.random() - 0.5);
+        // Chronological for standard
+        const sortedStandard = [...standard].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        
+        sortedContent = [...shuffledHighlighted, ...sortedStandard];
     }
 
-    // SOLO SI ESTAMOS EN "TODOS": Inyección de Publicidad desde ADS
+    // 3. AD INJECTION (Only if no town filter active)
+    if (selectedTownIds.length > 0 || filterType !== 'all') {
+        return sortedContent;
+    }
+
     if (ADS.length === 0) {
-        return contentToRender;
+        return sortedContent;
     }
 
     const result = [];
     let adIndex = 0;
-    // Barajamos los anuncios para esta renderización
     const shuffledAds = [...ADS].sort(() => Math.random() - 0.5);
 
-    for (let i = 0; i < contentToRender.length; i++) {
-        result.push(contentToRender[i]);
-        
-        // Inyectar publicidad cada 3 elementos de contenido (para que queden en posiciones 4, 8, 12...)
+    for (let i = 0; i < sortedContent.length; i++) {
+        result.push(sortedContent[i]);
         if ((i + 1) % 3 === 0) {
-            // REGLA: Si solo hay 1 anuncio, mostrar solo 1 vez en la primera posición disponible.
             if (shuffledAds.length === 1 && adIndex > 0) {
                 continue;
             }
-            
             if (shuffledAds.length > 0) {
                 const ad = shuffledAds[adIndex % shuffledAds.length];
                 result.push(ad);
@@ -540,7 +545,7 @@ const App: React.FC = () => {
     }
     return result;
 
-  }, [filteredEvents, selectedTownIds]);
+  }, [filteredEvents, selectedTownIds, sortBy, filterType]);
 
   const handleCategoryToggle = (category: EventCategory) => {
     setSelectedCategories(prev => 
@@ -559,6 +564,9 @@ const App: React.FC = () => {
     setSelectedCategories([]);
     setStartDate(null);
     setEndDate(null);
+    setFilterType('all');
+    setSortBy('date');
+    
     // Clean URL
     const url = new URL(window.location.href);
     url.searchParams.delete('town');
@@ -572,10 +580,24 @@ const App: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Find selected event in main list or ADS
+  // UPDATED: Look in the 'events' state to ensure we get the latest interaction status
   const selectedEvent = useMemo(() => {
-      // Buscamos tanto en eventos como en ADS para poder abrir los detalles si fuera necesario (aunque ads suelen ser externos)
-      return events.find(e => e.id === selectedEventId) || ADS.find(e => e.id === selectedEventId);
-  }, [events, selectedEventId]);
+      if (!selectedEventId) return null;
+      
+      // First try to find in the active, reactive events list
+      const eventInState = events.find(e => e.id === selectedEventId);
+      if (eventInState) return eventInState;
+      
+      // Fallback for ads which might not be in 'events' if filtered out, 
+      // but usually ADS are handled separately. If needed, apply metrics to ad.
+      const ad = ADS.find(e => e.id === selectedEventId);
+      if (ad) return getEventMetrics(ad);
+      
+      // Last resort fallback (shouldn't happen if initialized correctly)
+      const staticEvent = ALL_EVENTS.find(e => e.id === selectedEventId);
+      return staticEvent ? getEventMetrics(staticEvent) : null;
+  }, [selectedEventId, events]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 transition-colors duration-300 pb-20">
@@ -604,6 +626,7 @@ const App: React.FC = () => {
             onCategoryFilterClick={(cat) => { setSelectedCategories([cat]); navigateToEvent(null); }}
             showToast={showToast}
             onEngagement={handleEngagementAction}
+            onUpdateEvent={handleInteractionUpdate}
           />
         ) : (
           <>
@@ -625,7 +648,7 @@ const App: React.FC = () => {
 
              <div className="flex flex-col md:flex-row gap-8">
                 <aside className="w-full md:w-1/4 hidden md:block">
-                  <div className="sticky top-24">
+                  <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2 scrollbar-hide hover:scrollbar-default">
                     <FilterSidebar 
                       towns={TOWNS}
                       selectedTowns={selectedTownIds}
@@ -639,6 +662,10 @@ const App: React.FC = () => {
                       onDateChange={handleDateChange}
                       availableCategories={availableCategories}
                       eventCounts={townEventCounts}
+                      sortBy={sortBy}
+                      onSortChange={setSortBy}
+                      filterType={filterType}
+                      onFilterTypeChange={setFilterType}
                     />
                   </div>
                 </aside>
@@ -650,9 +677,10 @@ const App: React.FC = () => {
                       onSelectEvent={navigateToEvent}
                       onResetFilters={handleResetFilters}
                       onCategoryFilterClick={(cat) => setSelectedCategories([cat])}
-                      isAnyFilterActive={selectedTownIds.length > 0 || !!searchQuery || selectedCategories.length > 0 || !!startDate}
+                      isAnyFilterActive={selectedTownIds.length > 0 || !!searchQuery || selectedCategories.length > 0 || !!startDate || filterType !== 'all'}
                       isLoading={isLoading}
                       selectedTownIds={selectedTownIds}
+                      onUpdateEvent={handleInteractionUpdate}
                     />
                   ) : (
                     <EventCalendar events={finalEventsList} onSelectEvent={navigateToEvent} />
@@ -697,6 +725,10 @@ const App: React.FC = () => {
             onDateChange={handleDateChange}
             availableCategories={availableCategories}
             eventCounts={townEventCounts}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            filterType={filterType}
+            onFilterTypeChange={setFilterType}
           />
       )}
 

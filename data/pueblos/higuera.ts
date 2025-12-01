@@ -27,6 +27,20 @@ export const HIGUERA_EVENTS: EventType[] = [
     "sponsored": true,
     "interestInfo": INFO_HIGUERA,
     "itinerary": "**☕ Desayuno:**\nChurros con chocolate en la plaza para coger fuerzas.\n\n**🚶 Actividad Principal:**\nSube a la parte alta del pueblo para visitar el **Lavadero** y disfrutar de las vistas de la dehesa. Si vas con niños, el parque de El Charcón (antes de que empiece el Belén) es ideal.\n\n**🍽️ Almuerzo:**\nDisfruta de la gastronomía local en **Bar La Plaza**, con raciones generosas y buen ambiente.\n\n**✨ Tarde de Belén:**\nA las 17:00 abre el **Belén Viviente en El Charcón**. Recórrelo con calma, disfrutando de la iluminación y las escenas. Al terminar, entra en calor con un chocolate caliente.\n\n**🛏️ Hospedaje:**\nBusca alojamiento en **Casa Rural La Sierra** o regresa a Aracena (a solo 15 min) si buscas más opciones hoteleras."
+  },
+  {
+    "id": "suena-navidad-higuera",
+    "title": "Suena la Navidad",
+    "description": "La Navidad \"Suena\" en Higuera de la Sierra con Música y Tradición\nHiguera de la Sierra se prepara para recibir la Navidad con un evento cargado de espíritu festivo y tradición: \"Suena la Navidad\". El próximo sábado, 6 de diciembre, la localidad onubense se vestirá de gala para ofrecer una jornada musical que culminará con el esperado concierto del Coro Aguabuena.\n\n🎶 Un Pasacalle para Abrir la Celebración\nLa tarde festiva dará comienzo a las 20:00h con un vibrante Pasacalle Navideño protagonizado por la Banda Municipal de Música. El recorrido se iniciará en el Parque del Charcón y llenará de melodías navideñas las principales vías del municipio, incluyendo:\n\nParque del Charcón\n\nArias Montano\n\nConcejo\n\nPasaderas\n\nMaestro Daniel Arteaga\n\nTovar\n\nDomingo Fal Conde\n\nLa comitiva musical finalizará su recorrido en el corazón del pueblo, la Plaza de la Constitución.\n\n🎤 Broche de Oro con el Coro Aguabuena\nTras el animado pasacalle, la celebración continuará a las 20:45h en la Plaza de la Constitución con la actuación estelar del Coro Aguabuena. Este concierto promete ser el momento culminante, con un repertorio que evocará el sentir más profundo de la Navidad andaluza.\n\n🎁 Dulces y Hermandad para el Final\nEl evento no solo será un festín para el oído, sino también para el paladar. Al finalizar las actuaciones, los miembros de la Asociación Cultural y Musical José Luis Romero colaborarán instalando una barra con dulces, chupitos y más alimentos para todos los asistentes. Una oportunidad perfecta para compartir un momento de hermandad y degustar la gastronomía local mientras se disfruta del canto del Coro Aguabuena.",
+    "town": "Higuera de la Sierra",
+    "date": "2025-12-06",
+    "category": EventCategory.FIESTA,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-00-2.png",
+    "galleryUrls": [
+        "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/590780592_1354921316679550_5012067734341666121_n.jpg",
+        "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/590710454_1354921323346216_8467311358159351957_n.jpg"
+    ],
+    "interestInfo": INFO_HIGUERA,
+    "itinerary": "**✨ Tarde (17:00):**\nVisita el **Belén Viviente** en El Charcón antes de que empiece la música.\n\n**🎺 Noche (20:00):**\nSigue el **Pasacalle Navideño** de la Banda Municipal desde el Parque del Charcón hasta la Plaza.\n\n**💃 Concierto (20:45):**\nDisfruta de la actuación del **Coro Aguabuena** en la Plaza de la Constitución y toma unos dulces en la barra solidaria."
   }
 ];
-    

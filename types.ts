@@ -24,6 +24,13 @@ export interface EventType {
   externalUrl?: string;
   itinerary?: string; // Plan de día pre-generado para evitar llamadas a la API
   galleryUrls?: string[]; // NUEVO: Galería de imágenes adicionales
+  
+  // Social Metrics (Optional because they are injected at runtime)
+  views?: number;
+  likes?: number;
+  attendees?: number;
+  isFavorite?: boolean; // User state
+  isAttending?: boolean; // User state
 }
 
 // Types for change instructions

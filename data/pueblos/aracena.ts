@@ -43,5 +43,19 @@ export const ARACENA_EVENTS: EventType[] = [
       "https://solonet.es/wp-content/uploads/2025/11/FERIA-QUESO-ARACENA-2.jpg",
       "https://solonet.es/wp-content/uploads/2025/11/FERIA-QUESO-ARACENA-3.jpg"
     ]
+  },
+  {
+    "id": "zambomba-flamenca-aracena-barcelo",
+    "title": "Zambomba Flamenca",
+    "description": "¡La Navidad Llega a Aracena Bajo las Estrellas! Zambomba Flamenca Inolvidable en el Hotel Barceló Aracena 🌟\nLa magia de la Navidad se enciende en el corazón de la Sierra de Huelva con un evento que promete ser el broche de oro de las celebraciones prenavideñas: la Zambomba Flamenca Bajo las Estrellas en el prestigioso Hotel Barceló Aracena.\n\nEl próximo martes, 12 de diciembre, la localidad de Aracena se vestirá de fiesta para acoger esta cita imprescindible que fusiona el arte flamenco más puro con el espíritu entrañable de la Navidad andaluza.\n\n📅 Programa del Evento: Una Tarde-Noche para no Perderse\nLa velada arrancará a las 17:30 horas con la apertura de puertas y música ambiente para ir creando el clima festivo. El programa detallado es el siguiente:\n\n17:30 H: Apertura de Puertas y Música Ambiente.\n\n19:00 H: Gran Zambomba Flamenca \"A Belén Pastores\" bajo la dirección de Pedro Vázquez. Un espectáculo vibrante con los cantes y villancicos flamencos más emotivos.\n\nDesde las 21:00 H: Continuamos la fiesta con la música del DJ Raúl James para bailar hasta el final de la noche.\n\n🥂 Servicios Exclusivos para los Asistentes\nPara garantizar una experiencia completa, el Hotel Barceló Aracena ha dispuesto una serie de servicios y atenciones:\n\nBarra Abierta durante todo el evento.\n\nCarta de Comida disponible a partir de las 21:00 horas.\n\nChocolate con Churros y Castañas Asadas para disfrutar del sabor más tradicional durante la Zambomba.\n\nDulces Típicos Navideños que endulzarán su velada.\n\n🎟️ Entradas: Asegura tu Plaza con Antelación\nNo dejes la compra para última hora y aprovecha el precio especial de la venta anticipada.",
+    "town": "Aracena",
+    "date": "2025-12-12",
+    "category": EventCategory.FIESTA,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-00-5.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/591833692_1341257704462169_688491569445910859_n.jpg"
+    ],
+    "interestInfo": INFO_ARACENA,
+    "itinerary": "**☕ Tardeo:**\nLlega al **Hotel Barceló Aracena** a partir de las 17:30 para disfrutar de la música ambiente y coger buen sitio.\n\n**💃 19:00 - Zambomba:**\nDisfruta del espectáculo \"A Belén Pastores\" con chocolate, churros y castañas.\n\n**🍽️ Cena y Fiesta:**\nA partir de las 21:00, aprovecha la carta de comida del hotel y sigue bailando con el DJ Raúl James.\n\n**🛏️ Alojamiento:**\nSi puedes, alójate en el mismo **Hotel Barceló** para una experiencia completa y sin preocupaciones de transporte."
   }
 ];

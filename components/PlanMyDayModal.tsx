@@ -153,8 +153,8 @@ const PlanMyDayModal: React.FC<PlanMyDayModalProps> = ({ event, onClose }) => {
       return (
         <div className="p-6 text-slate-700 dark:text-slate-300 leading-relaxed overflow-y-auto">
           <AIFormattedText text={plan} />
-          <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-6">
-              *Este plan es una sugerencia personalizada. ¡Siéntete libre de adaptarlo a tu gusto!
+          <p className="text-xs text-slate-500 dark:text-slate-400 italic mt-6 border-t border-slate-200 dark:border-slate-700 pt-4">
+              *Este itinerario es una sugerencia generada por Inteligencia Artificial. Los datos pueden no ser precisos. ¡Siéntete libre de adaptarlo a tu gusto!
           </p>
         </div>
       );

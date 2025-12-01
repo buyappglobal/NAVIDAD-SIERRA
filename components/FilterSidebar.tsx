@@ -1,3 +1,4 @@
+
 import React from 'react';
 import TownFilter from './TownFilter';
 import SearchBar from './SearchBar';
@@ -5,6 +6,7 @@ import CategoryFilter from './CategoryFilter';
 import DateRangeFilter from './DateRangeFilter';
 import { EventCategory } from '../types';
 import CollapsibleFilterSection from './CollapsibleFilterSection';
+import { ICONS } from '../constants';
 
 interface Town {
   id: string;
@@ -13,7 +15,7 @@ interface Town {
 
 interface FilterSidebarProps {
   towns: Town[];
-  selectedTowns: string[]; // Changed to array
+  selectedTowns: string[];
   onSelectTown: (townId: string) => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
@@ -25,6 +27,12 @@ interface FilterSidebarProps {
   onFilterAndClose?: () => void;
   availableCategories?: EventCategory[];
   eventCounts?: Record<string, number>;
+  
+  // New props for sorting and personal filters
+  sortBy: 'date' | 'popularity';
+  onSortChange: (sort: 'date' | 'popularity') => void;
+  filterType: 'all' | 'favorites' | 'attending';
+  onFilterTypeChange: (type: 'all' | 'favorites' | 'attending') => void;
 }
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ 
@@ -40,31 +48,88 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     onDateChange,
     onFilterAndClose,
     availableCategories,
-    eventCounts
+    eventCounts,
+    sortBy,
+    onSortChange,
+    filterType,
+    onFilterTypeChange
 }) => {
 
-  const handleSelectTownAndClose = (townId: string) => {
-    onSelectTown(townId);
-    // Don't close immediately on town selection in multi-select mode to allow picking more
-    // But if it's the desktop sidebar, onFilterAndClose is undefined anyway.
-    // If it's modal, maybe we want to keep it open? 
-    // Let's keep it open for multi-select experience.
-    // onFilterAndClose?.(); 
-  };
-
-  const handleCategoryToggleAndClose = (category: EventCategory) => {
-    onCategoryToggle(category);
-    // onFilterAndClose?.(); // Keep open for multi select feel
-  };
-
-  const townSelectHandler = onSelectTown; // Always use direct handler, let user close modal manually with button
+  const townSelectHandler = onSelectTown; 
   const categoryToggleHandler = onCategoryToggle;
 
   return (
     <div className="space-y-4 md:space-y-8">
+      
+      {/* Mis Listas Section */}
+      <CollapsibleFilterSection title="Mis Listas" defaultOpen={true}>
+        <div className="flex gap-2">
+            <button
+                onClick={() => onFilterTypeChange('all')}
+                className={`flex-1 py-2 px-1 text-xs font-bold rounded-lg border transition-all flex flex-col items-center gap-1 ${
+                    filterType === 'all' 
+                    ? 'bg-slate-800 text-white border-slate-800 dark:bg-white dark:text-slate-900' 
+                    : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:bg-slate-50'
+                }`}
+            >
+                {ICONS.list}
+                Todos
+            </button>
+            <button
+                onClick={() => onFilterTypeChange('favorites')}
+                className={`flex-1 py-2 px-1 text-xs font-bold rounded-lg border transition-all flex flex-col items-center gap-1 ${
+                    filterType === 'favorites' 
+                    ? 'bg-red-500 text-white border-red-500 shadow-md' 
+                    : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:text-red-500'
+                }`}
+            >
+                {ICONS.heartFilled}
+                Favoritos
+            </button>
+            <button
+                onClick={() => onFilterTypeChange('attending')}
+                className={`flex-1 py-2 px-1 text-xs font-bold rounded-lg border transition-all flex flex-col items-center gap-1 ${
+                    filterType === 'attending' 
+                    ? 'bg-green-600 text-white border-green-600 shadow-md' 
+                    : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:text-green-600'
+                }`}
+            >
+                {ICONS.checkCircle}
+                Asistiré
+            </button>
+        </div>
+      </CollapsibleFilterSection>
+
+      <CollapsibleFilterSection title="Ordenar por">
+         <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+            <button
+                onClick={() => onSortChange('date')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-bold transition-colors ${
+                    sortBy === 'date' 
+                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' 
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                }`}
+            >
+                Fecha
+            </button>
+            <button
+                onClick={() => onSortChange('popularity')}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
+                    sortBy === 'popularity' 
+                    ? 'bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm' 
+                    : 'text-slate-500 dark:text-slate-400 hover:text-amber-600'
+                }`}
+            >
+                {ICONS.chart}
+                Popularidad
+            </button>
+         </div>
+      </CollapsibleFilterSection>
+
       <CollapsibleFilterSection title="Buscar Evento">
         <SearchBar query={searchQuery} onQueryChange={onSearchQueryChange} />
       </CollapsibleFilterSection>
+      
       <CollapsibleFilterSection title="Filtrar por Fecha">
         <DateRangeFilter 
           startDate={startDate}
@@ -72,6 +137,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           onDateChange={onDateChange}
         />
       </CollapsibleFilterSection>
+      
       <CollapsibleFilterSection title="Categorías" defaultOpen={true}>
         <CategoryFilter 
           selectedCategories={selectedCategories}
@@ -79,6 +145,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           availableCategories={availableCategories}
         />
       </CollapsibleFilterSection>
+      
       <CollapsibleFilterSection title="Pueblos" defaultOpen={true}>
         <TownFilter 
             towns={towns} 

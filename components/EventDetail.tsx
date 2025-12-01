@@ -7,6 +7,7 @@ import PlanMyDayModal from './PlanMyDayModal';
 import ResourceGalleryModal from './ResourceGalleryModal';
 import WeatherModal from './WeatherModal';
 import { townCoordinates } from '../data/townCoordinates';
+import { incrementViewEvent, toggleLikeEvent, toggleAttendEvent } from '../services/interactionService';
 
 interface EventDetailProps {
   event: EventType;
@@ -16,6 +17,7 @@ interface EventDetailProps {
   onCategoryFilterClick: (category: EventCategory) => void;
   showToast: (message: string, icon: React.ReactNode) => void;
   onEngagement: () => void;
+  onUpdateEvent: (updatedEvent: EventType) => void; // New prop for syncing interaction
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
@@ -68,14 +70,20 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement }) => {
-  const { title, description, town, date, category, imageUrl, interestInfo, galleryUrls } = event;
+const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement, onUpdateEvent }) => {
+  const { title, description, town, date, category, imageUrl, interestInfo, galleryUrls, views, likes, attendees, isFavorite, isAttending, id } = event;
   const colors = categoryColors[category] || categoryColors[EventCategory.OTRO];
   const [isReading, setIsReading] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [showWeatherModal, setShowWeatherModal] = useState(false);
+  
+  // Local interaction state to update UI immediately
+  const [localLikes, setLocalLikes] = useState(likes || 0);
+  const [localIsFavorite, setLocalIsFavorite] = useState(isFavorite || false);
+  const [localAttendees, setLocalAttendees] = useState(attendees || 0);
+  const [localIsAttending, setLocalIsAttending] = useState(isAttending || false);
 
   const isPuebloDestacado = category === EventCategory.PUEBLO_DESTACADO;
   const hasCoordinates = !!townCoordinates[town];
@@ -103,11 +111,14 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Increment view count when details open
+    incrementViewEvent(id);
+    
     return () => {
       window.speechSynthesis.cancel();
       setIsReading(false);
     };
-  }, []);
+  }, [id]);
 
   const handleToggleSpeech = () => {
     if (isReading) {
@@ -130,6 +141,36 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
       return;
     }
     setShowPlanModal(true);
+  };
+  
+  const handleLike = () => {
+      const newStatus = toggleLikeEvent(id);
+      setLocalIsFavorite(newStatus);
+      setLocalLikes(prev => prev + (newStatus ? 1 : -1));
+      
+      // Update global state immediately
+      onUpdateEvent({
+          ...event,
+          isFavorite: newStatus,
+          likes: (likes || 0) + (newStatus ? 1 : -1)
+      });
+
+      if (newStatus) showToast("Añadido a tus favoritos", ICONS.heartFilled);
+  };
+
+  const handleAttend = () => {
+      const newStatus = toggleAttendEvent(id);
+      setLocalIsAttending(newStatus);
+      setLocalAttendees(prev => prev + (newStatus ? 1 : -1));
+      
+      // Update global state immediately
+      onUpdateEvent({
+          ...event,
+          isAttending: newStatus,
+          attendees: (attendees || 0) + (newStatus ? 1 : -1)
+      });
+
+      if (newStatus) showToast("¡Genial! Nos vemos allí", ICONS.checkCircle);
   };
 
   // LOGIC: Determine relevant date for Weather Forecast
@@ -194,23 +235,57 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
         </div>
 
         <article className="bg-white dark:bg-slate-800 rounded-lg shadow-lg overflow-hidden border border-slate-200 dark:border-slate-700/50">
-          <div className="w-full h-48 sm:h-64 bg-slate-100 dark:bg-black/20">
+          <div className="w-full h-48 sm:h-64 bg-slate-100 dark:bg-black/20 relative">
               <img 
                 src={imageUrl || IMAGE_PLACEHOLDER} 
                 alt={`Imagen de ${title}`} 
                 className="w-full h-full object-cover" 
                 onError={handleImageError}
               />
+              <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-white text-sm font-bold flex items-center gap-2 shadow-lg">
+                {ICONS.eye} {views ? views + 1 : 1} Vistas
+              </div>
           </div>
           
           <div className={`p-6 sm:p-8 border-t-4 ${colors.border}`}>
-            <button
-                onClick={() => onCategoryFilterClick(category)}
-                className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-4 ${colors.bg} ${colors.text} transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:ring-amber-400`}
-            >
-              {category}
-            </button>
-            <h1 className="text-3xl sm:text-4xl font-display text-orange-800 dark:text-amber-300 mb-4">{title}</h1>
+            
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                    <button
+                        onClick={() => onCategoryFilterClick(category)}
+                        className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${colors.bg} ${colors.text} transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-800 focus:ring-amber-400`}
+                    >
+                    {category}
+                    </button>
+                    <h1 className="text-3xl sm:text-4xl font-display text-orange-800 dark:text-amber-300">{title}</h1>
+                </div>
+                
+                {/* Botones de Acción Social */}
+                <div className="flex gap-2">
+                    <button 
+                        onClick={handleLike}
+                        className={`flex flex-col items-center justify-center p-2 rounded-lg min-w-[70px] border transition-all ${
+                            localIsFavorite 
+                            ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-500' 
+                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100'
+                        }`}
+                    >
+                        {localIsFavorite ? ICONS.heartFilled : ICONS.heart}
+                        <span className="text-xs font-bold mt-1">{localLikes}</span>
+                    </button>
+                    <button 
+                        onClick={handleAttend}
+                        className={`flex flex-col items-center justify-center p-2 rounded-lg min-w-[70px] border transition-all ${
+                            localIsAttending
+                            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-600' 
+                            : 'bg-slate-50 dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:bg-slate-100'
+                        }`}
+                    >
+                        {localIsAttending ? ICONS.checkCircle : ICONS.userGroup}
+                        <span className="text-xs font-bold mt-1">{localIsAttending ? 'Asistiré' : 'Asistiré?'}</span>
+                    </button>
+                </div>
+            </div>
             
             <div className="flex flex-col sm:flex-row sm:items-center flex-wrap gap-y-4 gap-x-8 text-slate-700 dark:text-slate-300 mb-6 border-y border-slate-200 dark:border-slate-700/50 py-4">
               <div className="flex items-center gap-3">

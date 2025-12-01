@@ -36,5 +36,27 @@ export const ALMONASTER_EVENTS: EventType[] = [
     "category": EventCategory.OTRO,
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-1-Rafael-Caballero-Vazquez.png",
     "interestInfo": INFO_ALMONASTER
+  },
+  {
+    "id": "monologo-guelmi-almonaster",
+    "title": "Monologo \"Guelmi\"",
+    "description": "¡La risa llega a la Sierra de Huelva! El monologuista GUELMI aterriza en Almonaster la Real con su humor sin filtros\nEl Excmo. Ayuntamiento de Almonaster la Real, en el corazón de la Sierra de Huelva, tiene el placer de anunciar uno de los eventos culturales más esperados de la agenda de fin de año. El reconocido cómico andaluz GUELMI ofrecerá un espectáculo de monólogo que promete ser una inyección de risas y buen humor.\n\nLa cita ineludible para los amantes de la comedia tendrá lugar el próximo 7 de Diciembre a las 19:00 horas.\n\nUn Cómico Genuino: De la Aceituna al Escenario\nQuienes todavía no lo conozcan, descubrirán a Miguel Navarro López, universalmente conocido por su nombre artístico: GUELMI. Este monologuista, que se ha ganado el apodo de \"El Aceitunero Mongologuista\", trae consigo un estilo de comedia genuino, cercano y profundamente arraigado en la cultura andaluza y la vida cotidiana.\n\nGuelmi es un fenómeno que ha pasado de narrar sus días en el campo a triunfar en los escenarios de toda España. Su humor se basa en anécdotas reales, traumas, miedos e inseguridades, ofreciendo una especie de \"sesión de análisis\" personal donde el público se convierte en cómplice fundamental. Prepárense para disfrutar de la ironía, el ingenio y el acento de Jaén que, con una \"poca vergüenza\" magistral, consigue que el público no pare de reír a carcajadas.\n\nDetalles del Evento\nGracias a la gestión del consistorio local, los vecinos de Almonaster la Real y la comarca podrán disfrutar de este gran talento en un marco ideal.",
+    "town": "Almonaster la Real",
+    "date": "2025-12-07",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-00-1.png",
+    "interestInfo": INFO_ALMONASTER,
+    "itinerary": "**🕌 Mañana de Patrimonio:**\nSube a la **Mezquita de Almonaster**, única en España, y disfruta de las vistas desde el castillo. Pasea por el entorno de la Plaza de Toros integrada.\n\n**🍽️ Mediodía Serrano:**\nRepón fuerzas con la gastronomía local. Platos de setas o cerdo ibérico en **El Rincón de Curro** o **Casa García**.\n\n**☕ Tarde de Café:**\nDisfruta de un café con dulces locales en la Plaza de la Constitución mientras esperas la hora del espectáculo.\n\n**🎭 19:00 - La Hora de las Risas:**\nAsiste al **Monólogo de Guelmi**. Prepárate para una buena dosis de humor andaluz y anécdotas del campo.\n\n**🌙 Noche:**\nTras el espectáculo, termina el día con unas tapas ligeras en los bares del centro."
+  },
+  {
+    "id": "encendido-alumbrado-almonaster",
+    "title": "Encendido del Alumbrado",
+    "description": "🎄 ¡La Navidad Llega a Almonaster la Real! Iluminación y Música en la Plaza de la Constitución 🎵\nEl Excmo. Ayuntamiento de Almonaster la Real tiene el placer de invitar a todos los vecinos y visitantes a dar la bienvenida oficial a la temporada navideña con un evento que promete llenar de luz y música la Plaza de la Constitución.\n\nEl próximo 5 de Diciembre, la magia de la Navidad se encenderá en nuestra localidad. A partir de las 19:00h, tendrá lugar el tradicional acto de Encendido del alumbrado navideño, marcando el inicio de unas fiestas llenas de ilusión.\n\nUn Evento con Sabor Local\nPara que la velada sea aún más especial, el encendido de las luces estará amenizado por la actuación estelar de la BANDA DEL CERRO DE ANDÉVALO. Su música pondrá la banda sonora perfecta a este momento tan esperado, creando un ambiente festivo e inmejorable para comenzar a disfrutar del espíritu navideño.",
+    "town": "Almonaster la Real",
+    "date": "2025-12-05",
+    "category": EventCategory.FIESTA,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-00.png",
+    "interestInfo": INFO_ALMONASTER,
+    "itinerary": "**☕ Tardeo:**\nLlega temprano a la Plaza de la Constitución para coger sitio y disfrutar del ambiente previo.\n\n**💡 19:00 - El Encendido:**\nVive el momento mágico del encendido de luces acompañado por la música de la **Banda del Cerro de Andévalo**.\n\n**🍻 Noche:**\nCelebra el inicio de la Navidad tomando algo en los bares de la plaza con familia y amigos."
   }
 ];

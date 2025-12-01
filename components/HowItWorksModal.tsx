@@ -33,11 +33,23 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
           </div>
 
           <div className="flex gap-4">
+            <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center text-red-500 dark:text-red-400 flex-shrink-0">
+              {ICONS.heart}
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">2. Interactúa y Vota</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Dale a <strong>Me Gusta</strong> ❤️ para guardar tus favoritos y marca <strong>Asistiré</strong> ✅ en los eventos a los que irás. Tus votos actualizan el Ranking de popularidad en tiempo real.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
             <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
               {ICONS.magic}
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">2. Planifica tu día con IA</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">3. Planifica tu día con IA</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 Dentro de cada evento, pulsa el botón "Planificar mi día" para obtener un itinerario personalizado con sugerencias de dónde comer y qué visitar.
               </p>
@@ -49,7 +61,7 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
               {ICONS.map}
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">3. Explora el Mapa</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">4. Explora el Mapa</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 Usa la vista de mapa para ver qué eventos te pillan cerca y organizar tu ruta por la Sierra.
               </p>
