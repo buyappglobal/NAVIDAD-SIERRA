@@ -1,3 +1,4 @@
+
 import React from 'react';
 import FilterSidebar from './FilterSidebar';
 import { ICONS } from '../constants';
@@ -23,6 +24,10 @@ interface FilterSidebarModalProps {
     onDateChange: (start: string | null, end: string | null) => void;
     availableCategories?: EventCategory[];
     eventCounts?: Record<string, number>;
+    sortBy: 'date' | 'popularity';
+    onSortChange: (sort: 'date' | 'popularity') => void;
+    filterType: 'all' | 'favorites' | 'attending';
+    onFilterTypeChange: (type: 'all' | 'favorites' | 'attending') => void;
 }
 
 const FilterSidebarModal: React.FC<FilterSidebarModalProps> = (props) => {

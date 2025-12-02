@@ -2,7 +2,7 @@
 import React from 'react';
 import { EventType, EventCategory } from '../types';
 import EventCard from './EventCard';
-import { TOWNS, ICONS } from '../constants';
+import { TOWNS, ICONS, ENABLE_AI_SEARCH } from '../constants';
 
 interface EventListProps {
   events: EventType[];
@@ -123,6 +123,22 @@ const EventList: React.FC<EventListProps> = ({
       <>
         {selectedTownIds.length > 0 && renderTownHeader()}
         {isAnyFilterActive && renderFilterResetBanner()}
+        
+        {/* Suggestion for AI Search when no results */}
+        {ENABLE_AI_SEARCH && (
+            <div className="mb-6 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 p-4 rounded-lg flex flex-col sm:flex-row gap-4 items-center text-center sm:text-left animate-fade-in">
+                <div className="p-3 bg-purple-100 dark:bg-purple-800 rounded-full text-purple-600 dark:text-purple-300">
+                    {ICONS.sparkles}
+                </div>
+                <div className="flex-1">
+                    <h4 className="font-bold text-purple-800 dark:text-purple-300">¿No encuentras lo que buscas?</h4>
+                    <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">
+                        Prueba nuestro <strong>Buscador IA</strong> pulsando el botón mágico en la barra de búsqueda. Escribe frases como "planes con niños", "comida barata" o "música en la calle".
+                    </p>
+                </div>
+            </div>
+        )}
+
         <div className="text-center py-16 px-4 bg-slate-100 dark:bg-slate-800/50 rounded-lg animate-fade-in border border-slate-200 dark:border-slate-800">
           <h3 className="text-2xl font-bold text-orange-800 dark:text-slate-400 font-display">No hay eventos que mostrar</h3>
           <p className="text-slate-500 dark:text-slate-500 mt-2">Prueba a seleccionar otro pueblo o a borrar los filtros.</p>

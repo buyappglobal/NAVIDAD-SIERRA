@@ -25,7 +25,6 @@ import Toast from './components/Toast';
 import InfoAppModal from './components/InfoAppModal';
 import FaqModal from './components/FaqModal';
 import HowItWorksModal from './components/HowItWorksModal';
-import EventCounter from './components/EventCounter';
 import { analyzeSearchIntent } from './services/aiSearchService';
 import { getEventMetrics } from './services/interactionService';
 import { exportEventsToCSV } from './services/googleSheetsService';
@@ -422,7 +421,7 @@ const App: React.FC = () => {
                                  <input
                                     type="text" 
                                     className="w-full p-3 pl-10 pr-20 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400 disabled:opacity-50"
-                                    placeholder={isAiSearching ? "Analizando..." : "Puente de diciembre, Cabalgata..."}
+                                    placeholder={isAiSearching ? "Analizando..." : "Ej: Planes con niños el sábado, conciertos gratis..."}
                                     value={searchQuery}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleAiSearch()}
@@ -456,22 +455,6 @@ const App: React.FC = () => {
                   </div>
 
                 <Hero />
-
-                {/* Contador de Eventos */}
-                <div className="mb-4">
-                    <EventCounter 
-                        total={events.filter(e => !e.id.startsWith('ad-')).length} 
-                        onClick={() => {
-                            setSelectedTowns([]);
-                            setSelectedCategories([]);
-                            setSearchQuery('');
-                            setStartDate(null);
-                            setEndDate(null);
-                            setFilterType('all');
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }}
-                    />
-                </div>
 
                 {view === 'calendar' ? (
                     <EventCalendar events={filteredEvents} onSelectEvent={setSelectedEventId} />
@@ -591,6 +574,15 @@ const App: React.FC = () => {
         
         {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
         
+        {ENABLE_AI_SEARCH && (
+            <button 
+                onClick={() => setShowAiAssistant(true)}
+                className="fixed bottom-24 right-4 z-40 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-colors animate-bounce-slow"
+                title="Asistente de Viaje IA"
+            >
+                {ICONS.sparkles}
+            </button>
+        )}
       </div>
     </div>
   );

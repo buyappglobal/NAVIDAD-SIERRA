@@ -57,5 +57,16 @@ export const ARACENA_EVENTS: EventType[] = [
     ],
     "interestInfo": INFO_ARACENA,
     "itinerary": "**☕ Tardeo:**\nLlega al **Hotel Barceló Aracena** a partir de las 17:30 para disfrutar de la música ambiente y coger buen sitio.\n\n**💃 19:00 - Zambomba:**\nDisfruta del espectáculo \"A Belén Pastores\" con chocolate, churros y castañas.\n\n**🍽️ Cena y Fiesta:**\nA partir de las 21:00, aprovecha la carta de comida del hotel y sigue bailando con el DJ Raúl James.\n\n**🛏️ Alojamiento:**\nSi puedes, alójate en el mismo **Hotel Barceló** para una experiencia completa y sin preocupaciones de transporte."
+  },
+  {
+    "id": "gala-benefica-afa-aracena-2025",
+    "title": "III Gala Benéfica AFA Sierra",
+    "description": "Un año más, la Asociación de Familiares de Personas Afectadas por el Alzheimer y otras Demencias Sierra de Aracena (AFA) hace un llamamiento a la solidaridad onubense para celebrar su tradicional cita anual: la III Gala Benéfica.\n\nLa memoria y el apoyo a las familias tienen un encuentro ineludible el próximo 19 de Diciembre a las 19:30 horas. Este evento, que cuenta con el respaldo del Ayuntamiento de Aracena y la colaboración de diversas entidades, se presenta como la ocasión perfecta para disfrutar de una velada emotiva y, al mismo tiempo, contribuir a una causa fundamental en la comarca.\n\nUna Causa de Vital Importancia\nEl objetivo principal de esta Gala es recaudar fondos destinados a mantener y potenciar los servicios esenciales que AFA Sierra de Aracena ofrece a los afectados por el Alzheimer y otras demencias, así como a sus familiares y cuidadores. Gracias a la participación ciudadana, la asociación puede seguir ofreciendo terapias de estimulación cognitiva, talleres de ayuda mutua y apoyo profesional que mejoran significativamente la calidad de vida de decenas de familias en la Sierra de Huelva.\n\nCómo Participar y Colaborar\nAsistir y colaborar con esta noble causa es muy sencillo.\n\nFecha y Hora: 19 de Diciembre, a las 19:30 horas.\n\nEntradas: El precio simbólico de las entradas es de 5€.\n\nPuntos de Venta:\n\nOnline: A través de la plataforma GIGLON.com.\n\nPresencial: En la taquilla del recinto, con apertura dos horas antes del comienzo del evento.\n\nFila Cero: Si no puedes asistir, puedes ayudar\n\nPara aquellos que deseen colaborar pero no puedan acudir al evento, se ha habilitado una Fila Cero. Las donaciones se pueden realizar directamente a la cuenta bancaria de la asociación: ES54 0182 6789 4202 0152 3627",
+    "town": "Aracena",
+    "date": "2025-12-19",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-00-6.png",
+    "interestInfo": INFO_ARACENA,
+    "itinerary": "**🏛️ Tarde Cultural:** Pasea por el centro de Aracena antes de la gala. Visita el Museo del Jamón.\n**🎭 19:30 - Gala Benéfica:** Asiste al Teatro Sierra de Aracena para disfrutar de la gala y colaborar con AFA.\n**🍽️ Cena:** Al salir, tapea en los bares cercanos a la Plaza del Marqués de Aracena.",
   }
 ];

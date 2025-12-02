@@ -5,16 +5,19 @@ export const INFO_ALMONASTER = "🏞️ Lugares Emblemáticos que Debes Visitar 
 
 export const ALMONASTER_EVENTS: EventType[] = [
   {
-    "id": "pueblo-almonaster",
-    "title": "Almonaster la Real",
-    "description": "Descubre Almonaster la Real, un pueblo con un encanto único, coronado por una mezquita milenaria y considerado uno de los más bonitos de España. Piérdete en sus calles empedradas y respira la historia que emana de cada rincón.",
+    "id": "navidad-almonaster-2025",
+    "title": "Navidad en Almonaster la Real",
+    "description": "Vive la Magia de la Navidad en Almonaster la Real: Guía de Actividades 2024-2025\nLa Sierra se viste de gala: Tradición, música y solidaridad en un entorno único.\n\nAlmonaster la Real se prepara para recibir una de las épocas más entrañables del año. Este rincón de la Sierra, conocido por su patrimonio y su belleza natural, ha desplegado una programación navideña que promete llenar de luz, música y alegría tanto el núcleo principal como sus encantadoras aldeas. Desde el encendido del alumbrado hasta la llegada de Sus Majestades de Oriente, aquí te contamos todo lo que no te puedes perder.\n\n✨ El Inicio de la Navidad: Luz y Solidaridad\nEl pistoletazo de salida tendrá lugar el 5 de diciembre en la emblemática Plaza de la Constitución. A las 19:00h, el pueblo se iluminará con el encendido oficial, acompañado por las notas de la Banda del Cerro de Andévalo, creando esa primera estampa mágica que todos esperamos.\n\nEl Puente de Diciembre (días 6, 7 y 8) será una oportunidad perfecta para pasear y compartir. La Plaza de la Constitución y la Calle Real acogerán el Mercadillo Solidario y la Feria del Libro Solidario (AECC), ideal para encontrar regalos con corazón. Además, el humor tendrá su espacio el día 7 con el monólogo de \"GUELMI\" en el Blas Infante.\n\n🎶 La Ruta de las Zambombas: Navidad en las Aldeas\nUno de los puntos fuertes de este año es cómo la fiesta se extiende por todo el término municipal. Almonaster apuesta por la tradición de las Zambombas, llevando el compás navideño a cada rincón:\n\nMina Concepción: 8 de diciembre con \"Nazaret Cala\".\n\nEnsanche Calle Real: 20 de diciembre con \"Jerez por Navidad\".\n\nCueva de la Mora: 21 de diciembre con \"Consentío\".\n\nAldea Veredas: 26 de diciembre con \"Nazaret Cala\".\n\nEl Patrás y Calabazares: 27 de diciembre, con aires de Jerez.\n\n🎅 Diversión para los más Pequeños\nLa Navidad es, ante todo, la ilusión de los niños. El programa incluye momentos mágicos pensados para ellos:\n\nEl Cartero Real visitará el Blas Infante el 7 de diciembre para recoger los deseos más tempranos.\n\nEl Circo llegará el 14 de diciembre y el 3 de enero con espectáculos en el Pabellón Deportivo.\n\nY, por supuesto, el broche de oro lo pondrá la Gran Cabalgata de Reyes Magos el 5 de enero, llenando las calles de caramelos e ilusión.\n\n🥂 Los Días Grandes: Nochebuena y Nochevieja\nPara los días clave, Almonaster propone vivir la fiesta en la calle. Tanto el 24 como el 31 de diciembre, las mañanas comenzarán con Pasacalles a las 12:00h para calentar motores.\n\nLas tardes se trasladarán a la Carpa Municipal a partir de las 16:30h. El día 24 con la \"Tarde Joven\" y el grupo \"De Norte a Sur\", y el día 31 con las famosas Preuvas y Cotillón, amenizados por DJ Raster para despedir el año con el mejor ritmo.",
     "town": "Almonaster la Real",
-    "date": "2025-12-01",
-    "category": EventCategory.PUEBLO_DESTACADO,
-    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/almonaster.jpg",
-    "sponsored": true,
+    "date": "2025-12-05",
+    "endDate": "2026-01-05",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-6.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-11-27-at-11.27.26.jpeg"
+    ],
     "interestInfo": INFO_ALMONASTER,
-    "itinerary": "**☕ Desayuno:**\nToma un café y dulces típicos en la plaza del pueblo.\n\n**🚶 Actividad Principal:**\nSube a la Mezquita y el Castillo. Pasea por el recinto amurallado y disfruta de las vistas. Después, baja y recorre la iglesia gótica de San Martín.\n\n**🍽️ Almuerzo:**\nPrueba la gastronomía local en alguno de los mesones del pueblo.\n\n**🌙 Tarde:**\nDa un paseo hasta el Puente de las Tres Fuentes o las antiguas tenerías."
+    "itinerary": "**✨ 5 Dic (Inauguración):** 19:00h Encendido del Alumbrado en Plaza de la Constitución.\n**🎁 Puente (6-8 Dic):** Visita el Mercadillo Solidario y la Feria del Libro.\n**🎶 Navidad en Aldeas:** Disfruta de las Zambombas programadas (Mina Concepción, Cueva de la Mora...).\n**🎉 Fin de Año:** Pasacalles a las 12:00h y Preuvas en la Carpa Municipal."
   },
   {
     "id": "cartero-real-almonaster",

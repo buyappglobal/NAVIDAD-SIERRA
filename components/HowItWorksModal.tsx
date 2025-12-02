@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ICONS } from '../constants';
+import { ICONS, ENABLE_AI_SEARCH } from '../constants';
 
 interface HowItWorksModalProps {
   onClose: () => void;
@@ -27,7 +27,33 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
             <div>
               <h3 className="font-bold text-slate-800 dark:text-slate-200">1. Encuentra tu plan</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Usa los filtros para buscar por pueblo, fecha o tipo de evento (Belén, Cabalgata, Fiesta...). También puedes usar el buscador de texto.
+                Usa los filtros tradicionales para buscar por pueblo, fecha o categoría.
+              </p>
+            </div>
+          </div>
+
+          {ENABLE_AI_SEARCH && (
+            <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
+                {ICONS.sparkles}
+                </div>
+                <div>
+                <h3 className="font-bold text-slate-800 dark:text-slate-200">2. Buscador Mágico (IA)</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                    En la barra de búsqueda, escribe frases naturales como <em>"planes románticos para el sábado"</em> o <em>"conciertos gratis"</em> y pulsa el botón <strong>IA</strong>. Nuestra inteligencia artificial entenderá lo que buscas y te mostrará los mejores resultados.
+                </p>
+                </div>
+            </div>
+          )}
+
+          <div className="flex gap-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+              {ICONS.magic}
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "3." : "2."} Planifica tu día</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Dentro de cada evento, pulsa el botón "Planificar mi día" para obtener un itinerario personalizado con sugerencias de dónde comer y qué visitar.
               </p>
             </div>
           </div>
@@ -37,33 +63,9 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
               {ICONS.heart}
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">2. Interactúa y Vota</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "4." : "3."} Interactúa y Vota</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Dale a <strong>Me Gusta</strong> ❤️ para guardar tus favoritos y marca <strong>Asistiré</strong> ✅ en los eventos a los que irás. Tus votos actualizan el Ranking de popularidad en tiempo real.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
-              {ICONS.magic}
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">3. Planifica tu día con IA</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Dentro de cada evento, pulsa el botón "Planificar mi día" para obtener un itinerario personalizado con sugerencias de dónde comer y qué visitar.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 flex-shrink-0">
-              {ICONS.map}
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">4. Explora el Mapa</h3>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Usa la vista de mapa para ver qué eventos te pillan cerca y organizar tu ruta por la Sierra.
+                Dale a <strong>Me Gusta</strong> ❤️ para guardar tus favoritos y marca <strong>Asistiré</strong> ✅ en los eventos a los que irás. Tus votos actualizan el Ranking de popularidad.
               </p>
             </div>
           </div>

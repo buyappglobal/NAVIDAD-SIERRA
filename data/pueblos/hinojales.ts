@@ -1,0 +1,21 @@
+
+import { EventType, EventCategory } from '../../types';
+
+export const INFO_HINOJALES = "🏰 Hinojales: Esencia Serrana\nHinojales es un pueblo blanco situado en el corazón de la Sierra, conocido por su tranquilidad y su entorno natural privilegiado. Sus calles empedradas y su arquitectura tradicional invitan a pasear y desconectar.\n\nIglesia de Nuestra Señora de la Consolación: Declarada Bien de Interés Cultural, destaca por su torre y sus frescos murales góticos.\n\nEntorno Natural: Rodeado de dehesas de encinas y alcornoques, es ideal para el senderismo y la observación de la naturaleza.";
+
+export const HINOJALES_EVENTS: EventType[] = [
+  {
+    "id": "belen-viviente-hinojales-2025",
+    "title": "Belén Viviente",
+    "description": "La magia de la Sierra de Huelva cobra vida este diciembre en una de las recreaciones más auténticas y entrañables de la comarca.\n\nCon la llegada del invierno, los pueblos de la Sierra comienzan a iluminarse con el espíritu navideño, pero pocos eventos capturan la esencia de la tradición como lo hace Hinojales. Este año, la localidad celebra la sexta edición (VI) de su aclamado Belén Viviente, una cita ineludible que promete transportar a los visitantes a través del tiempo en un entorno rústico inigualable.\n\nSi estás buscando un plan familiar, cultural y lleno de encanto para estas fiestas, aquí te contamos todo lo que necesitas saber sobre este evento.\n\n📅 Coordenadas del Evento: Cuándo y Dónde\nMarca la fecha en tu calendario, porque es una oportunidad única de un solo día.\n\nFecha: 20 de diciembre de 2025.\n\nHorario: Desde las 18:00 hasta las 22:00 horas.\n\nUbicación: Calle José Nogales, Hinojales.\n\nPrecio: Entrada Gratuita.\n\n🌟 Una Recreación con Alma Serrana\nLo que hace especial al Belén Viviente de Hinojales es su autenticidad. Organizado directamente por los vecinos y vecinas del pueblo, cada rincón está cuidado al detalle para recrear la vida cotidiana de antaño.\n\nTal y como sugiere el cartel oficial, los asistentes podrán sumergirse en escenas costumbristas donde el fuego de leña, los utensilios de época y las vestimentas tradicionales son los protagonistas. Es una oportunidad perfecta para pasear bajo la \"nieve\" artificial y sentir la calidez de una comunidad unida por la tradición.\n\n🎶 Cultura y Gastronomía: Mucho más que un Belén\nLa experiencia no se limita solo a la vista; también es un deleite para el oído y el paladar.\n\n1. Villancicos Flamencos A las 19:30 horas, el silencio de la noche serrana se romperá con el arte de Bella de Sousa. La actuación de villancicos flamencos promete ser el punto álgido de la velada, aportando ese toque andaluz y pasional tan característico de nuestra tierra.\n\n2. Sabores de Invierno Para combatir el frío de la sierra, la organización ofrecerá buñuelos con chocolate. No hay mejor manera de terminar el recorrido que con este dulce tradicional, ideal para calentar el cuerpo y disfrutar de la convivencia vecinal.\n\n🤝 Un Esfuerzo Comunitario\nEl éxito de este Belén reside en la colaboración. Este evento es posible gracias al esfuerzo conjunto de los vecinos, con el respaldo del Excmo. Ayuntamiento de Hinojales, la Diputación Provincial de Huelva y la Mancomunidad Sierra Minera.\n\nConsejo del experto: Dado que el evento dura solo cuatro horas, recomendamos llegar con antelación para aparcar con tranquilidad y disfrutar de la caída de la tarde en las hermosas calles de Hinojales antes de entrar al recinto del Belén.",
+    "town": "Hinojales",
+    "date": "2025-12-20",
+    "category": EventCategory.BELEN_VIVIENTE,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-9.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/592167038_1298088495688386_3350854252004319002_n.jpg"
+    ],
+    "interestInfo": INFO_HINOJALES,
+    "itinerary": "**🌄 Tarde (17:00):** Llega a Hinojales y pasea por sus calles blancas antes de que anochezca.\n**✨ 18:00 - Belén:** Entra en el Belén Viviente (C/ José Nogales). Disfruta de la nieve artificial y el ambiente.\n**💃 19:30 - Villancicos:** No te pierdas la actuación de **Bella de Sousa**.\n**🍩 Cierre:** Termina la visita con unos **buñuelos con chocolate** calentitos."
+  }
+];

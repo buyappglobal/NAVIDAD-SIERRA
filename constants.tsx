@@ -1,11 +1,15 @@
 
 import React from 'react';
 
+// SEMÁFORO DE FUNCIONALIDADES (FEATURE FLAGS)
+// Pon esto en 'false' para desactivar completamente la búsqueda por IA y volver al comportamiento clásico.
+export const ENABLE_AI_SEARCH = true;
+
 // Enlace al formulario de Google para que los usuarios sugieran nuevos eventos.
 export const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScybkxSjeMujSSimNL0c2FrMQq_eCVio9OSov_9RBjcUTvJVg/viewform?usp=sf_link";
 
 // Placeholder para imágenes rotas o que no cargan.
-export const IMAGE_PLACEHOLDER = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDQwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMxZTI5M2IiLz48cGF0aCBkPSJNMCAyMDAgVjE0MCBMODAgMTYwIEwxNTAgMTIwIEwyMjAgMTcwIEwzMDAgMTMwIEw0MDAgMTgwIFYyMDAgWiIgZmlsbD0iIzQ3NTU2OSIvPjxwYXRoIGQ9Ik0zMDAgNDAgTDMyMCA2MCBMMzAwIDgwIEwyODAgNjAgWiIgZmlsbD0iI2ZjZDM0ZCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjcwIiByPSIzIiBmaWxsPSIjZmNkMzRkIiBvcGFjaXR5PSIwLjciLz48Y2lyY2xlIGN4PSIzNTAiIGN5PSIxMDAiIHI9IjIiIGZpbGw9IiNmY2QzNGQiIG9acGFjaXR5PSIwLjciLz48L3N2Zz4=`;
+export const IMAGE_PLACEHOLDER = `data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDQwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMxZTI5M2IiLz48cGF0aCBkPSJNMCAyMDAgVjE0MCBMODAgMTYwIEwxNTAgMTIwIEwyMjAgMTcwIEwzMDAgMTgwIEw0MDAgMTgwIFYyMDAgWiIgZmlsbD0iIzQ3NTU2OSIvPjxwYXRoIGQ9Ik0zMDAgNDAgTDMyMCA2MCBMMzAwIDgwIEwyODAgNjAgWiIgZmlsbD0iI2ZjZDM0ZCIvPjxjaXJjbGUgY3g9IjEwMCIgY3k9IjcwIiByPSIzIiBmaWxsPSIjZmNkMzRkIiBvcGFjaXR5PSIwLjciLz48Y2lyY2xlIGN4PSIzNTAiIGN5PSIxMDAiIHI9IjIiIGZpbGw9IiNmY2QzNGQiIG9acGFjaXR5PSIwLjciLz48L3N2Zz4=`;
 
 // Definición de Pueblos con ID para filtrado estricto
 export const TOWNS = [
@@ -91,5 +95,6 @@ export const ICONS = {
     heartFilled: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" /></svg>,
     checkCircle: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     userGroup: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
-    chart: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
+    chart: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>,
+    sparkles: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" /></svg>
 };

@@ -21,47 +21,86 @@ const BottomNav: React.FC<BottomNavProps> = ({
   const labelClass = "text-[10px] font-bold mt-1";
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50 h-16 pb-safe px-2 animate-fade-in-up">
-      <div className="flex justify-between items-center h-full max-w-lg mx-auto relative">
+    <>
+      <style>{`
+        @keyframes cometSlideRight {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100vw); }
+        }
+      `}</style>
+
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50 h-16 pb-safe px-2 animate-fade-in-up">
         
-        {/* Inicio / Arriba */}
-        <button onClick={onHomeClick} className={navItemClass}>
-          {ICONS.home}
-          <span className={labelClass}>Inicio</span>
-        </button>
-
-        {/* Guía */}
-        <button onClick={onGuideClick} className={navItemClass}>
-          {ICONS.book}
-          <span className={labelClass}>Guía</span>
-        </button>
-
-        {/* Botón Central Destacado (Filtros) */}
-        <div className="relative w-full flex justify-center items-end h-full pointer-events-none">
-           <button 
-            onClick={onFilterClick}
-            className="pointer-events-auto absolute -top-5 bg-amber-400 text-slate-900 h-14 w-14 rounded-full shadow-lg flex items-center justify-center border-4 border-slate-50 dark:border-slate-900 transform active:scale-90 transition-transform hover:bg-amber-300"
-            aria-label="Filtrar eventos"
-          >
-            {ICONS.filter}
-          </button>
-          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 mt-8">Filtrar</span>
+        {/* Borde Superior Animado (Cometa de Izquierda a Derecha) */}
+        <div className="absolute top-0 left-0 w-full h-[2px] pointer-events-none overflow-hidden z-20">
+            {/* Contenedor del cometa */}
+            <div 
+                className="absolute top-0 left-0 h-full flex items-center"
+                style={{ 
+                    animation: 'cometSlideRight 4s linear infinite',
+                    width: '150px', // Longitud de la estela
+                    willChange: 'transform'
+                }}
+            >
+                {/* La Cola (Degradado de transparente a dorado) */}
+                <div className="flex-grow h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-amber-500 rounded-full"></div>
+                
+                {/* La Estrella (Cabeza) */}
+                <div className="relative -ml-1 text-amber-500 z-10 filter drop-shadow-[0_0_5px_rgba(251,191,36,0.9)]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
+                </div>
+            </div>
         </div>
 
-        {/* Ayuda / FAQ */}
-        <button onClick={onFaqClick} className={navItemClass}>
-          {ICONS.question}
-          <span className={labelClass}>Ayuda</span>
-        </button>
+        {/* Línea base estática muy sutil para delimitar si no pasa el cometa */}
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-slate-100 dark:bg-slate-800 z-10"></div>
 
-        {/* Info */}
-        <button onClick={onInfoClick} className={navItemClass}>
-          {ICONS.info}
-          <span className={labelClass}>Info</span>
-        </button>
+        <div className="flex justify-between items-center h-full max-w-lg mx-auto relative z-30">
+          
+          {/* Inicio / Arriba */}
+          <button onClick={onHomeClick} className={navItemClass}>
+            {ICONS.home}
+            <span className={labelClass}>Inicio</span>
+          </button>
 
-      </div>
-    </nav>
+          {/* Guía */}
+          <button onClick={onGuideClick} className={navItemClass}>
+            {ICONS.book}
+            <span className={labelClass}>Guía</span>
+          </button>
+
+          {/* Botón Central Destacado (Filtros) */}
+          <div className="relative w-full flex justify-center items-end h-full pointer-events-none">
+             {/* Background circle */}
+             <div className="absolute -top-5 w-14 h-14 rounded-full bg-slate-50 dark:bg-slate-900 -z-10"></div>
+             
+             <button 
+              onClick={onFilterClick}
+              className="pointer-events-auto absolute -top-5 bg-amber-400 text-slate-900 h-14 w-14 rounded-full shadow-lg flex items-center justify-center border-4 border-slate-50 dark:border-slate-900 transform active:scale-90 transition-transform hover:bg-amber-300 z-10"
+              aria-label="Filtrar eventos"
+            >
+              {ICONS.filter}
+            </button>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 mt-8">Filtrar</span>
+          </div>
+
+          {/* Ayuda / FAQ */}
+          <button onClick={onFaqClick} className={navItemClass}>
+            {ICONS.question}
+            <span className={labelClass}>Ayuda</span>
+          </button>
+
+          {/* Info */}
+          <button onClick={onInfoClick} className={navItemClass}>
+            {ICONS.info}
+            <span className={labelClass}>Info</span>
+          </button>
+
+        </div>
+      </nav>
+    </>
   );
 };
 

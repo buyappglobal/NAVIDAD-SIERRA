@@ -14,6 +14,10 @@ import { AROCHE_EVENTS } from './pueblos/aroche';
 import { VALDELARCO_EVENTS } from './pueblos/valdelarco';
 import { ROSAL_EVENTS } from './pueblos/rosal';
 import { CORTEGANA_EVENTS } from './pueblos/cortegana';
+import { CASTANO_EVENTS } from './pueblos/castano';
+import { CALA_EVENTS } from './pueblos/cala';
+import { SANTA_OLALLA_EVENTS } from './pueblos/santaolalla';
+import { HINOJALES_EVENTS } from './pueblos/hinojales';
 import { OTHER_EVENTS } from './pueblos/otros';
 
 export const ALL_EVENTS = [
@@ -32,5 +36,9 @@ export const ALL_EVENTS = [
     ...VALDELARCO_EVENTS,
     ...ROSAL_EVENTS,
     ...CORTEGANA_EVENTS,
+    ...CASTANO_EVENTS,
+    ...CALA_EVENTS,
+    ...SANTA_OLALLA_EVENTS,
+    ...HINOJALES_EVENTS,
     ...OTHER_EVENTS
 ];
