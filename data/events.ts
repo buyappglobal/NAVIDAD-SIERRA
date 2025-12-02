@@ -1,4 +1,5 @@
 
+
 import { ARACENA_EVENTS } from './pueblos/aracena';
 import { LINARES_EVENTS } from './pueblos/linares';
 import { HIGUERA_EVENTS } from './pueblos/higuera';
@@ -18,6 +19,8 @@ import { CASTANO_EVENTS } from './pueblos/castano';
 import { CALA_EVENTS } from './pueblos/cala';
 import { SANTA_OLALLA_EVENTS } from './pueblos/santaolalla';
 import { HINOJALES_EVENTS } from './pueblos/hinojales';
+import { CORTECONCEPCION_EVENTS } from './pueblos/corteconcepcion';
+import { ARROYOMOLINOS_EVENTS } from './pueblos/arroyomolinos';
 import { OTHER_EVENTS } from './pueblos/otros';
 
 export const ALL_EVENTS = [
@@ -40,5 +43,7 @@ export const ALL_EVENTS = [
     ...CALA_EVENTS,
     ...SANTA_OLALLA_EVENTS,
     ...HINOJALES_EVENTS,
+    ...CORTECONCEPCION_EVENTS,
+    ...ARROYOMOLINOS_EVENTS,
     ...OTHER_EVENTS
 ];

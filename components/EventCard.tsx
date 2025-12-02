@@ -119,7 +119,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, onSelectEvent, onCategoryF
              </div>
           </div>
           
-          <p className="text-slate-600 dark:text-slate-400 line-clamp-2 mt-2 text-sm">{isPuebloDestacado ? `Descubre ${town}, uno de los pueblos con más encanto de la Sierra.` : description}</p>
+          <p className="text-slate-600 dark:text-slate-400 line-clamp-4 mt-2 text-sm">{isPuebloDestacado ? `Descubre ${town}, uno de los pueblos con más encanto de la Sierra.` : description}</p>
         </div>
 
         {/* Social Bar */}

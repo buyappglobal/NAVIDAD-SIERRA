@@ -4,7 +4,7 @@ import { ICONS } from '../constants';
 
 interface BottomNavProps {
   onHomeClick: () => void;
-  onInfoClick: () => void;
+  onMenuClick: () => void;
   onFaqClick: () => void;
   onGuideClick: () => void;
   onFilterClick: () => void;
@@ -12,7 +12,7 @@ interface BottomNavProps {
 
 const BottomNav: React.FC<BottomNavProps> = ({ 
   onHomeClick, 
-  onInfoClick, 
+  onMenuClick, 
   onFaqClick, 
   onGuideClick,
   onFilterClick
@@ -29,7 +29,7 @@ const BottomNav: React.FC<BottomNavProps> = ({
         }
       `}</style>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50 h-16 pb-safe px-2 animate-fade-in-up">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] border-t border-slate-200 dark:border-slate-800 z-[100] h-16 pb-[env(safe-area-inset-bottom)] px-2">
         
         {/* Borde Superior Animado (Cometa de Izquierda a Derecha) */}
         <div className="absolute top-0 left-0 w-full h-[2px] pointer-events-none overflow-hidden z-20">
@@ -53,9 +53,6 @@ const BottomNav: React.FC<BottomNavProps> = ({
                 </div>
             </div>
         </div>
-
-        {/* Línea base estática muy sutil para delimitar si no pasa el cometa */}
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-slate-100 dark:bg-slate-800 z-10"></div>
 
         <div className="flex justify-between items-center h-full max-w-lg mx-auto relative z-30">
           
@@ -92,10 +89,10 @@ const BottomNav: React.FC<BottomNavProps> = ({
             <span className={labelClass}>Ayuda</span>
           </button>
 
-          {/* Info */}
-          <button onClick={onInfoClick} className={navItemClass}>
-            {ICONS.info}
-            <span className={labelClass}>Info</span>
+          {/* Menú (Antes Info) */}
+          <button onClick={onMenuClick} className={navItemClass}>
+            {ICONS.more}
+            <span className={labelClass}>Menú</span>
           </button>
 
         </div>

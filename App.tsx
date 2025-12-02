@@ -11,7 +11,6 @@ import EventCalendar from './components/EventCalendar';
 import FilterSidebar from './components/FilterSidebar';
 import FilterSidebarModal from './components/FilterSidebarModal';
 import EventMapModal from './components/EventMapModal';
-import ScrollToTopButton from './components/ScrollToTopButton';
 import Footer from './components/Footer';
 import BottomNav from './components/BottomNav';
 import Hero from './components/Hero';
@@ -26,6 +25,7 @@ import InfoAppModal from './components/InfoAppModal';
 import FaqModal from './components/FaqModal';
 import HowItWorksModal from './components/HowItWorksModal';
 import EventCounter from './components/EventCounter';
+import MenuModal from './components/MenuModal';
 import { analyzeSearchIntent } from './services/aiSearchService';
 import { getEventMetrics } from './services/interactionService';
 import { exportEventsToCSV } from './services/googleSheetsService';
@@ -87,6 +87,7 @@ const App: React.FC = () => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showFaqModal, setShowFaqModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showMenuModal, setShowMenuModal] = useState(false);
 
   // Auth & Toast
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -351,13 +352,35 @@ const App: React.FC = () => {
                 </div>
                 <BottomNav 
                     onHomeClick={handleCloseDetail}
-                    onInfoClick={() => setShowInfoModal(true)}
+                    onMenuClick={() => setShowMenuModal(true)}
                     onFaqClick={() => setShowFaqModal(true)}
                     onGuideClick={() => setShowGuideModal(true)}
                     onFilterClick={() => { setSelectedEventId(null); setIsFilterModalOpen(true); }}
                 />
             </div>
             {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+            {showMenuModal && (
+                <MenuModal 
+                    onClose={() => setShowMenuModal(false)}
+                    onInstall={() => setShowInstallModal(true)}
+                    onSuggest={() => setShowSuggestModal(true)}
+                    toggleTheme={handleToggleTheme}
+                    onInfo={() => setShowInfoModal(true)}
+                    isPwaInstallable={true}
+                    theme={theme}
+                />
+            )}
+            {showInstallModal && (
+                <InstallPwaModal 
+                    onClose={() => setShowInstallModal(false)}
+                    onInstall={() => {
+                        localStorage.setItem('pwa_installed', 'true');
+                        setShowInstallModal(false);
+                    }}
+                />
+            )}
+            {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}
+            {showSuggestModal && <SuggestEventModal onClose={() => setShowSuggestModal(false)} />}
           </div>
       );
   }
@@ -370,10 +393,6 @@ const App: React.FC = () => {
             setView={setView} 
             isMapVisible={isMapVisible} 
             onMapClick={() => setIsMapVisible(true)}
-            theme={theme}
-            toggleTheme={handleToggleTheme}
-            isPwaInstallable={true}
-            onInstallClick={() => setShowInstallModal(true)}
             onHomeClick={() => {
                 setSelectedTowns([]);
                 setSelectedCategories([]);
@@ -381,7 +400,6 @@ const App: React.FC = () => {
                 setStartDate(null);
                 setEndDate(null);
             }}
-            onSuggestClick={() => setShowSuggestModal(true)}
         />
 
         <main className="container mx-auto p-4 md:flex gap-8">
@@ -510,13 +528,11 @@ const App: React.FC = () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setSelectedEventId(null);
             }}
-            onInfoClick={() => setShowInfoModal(true)}
+            onMenuClick={() => setShowMenuModal(true)}
             onFaqClick={() => setShowFaqModal(true)}
             onGuideClick={() => setShowGuideModal(true)}
             onFilterClick={() => setIsFilterModalOpen(true)}
         />
-
-        <ScrollToTopButton />
 
         {/* MODALS */}
         {isFilterModalOpen && (
@@ -580,6 +596,18 @@ const App: React.FC = () => {
                     localStorage.setItem('pwa_installed', 'true');
                     setShowInstallModal(false);
                 }}
+            />
+        )}
+
+        {showMenuModal && (
+            <MenuModal 
+                onClose={() => setShowMenuModal(false)}
+                onInstall={() => setShowInstallModal(true)}
+                onSuggest={() => setShowSuggestModal(true)}
+                toggleTheme={handleToggleTheme}
+                onInfo={() => setShowInfoModal(true)}
+                isPwaInstallable={true}
+                theme={theme}
             />
         )}
 

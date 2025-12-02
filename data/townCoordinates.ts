@@ -1,11 +1,15 @@
+
+
 export const townCoordinates: Record<string, [number, number]> = {
     "Alájar": [37.874, -6.668],
     "Almonaster la Real": [37.872, -6.782],
     "Aracena": [37.893, -6.561],
     "Aroche": [37.943, -6.957],
+    "Arroyomolinos de León": [38.026, -6.423],
     "Cala": [37.973, -6.321],
     "Castaño del Robledo": [37.899, -6.711],
     "Cortegana": [37.909, -6.809],
+    "Corteconcepción": [37.894, -6.506],
     "Cortelazor": [37.935, -6.621],
     "Cumbres de Enmedio": [38.070, -6.993],
     "Cumbres de San Bartolomé": [38.077, -7.036],

@@ -12,6 +12,7 @@ const EventCounter: React.FC<EventCounterProps> = ({ total, onClick }) => {
   useEffect(() => {
     let startTimestamp: number | null = null;
     const duration = 2000; // 2 seconds animation
+    let animationFrameId: number;
 
     const step = (timestamp: number) => {
       if (!startTimestamp) startTimestamp = timestamp;
@@ -20,14 +21,23 @@ const EventCounter: React.FC<EventCounterProps> = ({ total, onClick }) => {
       // Ease out cubic function for smooth deceleration
       const easeProgress = 1 - Math.pow(1 - progress, 3);
       
-      setCount(Math.floor(easeProgress * total));
+      // Ensure total is a valid number before multiplying
+      const target = isNaN(total) ? 0 : total;
+      setCount(Math.floor(easeProgress * target));
 
       if (progress < 1) {
-        window.requestAnimationFrame(step);
+        animationFrameId = window.requestAnimationFrame(step);
       }
     };
 
-    window.requestAnimationFrame(step);
+    animationFrameId = window.requestAnimationFrame(step);
+
+    // Cleanup function to cancel animation frame if component unmounts
+    return () => {
+        if (animationFrameId) {
+            window.cancelAnimationFrame(animationFrameId);
+        }
+    };
   }, [total]);
 
   return (
