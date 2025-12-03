@@ -53,20 +53,31 @@
       function gtag(){dataLayer.push(arguments);}
 
       // Set default consent to 'denied' as a placeholder
-      if(localStorage.getItem('cookie_consent') === 'accepted') {
-          gtag('consent', 'default', {
-            'ad_storage': 'granted',
-            'ad_user_data': 'granted',
-            'ad_personalization': 'granted',
-            'analytics_storage': 'granted'
-          });
-      } else {
-          gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
-          });
+      try {
+        if(localStorage.getItem('cookie_consent') === 'accepted') {
+            gtag('consent', 'default', {
+              'ad_storage': 'granted',
+              'ad_user_data': 'granted',
+              'ad_personalization': 'granted',
+              'analytics_storage': 'granted'
+            });
+        } else {
+            gtag('consent', 'default', {
+              'ad_storage': 'denied',
+              'ad_user_data': 'denied',
+              'ad_personalization': 'denied',
+              'analytics_storage': 'denied'
+            });
+        }
+      } catch (e) {
+        console.warn('Storage access restricted', e);
+        // Default to denied if storage fails
+        gtag('consent', 'default', {
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
+          'analytics_storage': 'denied'
+        });
       }
     </script>
     
@@ -82,10 +93,15 @@
     <script>
       // Set theme based on localStorage before the page loads to prevent FOUC
       // DEFAULT IS NOW LIGHT
-      if (localStorage.getItem('sierra-navidad-theme') === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        // Default to light mode if not set or set to light
+      try {
+        if (localStorage.getItem('sierra-navidad-theme') === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          // Default to light mode if not set or set to light
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {
+        console.warn('Storage access restricted for theme', e);
         document.documentElement.classList.remove('dark');
       }
       // Configure Tailwind to use the 'class' strategy for dark mode

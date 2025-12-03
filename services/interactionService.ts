@@ -38,16 +38,24 @@ const generateBaseMetrics = (eventId: string) => {
 
 // Get stored user interactions
 const getStoredInteractions = (): InteractionData => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    return JSON.parse(stored);
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (e) {
+    console.warn('LocalStorage access blocked or unavailable', e);
   }
   return { likes: {}, attending: {}, viewed: {} };
 };
 
 // Save user interactions
 const saveInteractions = (data: InteractionData) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.warn('LocalStorage write blocked or unavailable', e);
+  }
 };
 
 export const getEventMetrics = (event: EventType) => {

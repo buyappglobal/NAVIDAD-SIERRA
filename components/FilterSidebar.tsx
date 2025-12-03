@@ -35,6 +35,8 @@ interface FilterSidebarProps {
   onFilterTypeChange: (type: 'all' | 'favorites' | 'attending') => void;
 }
 
+const SIDEBAR_BANNER_URL = "https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-02-at-14.11.06-1.jpeg";
+
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ 
     towns, 
     selectedTowns, 
@@ -99,6 +101,16 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
             </button>
         </div>
       </CollapsibleFilterSection>
+
+      {/* Banner Promocional Sidebar */}
+      <div className="py-2 animate-fade-in">
+        <img 
+            src={SIDEBAR_BANNER_URL} 
+            alt="Espacio Patrocinado" 
+            className="w-full h-auto rounded-xl shadow-md border border-slate-200 dark:border-slate-700 hover:opacity-95 transition-opacity"
+            loading="lazy"
+        />
+      </div>
 
       <CollapsibleFilterSection title="Ordenar por">
          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">

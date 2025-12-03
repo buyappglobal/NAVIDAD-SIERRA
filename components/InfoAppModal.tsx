@@ -45,7 +45,14 @@ const InfoAppModal: React.FC<InfoAppModalProps> = ({ onClose }) => {
           
           <div className="text-xs text-center pt-4 border-t border-slate-200 dark:border-slate-700 text-slate-500">
             <p>Desarrollado con ❤️ para Huelva.</p>
-            <a href="https://huelvalate.es" className="hover:text-amber-500 underline">www.huelvalate.es</a>
+            <a href="https://huelvalate.es" className="hover:text-amber-500 underline mb-2 inline-block">www.huelvalate.es</a>
+            
+            <div className="flex justify-center gap-4 pt-2">
+                <a href="https://github.com/buyappglobal/huelva-cultura" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors flex items-center gap-2" title="Ver código en GitHub">
+                    {ICONS.github}
+                    <span>Código Fuente</span>
+                </a>
+            </div>
           </div>
         </div>
         

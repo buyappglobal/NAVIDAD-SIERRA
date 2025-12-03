@@ -15,6 +15,8 @@ interface EventListProps {
   onUpdateEvent: (updatedEvent: EventType) => void; // New prop for syncing interaction
 }
 
+const FEED_BANNER_URL = "https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-02-at-14.11.06.jpeg";
+
 const EventList: React.FC<EventListProps> = ({ 
     events, 
     onSelectEvent, 
@@ -43,11 +45,13 @@ const EventList: React.FC<EventListProps> = ({
   const renderTownHeader = () => {
     if (!selectedTownName) return null;
     
-    // Sharing URL - if multiple towns, maybe just link to home or construct complex query. 
-    // For now, let's just link to home if multiple, or specific town if one.
+    // Sharing URL using Hash Routing
+    // FIX: Hardcode the base URL to huelvalate.es to ensure correct sharing links regardless of environment
+    const cleanBaseUrl = "https://huelvalate.es";
+
     const shareUrl = selectedTownIds.length === 1 
-        ? `https://huelvalate.es/?town=${selectedTownIds[0]}` 
-        : `https://huelvalate.es/`;
+        ? `${cleanBaseUrl}/#/pueblo/${selectedTownIds[0]}` 
+        : `${cleanBaseUrl}/`;
         
     const shareText = `¡Descubre la agenda de eventos de Navidad en ${selectedTownName} (Huelva)!`;
     
@@ -159,18 +163,31 @@ const EventList: React.FC<EventListProps> = ({
       {isAnyFilterActive && renderFilterResetBanner()}
       <div className="grid gap-6 md:gap-8 grid-cols-1">
         {events.map((event, index) => (
-          <div
-            key={event.id}
-            className="animate-fade-in-up"
-            style={{ animationDelay: `${50 + index * 75}ms` }}
-          >
-            <EventCard 
-                event={event} 
-                onSelectEvent={onSelectEvent}
-                onCategoryFilterClick={onCategoryFilterClick}
-                onUpdateEvent={onUpdateEvent}
-            />
-          </div>
+          <React.Fragment key={event.id}>
+            <div
+                className="animate-fade-in-up"
+                style={{ animationDelay: `${50 + index * 75}ms` }}
+            >
+                <EventCard 
+                    event={event} 
+                    onSelectEvent={onSelectEvent}
+                    onCategoryFilterClick={onCategoryFilterClick}
+                    onUpdateEvent={onUpdateEvent}
+                />
+            </div>
+            
+            {/* Banner inserter: After 5th item (index 4) and 10th item (index 9) */}
+            {(index === 4 || index === 9) && (
+                <div className="animate-fade-in-up w-full">
+                    <img 
+                        src={FEED_BANNER_URL} 
+                        alt="Espacio Patrocinado" 
+                        className="w-full h-auto rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 object-cover"
+                        loading="lazy"
+                    />
+                </div>
+            )}
+          </React.Fragment>
         ))}
       </div>
     </>

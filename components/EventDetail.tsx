@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { EventType, EventCategory } from '../types';
 import { ICONS, IMAGE_PLACEHOLDER } from '../constants';
 import InterestInfoModal from './InterestInfoModal';
@@ -17,7 +17,9 @@ interface EventDetailProps {
   onCategoryFilterClick: (category: EventCategory) => void;
   showToast: (message: string, icon: React.ReactNode) => void;
   onEngagement: () => void;
-  onUpdateEvent: (updatedEvent: EventType) => void; // New prop for syncing interaction
+  onUpdateEvent: (updatedEvent: EventType) => void; 
+  allEvents?: EventType[]; // New prop for related events
+  onSelectEvent?: (eventId: string) => void; // New prop for redirection
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
@@ -70,7 +72,7 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement, onUpdateEvent }) => {
+const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement, onUpdateEvent, allEvents, onSelectEvent }) => {
   const { title, description, town, date, category, imageUrl, interestInfo, galleryUrls, views, likes, attendees, isFavorite, isAttending, id } = event;
   const colors = categoryColors[category] || categoryColors[EventCategory.OTRO];
   const [isReading, setIsReading] = useState(false);
@@ -85,22 +87,29 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
   const [localAttendees, setLocalAttendees] = useState(attendees || 0);
   const [localIsAttending, setLocalIsAttending] = useState(isAttending || false);
 
+  // Refs for Drag to Scroll
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const isDown = useRef(false);
+  const startX = useRef(0);
+  const scrollLeftPos = useRef(0);
+  const mouseMoved = useRef(0);
+
   const isPuebloDestacado = category === EventCategory.PUEBLO_DESTACADO;
   const hasCoordinates = !!townCoordinates[town];
 
-  const formatDateDisplay = () => {
-      const start = new Date(date + 'T00:00:00');
-      const startStr = start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+  const formatDateDisplay = (dateStr: string, endDateStr?: string) => {
+      const start = new Date(dateStr + 'T00:00:00');
+      const startDay = start.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
       
-      if (event.endDate) {
-          const end = new Date(event.endDate + 'T00:00:00');
-          const endStr = end.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
-          return `Del ${startStr} al ${endStr}`;
+      if (endDateStr) {
+          const end = new Date(endDateStr + 'T00:00:00');
+          const endDay = end.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+          return `Del ${startDay} al ${endDay}`;
       }
-      return `${startStr}, ${start.getFullYear()}`;
+      return start.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
   };
 
-  const formattedDate = formatDateDisplay();
+  const formattedDate = formatDateDisplay(date, event.endDate);
 
   const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(town + ', Huelva, España')}`;
 
@@ -114,11 +123,25 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     // Increment view count when details open
     incrementViewEvent(id);
     
+    // Update hash for deep linking state without full reload
+    // Only if not already present to avoid loops
+    if (!window.location.hash.includes(id)) {
+        // Use replaceState to avoid cluttering history stack if just viewing details
+        // Or assign to hash if you want back button to close detail (handled in App.tsx)
+        window.location.hash = `/evento/${id}`;
+    }
+    
+    // Reset local state when event changes
+    setLocalLikes(likes || 0);
+    setLocalIsFavorite(isFavorite || false);
+    setLocalAttendees(attendees || 0);
+    setLocalIsAttending(isAttending || false);
+    
     return () => {
       window.speechSynthesis.cancel();
       setIsReading(false);
     };
-  }, [id]);
+  }, [id, likes, isFavorite, attendees, isAttending]);
 
   const handleToggleSpeech = () => {
     if (isReading) {
@@ -204,14 +227,92 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
 
   const weatherTargetDate = getRelevantWeatherDate();
 
+  // Related Events Logic
+  const relatedEvents = useMemo(() => {
+      if (!allEvents) return [];
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-  const shareUrl = window.location.href;
+      return allEvents.filter(e => {
+          // Same town
+          if (e.town !== town) return false;
+          // Not the current event
+          if (e.id === id) return false;
+          // Not an Ad
+          if (e.externalUrl) return false;
+          
+          // Future check (checks if start date is >= today OR if end date is >= today)
+          const startDate = new Date(e.date + 'T00:00:00');
+          const endDate = e.endDate ? new Date(e.endDate + 'T00:00:00') : startDate;
+          
+          return endDate >= today;
+      }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [allEvents, town, id]);
+
+
+  // Construct explicit deep link for sharing using HASH
+  // FIX: Hardcode the base URL to huelvalate.es to ensure correct sharing links regardless of environment
+  const cleanBaseUrl = "https://huelvalate.es";
+  
+  // Format: domain.com/#/evento/eventId
+  const shareUrl = `${cleanBaseUrl}/#/evento/${id}`;
+  
   const shareText = `¡No te pierdas "${title}" en ${town}! Echa un vistazo a este evento de la Sierra de Aracena:`;
   
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
   const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
+
+  // --- DRAG TO SCROLL HANDLERS ---
+  const onMouseDown = (e: React.MouseEvent) => {
+    isDown.current = true;
+    mouseMoved.current = 0;
+    if (sliderRef.current) {
+        sliderRef.current.classList.add('cursor-grabbing');
+        sliderRef.current.classList.remove('cursor-grab');
+        startX.current = e.pageX - sliderRef.current.offsetLeft;
+        scrollLeftPos.current = sliderRef.current.scrollLeft;
+    }
+  };
+
+  const onMouseLeave = () => {
+    isDown.current = false;
+    if (sliderRef.current) {
+        sliderRef.current.classList.remove('cursor-grabbing');
+        sliderRef.current.classList.add('cursor-grab');
+    }
+  };
+
+  const onMouseUp = () => {
+    isDown.current = false;
+    if (sliderRef.current) {
+        sliderRef.current.classList.remove('cursor-grabbing');
+        sliderRef.current.classList.add('cursor-grab');
+    }
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDown.current) return;
+    e.preventDefault();
+    if (sliderRef.current) {
+        const x = e.pageX - sliderRef.current.offsetLeft;
+        const walk = (x - startX.current) * 1.5; // Scroll speed
+        sliderRef.current.scrollLeft = scrollLeftPos.current - walk;
+        mouseMoved.current = Math.abs(x - startX.current);
+    }
+  };
+
+  const handleRelatedEventClick = (e: React.MouseEvent, eventId: string) => {
+      // If moved significantly (> 5px), treat as drag, not click
+      if (mouseMoved.current > 5) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+      }
+      if (onSelectEvent) onSelectEvent(eventId);
+  };
 
   return (
     <>
@@ -354,6 +455,53 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
             <div className="text-slate-700 dark:text-slate-300 text-base sm:text-lg leading-relaxed mb-8">
               <FormattedText text={description} />
             </div>
+
+            {/* Related Events Slider with Mouse Drag */}
+            {relatedEvents.length > 0 && (
+                <div className="mb-8 pt-6 border-t border-slate-200 dark:border-slate-700/50">
+                    <h3 className="text-xl font-bold font-display text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">
+                        Más eventos en <span className="text-amber-500 dark:text-amber-400">{town}</span>
+                    </h3>
+                    <div 
+                        ref={sliderRef}
+                        className="flex overflow-x-auto gap-4 pb-4 -mx-2 px-2 scrollbar-hide snap-x cursor-grab"
+                        onMouseDown={onMouseDown}
+                        onMouseLeave={onMouseLeave}
+                        onMouseUp={onMouseUp}
+                        onMouseMove={onMouseMove}
+                    >
+                        {relatedEvents.map(relEvent => (
+                            <div 
+                                key={relEvent.id}
+                                onClick={(e) => handleRelatedEventClick(e, relEvent.id)}
+                                className="flex-shrink-0 w-60 bg-slate-50 dark:bg-slate-900/50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all border border-slate-200 dark:border-slate-700 snap-start group select-none"
+                            >
+                                <div className="h-32 w-full relative">
+                                    <img 
+                                        src={relEvent.imageUrl || IMAGE_PLACEHOLDER} 
+                                        alt={relEvent.title}
+                                        className="w-full h-full object-cover transition-transform group-hover:scale-105 pointer-events-none"
+                                        onError={handleImageError}
+                                    />
+                                    <div className="absolute top-2 left-2">
+                                        <span className="bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                            {relEvent.category}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="p-3">
+                                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm line-clamp-2 mb-1 group-hover:text-amber-500 transition-colors">
+                                        {relEvent.title}
+                                    </h4>
+                                    <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                                        {new Date(relEvent.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div className="pt-6 border-t border-slate-200 dark:border-slate-700/50">
               <div className="flex justify-between items-center mb-3">

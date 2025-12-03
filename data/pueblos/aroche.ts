@@ -1,3 +1,4 @@
+
 import { EventType, EventCategory } from '../../types';
 
 export const INFO_AROCHE = "🏰 Aroche: Un enclave con historia milenaria\nAroche ya era un punto estratégico en la historia de la península. Situada en una posición fronteriza privilegiada, sus raíces se hunden profundamente en la historia.\n\nEl municipio se asienta sobre lo que fue la importante ciudad romana de Arucci Turóbriga (siglo I a.C.), fundada en tiempos de Augusto. Durante siglos, fue un centro neurálgico que controlaba el territorio serrano. Posteriormente, en la época medieval, la construcción de su imponente castillo almohade en el siglo XI (reconstruido por los cristianos en el XIII) definió la silueta que hoy corona el pueblo, integrando curiosamente una plaza de toros en su patio de armas en tiempos modernos.\n\n🎒 Qué ver en Aroche durante el Puente de Diciembre 2025\nAprovechando tu visita a la Fiesta del Picante el día 7, el puente ofrece la excusa perfecta para descubrir los tesoros de este municipio catalogado como uno de los más bellos de la provincia:\n\nEl Castillo de Aroche: Imprescindible. Su muralla artillera es visitable y ofrece unas vistas espectaculares de la sierra y los campos de Portugal. En su interior se encuentra una peculiar plaza de toros del siglo XIX.\n\nEnclave Arqueológico de Arucci Turóbriga: Situado en los llanos de La Belleza, es la única ciudad romana visitable de la provincia de Huelva. Podrás pasear por el foro, las termas y la Casa de la Columna.\n\nMuseo del Santo Rosario: Una curiosidad única en el mundo. Situado en la Casa de la Cilla, alberga una colección de más de 2.000 rosarios, ostentando un Récord Guinness. Incluye rosarios de personalidades como Kennedy, la Madre Teresa de Calcuta o varios Papas.\n\nIglesia de Nuestra Señora de la Asunción: Un templo que mezcla estilos gótico, mudéjar y renacentista, situado a los pies del castillo.\n\nSenderismo en el Parque Natural: Diciembre es ideal para recorrer los senderos que rodean Aroche, disfrutando del paisaje de dehesas de encinas y alcornoques, hábitat del cerdo ibérico.";
@@ -24,6 +25,22 @@ export const AROCHE_EVENTS: EventType[] = [
     "interestInfo": INFO_AROCHE,
     "itinerary": "**🏰 Mañana:** Visita el **Castillo de Aroche** y su plaza de toros interior. Disfruta de las vistas a Portugal. Después, baja al **Museo del Santo Rosario**, único en el mundo.\n**🍽️ Mediodía (El Evento):** A las 13:00, dirígete a **Cafetería Popo** para la **Fiesta del Picante**. Prueba las salsas y anima (o participa) en el concurso de comedores.\n**🏛️ Tarde:** Si sobrevives al picante, visita la ciudad romana de **Arucci Turóbriga** en los llanos de La Belleza.",
     "sponsored": true
+  },
+  {
+    "id": "belen-aroche-2025",
+    "title": "Belén Viviente",
+    "description": "Aroche se prepara para recibir una de las tradiciones navideñas más emotivas y significativas.\n\nUn año más, la Hermandad de Nuestro Padre Jesús Nazareno y la Hermandad del Santísimo Cristo de la Victoria, con la colaboración del Ayuntamiento de Aroche, se unen para traer a la vida el Belén Viviente, una representación que sumerge al visitante en la atmósfera de la Natividad.\n\n🗓️ Fechas y Horarios Ineludibles\nMarque su calendario para un encuentro con la tradición en tres días especiales:\n\nDías: 5, 6 y 7 de diciembre\n\nHorario: De 18:00 a 20:00 horas\n\n📍 Un Escenario Único: La Cilla\nEl Belén Viviente tendrá lugar en el enclave histórico de La Cilla. La entrada se realizará a través del museo, una ubicación que añade un marco de patrimonio y solemnidad a la experiencia.\n\n💖 Colaboración y Solidaridad\nEste evento no solo es un acto cultural y religioso, sino también una oportunidad para contribuir a una buena causa.\n\nDonativo de Entrada: La asistencia requiere un donativo de solo 1€.\n\nSabor a Tradición: Además, para endulzar la velada, habrá una Venta de buñuelos tradicionales.\n\nAmbas iniciativas están destinadas a apoyar la labor de las Hermandades organizadoras.",
+    "town": "Aroche",
+    "date": "2025-12-05",
+    "endDate": "2025-12-07",
+    "category": EventCategory.BELEN_VIVIENTE,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-18.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/591715593_727030163779932_721376166079550100_n.jpg"
+    ],
+    "interestInfo": INFO_AROCHE,
+    "itinerary": "**🏰 Tarde:** Pasea por el casco histórico de Aroche y visita el Museo del Rosario.\n**✨ 18:00 - Belén Viviente:** Accede a **La Cilla** a través del museo para disfrutar de la representación.\n**🍩 Degustación:** Colabora con las hermandades comprando unos **buñuelos tradicionales**.",
+    "sponsored": false
   },
   {
     "id": "visita-guiada-aroche",

@@ -8,6 +8,7 @@ interface MenuModalProps {
     onSuggest: () => void;
     toggleTheme: () => void;
     onInfo: () => void;
+    onProvinceEvents: () => void; // New prop
     isPwaInstallable: boolean;
     theme: 'light' | 'dark';
 }
@@ -18,6 +19,7 @@ const MenuModal: React.FC<MenuModalProps> = ({
     onSuggest,
     toggleTheme,
     onInfo,
+    onProvinceEvents,
     isPwaInstallable,
     theme
 }) => {
@@ -68,6 +70,11 @@ const MenuModal: React.FC<MenuModalProps> = ({
                         <button onClick={handleShareApp} className={buttonClass}>
                             <span className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300">{ICONS.share}</span>
                             <span>Compartir App</span>
+                        </button>
+
+                        <button onClick={() => { onProvinceEvents(); onClose(); }} className={buttonClass}>
+                            <span className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-400">{ICONS.globe}</span>
+                            <span>Más Eventos Huelva</span>
                         </button>
 
                         <button onClick={() => { onSuggest(); onClose(); }} className={buttonClass}>

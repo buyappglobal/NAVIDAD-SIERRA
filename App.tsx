@@ -11,6 +11,7 @@ import EventCalendar from './components/EventCalendar';
 import FilterSidebar from './components/FilterSidebar';
 import FilterSidebarModal from './components/FilterSidebarModal';
 import EventMapModal from './components/EventMapModal';
+import ScrollToTopButton from './components/ScrollToTopButton';
 import Footer from './components/Footer';
 import BottomNav from './components/BottomNav';
 import Hero from './components/Hero';
@@ -26,6 +27,7 @@ import FaqModal from './components/FaqModal';
 import HowItWorksModal from './components/HowItWorksModal';
 import EventCounter from './components/EventCounter';
 import MenuModal from './components/MenuModal';
+import ProvinceEventsModal from './components/ProvinceEventsModal';
 import { analyzeSearchIntent } from './services/aiSearchService';
 import { getEventMetrics } from './services/interactionService';
 import { exportEventsToCSV } from './services/googleSheetsService';
@@ -60,11 +62,64 @@ const App: React.FC = () => {
   // --- STATE ---
   const [events, setEvents] = useState<EventType[]>(INITIAL_EVENTS);
   const [view, setView] = useState<'list' | 'calendar'>('list');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   
-  // Filters
+  // --- ROUTING LOGIC ---
+  const parseRoute = () => {
+      let initialTowns: string[] = [];
+      let initialEventId: string | null = null;
+
+      try {
+          const hash = window.location.hash; // e.g. #/pueblo/aroche
+          const params = new URLSearchParams(window.location.search); 
+          
+          // 1. Hash Routing (Priority) - /#/pueblo/ID o /#/evento/ID
+          if (hash.includes('#/pueblo/')) {
+              // Extract everything after #/pueblo/
+              const parts = hash.split('#/pueblo/');
+              if (parts.length > 1) {
+                  const rawTown = decodeURIComponent(parts[1].split('/')[0]); // Handle trailing slash
+                  const townEntry = TOWNS.find(t => 
+                      t.id.toLowerCase() === rawTown.toLowerCase() || 
+                      t.name.toLowerCase() === rawTown.toLowerCase()
+                  );
+                  if (townEntry) initialTowns = [townEntry.id];
+              }
+          } else if (hash.includes('#/evento/')) {
+              const parts = hash.split('#/evento/');
+              if (parts.length > 1) {
+                  const eventId = decodeURIComponent(parts[1].split('/')[0]); // Handle trailing slash
+                  if (INITIAL_EVENTS.some(e => e.id === eventId)) {
+                      initialEventId = eventId;
+                  }
+              }
+          } 
+          // 2. Query Param Fallback (Legacy support for ?town=...)
+          else if (params.get('town')) {
+              const townParam = params.get('town')!;
+              const townEntry = TOWNS.find(t => 
+                  t.id.toLowerCase() === townParam.toLowerCase() || 
+                  t.name.toLowerCase() === townParam.toLowerCase()
+              );
+              if (townEntry) initialTowns = [townEntry.id];
+          } else if (params.get('event')) {
+              const eventParam = params.get('event');
+              if (eventParam && INITIAL_EVENTS.some(e => e.id === eventParam)) {
+                  initialEventId = eventParam;
+              }
+          }
+      } catch (err) {
+          console.warn("Route parsing failed safely:", err);
+      }
+
+      return { initialTowns, initialEventId };
+  };
+
+  const routeData = parseRoute();
+
+  const [selectedTowns, setSelectedTowns] = useState<string[]>(routeData.initialTowns);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(routeData.initialEventId);
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
@@ -88,6 +143,7 @@ const App: React.FC = () => {
   const [showFaqModal, setShowFaqModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showMenuModal, setShowMenuModal] = useState(false);
+  const [showProvinceEventsModal, setShowProvinceEventsModal] = useState(false);
 
   // Auth & Toast
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -102,11 +158,80 @@ const App: React.FC = () => {
     }
     
     // Cookie consent check
-    const consent = localStorage.getItem('cookie_consent');
-    if (!consent) {
-      setTimeout(() => setShowCookieConsent(true), 2000);
-    }
+    try {
+        const consent = localStorage.getItem('cookie_consent');
+        if (!consent) {
+          setTimeout(() => setShowCookieConsent(true), 2000);
+        }
+    } catch (e) {}
+
+    // Listen for Hash Changes (Back/Forward navigation)
+    const handleHashChange = () => {
+        const { initialTowns, initialEventId } = parseRoute();
+        // Update state to match URL
+        setSelectedTowns(initialTowns);
+        setSelectedEventId(initialEventId);
+        
+        // Reset other filters if we navigate back to home (empty hash)
+        if (initialTowns.length === 0 && !initialEventId && !window.location.hash.includes('#/')) {
+            setSelectedCategories([]);
+            setSearchQuery('');
+            setStartDate(null);
+            setEndDate(null);
+        }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  // Sync State to URL Hash (Enable sharing)
+  useEffect(() => {
+      try {
+          // 1. Sync Event Detail URL
+          if (selectedEventId) {
+              const newHash = `#/evento/${selectedEventId}`;
+              if (window.location.hash !== newHash) {
+                  // Safe update for blob/preview environments
+                  try {
+                    window.history.replaceState(null, '', newHash);
+                  } catch (e) {
+                    // Fallback to simple hash assignment if replaceState is blocked
+                    window.location.hash = newHash;
+                  }
+              }
+              return;
+          }
+
+          // 2. Sync Town Filter URL
+          // If we have selected exactly one town (and not viewing an event), update the URL
+          if (selectedTowns.length === 1) {
+              const townId = selectedTowns[0];
+              const newHash = `#/pueblo/${townId}`;
+              if (window.location.hash !== newHash) {
+                  try {
+                    window.history.replaceState(null, '', newHash);
+                  } catch (e) {
+                    window.location.hash = newHash;
+                  }
+              }
+          } else if (selectedTowns.length === 0 && !selectedEventId) {
+              // If no towns selected, clear specific hash if present
+              if (window.location.hash.includes('#/pueblo/') || window.location.hash.includes('#/evento/')) {
+                   const baseUrl = window.location.pathname + window.location.search;
+                   try {
+                        window.history.replaceState(null, '', baseUrl);
+                   } catch (e) {
+                        // If we can't clear it cleanly, just empty the hash
+                        window.location.hash = '';
+                   }
+              }
+          }
+      } catch (err) {
+          // Suppress errors in strict environments to prevent app crash
+          console.debug("Routing sync suppressed in this environment.");
+      }
+  }, [selectedTowns, selectedEventId]);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -168,7 +293,10 @@ const App: React.FC = () => {
       
       setIsAiSearching(true);
       // Try process.env first as per instructions, then session storage as fallback for existing behavior
-      const apiKey = process.env.API_KEY || sessionStorage.getItem('gemini-api-key');
+      let apiKey = process.env.API_KEY;
+      if (!apiKey) {
+          try { apiKey = sessionStorage.getItem('gemini-api-key'); } catch(e) {}
+      }
       
       if (!apiKey) {
           // Fallback: Open AI Assistant Modal to setup key or ask
@@ -198,22 +326,40 @@ const App: React.FC = () => {
   // Logic to show install modal after closing an event
   const handleCloseDetail = () => {
       setSelectedEventId(null);
+      // Remove hash from URL when closing detail without refreshing
+      if (window.location.hash.includes('#/evento/')) {
+          try {
+            const baseUrl = window.location.pathname + window.location.search;
+            // Restore town filter hash if one town was selected, otherwise clean
+            if (selectedTowns.length === 1) {
+                 const newHash = `#/pueblo/${selectedTowns[0]}`;
+                 window.history.replaceState(null, '', newHash);
+            } else {
+                 window.history.replaceState(null, '', baseUrl);
+            }
+          } catch(e) {
+             // Fallback
+             window.location.hash = '';
+          }
+      }
       
       // 1. Check if app is running in Standalone mode (Already installed)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
       
       // 2. Check if user has previously installed (Local Storage - Permanent flag)
-      const hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true';
+      let hasInstalledStorage = false;
+      try { hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true'; } catch(e) {}
 
       // 3. Check if we have already shown the modal in THIS session (Session Storage - Temporary flag)
-      const hasShownSession = sessionStorage.getItem('pwa_prompt_shown_session') === 'true';
+      let hasShownSession = false;
+      try { hasShownSession = sessionStorage.getItem('pwa_prompt_shown_session') === 'true'; } catch(e) {}
 
       // Logic: Show only if NOT installed, NOT marked as installed, and NOT shown this session
       if (!isStandalone && !hasInstalledStorage && !hasShownSession) {
           setTimeout(() => {
               setShowInstallModal(true);
               // Mark as shown for this session immediately so it doesn't pop up again until tab refresh
-              sessionStorage.setItem('pwa_prompt_shown_session', 'true');
+              try { sessionStorage.setItem('pwa_prompt_shown_session', 'true'); } catch(e) {}
           }, 1500); // 1.5s delay for smooth transition after closing event
       }
   };
@@ -348,6 +494,8 @@ const App: React.FC = () => {
                         showToast={showToastMessage}
                         onEngagement={() => {}}
                         onUpdateEvent={handleUpdateEvent}
+                        allEvents={events} // NEW: Passing all events for related slider
+                        onSelectEvent={setSelectedEventId} // NEW: Allow switching events from details
                     />
                 </div>
                 <BottomNav 
@@ -366,15 +514,19 @@ const App: React.FC = () => {
                     onSuggest={() => setShowSuggestModal(true)}
                     toggleTheme={handleToggleTheme}
                     onInfo={() => setShowInfoModal(true)}
+                    onProvinceEvents={() => setShowProvinceEventsModal(true)} // NEW
                     isPwaInstallable={true}
                     theme={theme}
                 />
+            )}
+            {showProvinceEventsModal && (
+                <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
             )}
             {showInstallModal && (
                 <InstallPwaModal 
                     onClose={() => setShowInstallModal(false)}
                     onInstall={() => {
-                        localStorage.setItem('pwa_installed', 'true');
+                        try { localStorage.setItem('pwa_installed', 'true'); } catch(e){}
                         setShowInstallModal(false);
                     }}
                 />
@@ -399,6 +551,9 @@ const App: React.FC = () => {
                 setSearchQuery('');
                 setStartDate(null);
                 setEndDate(null);
+                try {
+                    history.pushState("", document.title, window.location.pathname + window.location.search); // Clear hash
+                } catch(e) {}
             }}
         />
 
@@ -487,6 +642,9 @@ const App: React.FC = () => {
                             setEndDate(null);
                             setFilterType('all');
                             window.scrollTo({ top: 0, behavior: 'smooth' });
+                            try {
+                                history.pushState("", document.title, window.location.pathname + window.location.search);
+                            } catch(e) {}
                         }}
                     />
                 </div>
@@ -503,6 +661,9 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setSearchQuery('');
+                            try {
+                                history.pushState("", document.title, window.location.pathname + window.location.search);
+                            } catch(e) {}
                         }}
                         onCategoryFilterClick={(cat) => setSelectedCategories([cat])}
                         isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery}
@@ -527,6 +688,9 @@ const App: React.FC = () => {
             onHomeClick={() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setSelectedEventId(null);
+                try {
+                    history.pushState("", document.title, window.location.pathname + window.location.search);
+                } catch(e) {}
             }}
             onMenuClick={() => setShowMenuModal(true)}
             onFaqClick={() => setShowFaqModal(true)}
@@ -551,6 +715,10 @@ const App: React.FC = () => {
                 onDateChange={(s, e) => { setStartDate(s); setEndDate(e); }}
                 availableCategories={availableCategories}
                 eventCounts={eventCounts}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                filterType={filterType}
+                onFilterTypeChange={setFilterType}
             />
         )}
 
@@ -593,7 +761,7 @@ const App: React.FC = () => {
             <InstallPwaModal 
                 onClose={() => setShowInstallModal(false)}
                 onInstall={() => {
-                    localStorage.setItem('pwa_installed', 'true');
+                    try { localStorage.setItem('pwa_installed', 'true'); } catch(e){}
                     setShowInstallModal(false);
                 }}
             />
@@ -606,9 +774,14 @@ const App: React.FC = () => {
                 onSuggest={() => setShowSuggestModal(true)}
                 toggleTheme={handleToggleTheme}
                 onInfo={() => setShowInfoModal(true)}
+                onProvinceEvents={() => setShowProvinceEventsModal(true)}
                 isPwaInstallable={true}
                 theme={theme}
             />
+        )}
+
+        {showProvinceEventsModal && (
+            <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
         )}
 
         {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}

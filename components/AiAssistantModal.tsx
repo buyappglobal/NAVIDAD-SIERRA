@@ -36,9 +36,13 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({ onClose, allEvents 
   const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
-    const savedKey = sessionStorage.getItem('gemini-api-key');
-    if (savedKey) {
-      setApiKey(savedKey);
+    try {
+        const savedKey = sessionStorage.getItem('gemini-api-key');
+        if (savedKey) {
+          setApiKey(savedKey);
+        }
+    } catch(e) {
+        console.warn("Session storage restricted", e);
     }
   }, []);
 
@@ -50,14 +54,20 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({ onClose, allEvents 
     e.preventDefault();
     const trimmedKey = apiKeyInput.trim();
     if (trimmedKey) {
-      sessionStorage.setItem('gemini-api-key', trimmedKey);
+      try {
+        sessionStorage.setItem('gemini-api-key', trimmedKey);
+      } catch(e) {
+        console.warn("Could not save to session storage", e);
+      }
       setApiKey(trimmedKey);
       setKeyError(null);
     }
   };
 
   const handleResetApiKey = () => {
-    sessionStorage.removeItem('gemini-api-key');
+    try {
+        sessionStorage.removeItem('gemini-api-key');
+    } catch(e) {}
     setApiKey(null);
     setApiKeyInput('');
   };

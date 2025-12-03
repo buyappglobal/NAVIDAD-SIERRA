@@ -22,13 +22,17 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ isVisible, onClose }) => 
   };
 
   const handleAccept = () => {
-    localStorage.setItem('cookie_consent', 'accepted');
+    try {
+        localStorage.setItem('cookie_consent', 'accepted');
+    } catch(e) {}
     updateGtagConsent(true);
     onClose();
   };
 
   const handleReject = () => {
-    localStorage.setItem('cookie_consent', 'rejected');
+    try {
+        localStorage.setItem('cookie_consent', 'rejected');
+    } catch(e) {}
     updateGtagConsent(false);
     onClose();
   };

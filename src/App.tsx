@@ -25,6 +25,9 @@ import Toast from './components/Toast';
 import InfoAppModal from './components/InfoAppModal';
 import FaqModal from './components/FaqModal';
 import HowItWorksModal from './components/HowItWorksModal';
+import EventCounter from './components/EventCounter';
+import MenuModal from './components/MenuModal';
+import ProvinceEventsModal from './components/ProvinceEventsModal';
 import { analyzeSearchIntent } from './services/aiSearchService';
 import { getEventMetrics } from './services/interactionService';
 import { exportEventsToCSV } from './services/googleSheetsService';
@@ -59,11 +62,55 @@ const App: React.FC = () => {
   // --- STATE ---
   const [events, setEvents] = useState<EventType[]>(INITIAL_EVENTS);
   const [view, setView] = useState<'list' | 'calendar'>('list');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   
-  // Filters
+  // --- ROUTING LOGIC ---
+  const parseRoute = () => {
+      const hash = window.location.hash; // e.g. #/pueblo/aroche
+      // We keep search params as a fallback for legacy links, but Hash is priority
+      const params = new URLSearchParams(window.location.search); 
+      
+      let initialTowns: string[] = [];
+      let initialEventId: string | null = null;
+
+      // 1. Hash Routing (Priority) - /#/pueblo/ID o /#/evento/ID
+      if (hash.includes('#/pueblo/')) {
+          // Extract everything after #/pueblo/
+          const rawTown = decodeURIComponent(hash.split('#/pueblo/')[1]);
+          const townEntry = TOWNS.find(t => 
+              t.id.toLowerCase() === rawTown.toLowerCase() || 
+              t.name.toLowerCase() === rawTown.toLowerCase()
+          );
+          if (townEntry) initialTowns = [townEntry.id];
+      } else if (hash.includes('#/evento/')) {
+          const eventId = decodeURIComponent(hash.split('#/evento/')[1]);
+          if (INITIAL_EVENTS.some(e => e.id === eventId)) {
+              initialEventId = eventId;
+          }
+      } 
+      // 2. Query Param Fallback (Legacy support for ?town=...)
+      else if (params.get('town')) {
+          const townParam = params.get('town')!;
+          const townEntry = TOWNS.find(t => 
+              t.id.toLowerCase() === townParam.toLowerCase() || 
+              t.name.toLowerCase() === townParam.toLowerCase()
+          );
+          if (townEntry) initialTowns = [townEntry.id];
+      } else if (params.get('event')) {
+          const eventParam = params.get('event');
+          if (eventParam && INITIAL_EVENTS.some(e => e.id === eventParam)) {
+              initialEventId = eventParam;
+          }
+      }
+
+      return { initialTowns, initialEventId };
+  };
+
+  const routeData = parseRoute();
+
+  const [selectedTowns, setSelectedTowns] = useState<string[]>(routeData.initialTowns);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(routeData.initialEventId);
+  
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTowns, setSelectedTowns] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
@@ -86,6 +133,8 @@ const App: React.FC = () => {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [showFaqModal, setShowFaqModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
+  const [showMenuModal, setShowMenuModal] = useState(false);
+  const [showProvinceEventsModal, setShowProvinceEventsModal] = useState(false);
 
   // Auth & Toast
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -104,6 +153,25 @@ const App: React.FC = () => {
     if (!consent) {
       setTimeout(() => setShowCookieConsent(true), 2000);
     }
+
+    // Listen for Hash Changes (Back/Forward navigation)
+    const handleHashChange = () => {
+        const { initialTowns, initialEventId } = parseRoute();
+        // Update state to match URL
+        setSelectedTowns(initialTowns);
+        setSelectedEventId(initialEventId);
+        
+        // Reset other filters if we navigate back to home (empty hash)
+        if (initialTowns.length === 0 && !initialEventId && !window.location.hash.includes('#/')) {
+            setSelectedCategories([]);
+            setSearchQuery('');
+            setStartDate(null);
+            setEndDate(null);
+        }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
   useEffect(() => {
@@ -196,6 +264,12 @@ const App: React.FC = () => {
   // Logic to show install modal after closing an event
   const handleCloseDetail = () => {
       setSelectedEventId(null);
+      // Remove hash from URL when closing detail without refreshing
+      if (window.location.hash.includes('#/evento/')) {
+          // Reset hash to clean or to previous town filter if active?
+          // For simplicity, just remove hash if it was an event hash
+          history.pushState("", document.title, window.location.pathname + window.location.search);
+      }
       
       // 1. Check if app is running in Standalone mode (Already installed)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
@@ -346,17 +420,45 @@ const App: React.FC = () => {
                         showToast={showToastMessage}
                         onEngagement={() => {}}
                         onUpdateEvent={handleUpdateEvent}
+                        allEvents={events} // NEW: Passing all events for related slider
+                        onSelectEvent={setSelectedEventId} // NEW: Allow switching events from details
                     />
                 </div>
                 <BottomNav 
                     onHomeClick={handleCloseDetail}
-                    onInfoClick={() => setShowInfoModal(true)}
+                    onMenuClick={() => setShowMenuModal(true)}
                     onFaqClick={() => setShowFaqModal(true)}
                     onGuideClick={() => setShowGuideModal(true)}
                     onFilterClick={() => { setSelectedEventId(null); setIsFilterModalOpen(true); }}
                 />
             </div>
             {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+            {showMenuModal && (
+                <MenuModal 
+                    onClose={() => setShowMenuModal(false)}
+                    onInstall={() => setShowInstallModal(true)}
+                    onSuggest={() => setShowSuggestModal(true)}
+                    toggleTheme={handleToggleTheme}
+                    onInfo={() => setShowInfoModal(true)}
+                    onProvinceEvents={() => setShowProvinceEventsModal(true)} // NEW
+                    isPwaInstallable={true}
+                    theme={theme}
+                />
+            )}
+            {showProvinceEventsModal && (
+                <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
+            )}
+            {showInstallModal && (
+                <InstallPwaModal 
+                    onClose={() => setShowInstallModal(false)}
+                    onInstall={() => {
+                        localStorage.setItem('pwa_installed', 'true');
+                        setShowInstallModal(false);
+                    }}
+                />
+            )}
+            {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}
+            {showSuggestModal && <SuggestEventModal onClose={() => setShowSuggestModal(false)} />}
           </div>
       );
   }
@@ -369,18 +471,14 @@ const App: React.FC = () => {
             setView={setView} 
             isMapVisible={isMapVisible} 
             onMapClick={() => setIsMapVisible(true)}
-            theme={theme}
-            toggleTheme={handleToggleTheme}
-            isPwaInstallable={true}
-            onInstallClick={() => setShowInstallModal(true)}
             onHomeClick={() => {
                 setSelectedTowns([]);
                 setSelectedCategories([]);
                 setSearchQuery('');
                 setStartDate(null);
                 setEndDate(null);
+                history.pushState("", document.title, window.location.pathname + window.location.search); // Clear hash
             }}
-            onSuggestClick={() => setShowSuggestModal(true)}
         />
 
         <main className="container mx-auto p-4 md:flex gap-8">
@@ -421,7 +519,7 @@ const App: React.FC = () => {
                                  <input
                                     type="text" 
                                     className="w-full p-3 pl-10 pr-20 bg-slate-100 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-md focus:ring-amber-400 focus:border-amber-400 disabled:opacity-50"
-                                    placeholder={isAiSearching ? "Analizando..." : "Ej: Planes con niños el sábado, conciertos gratis..."}
+                                    placeholder={isAiSearching ? "Analizando..." : "Puente de diciembre, Cabalgata..."}
                                     value={searchQuery}
                                     onChange={(e) => handleSearchChange(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleAiSearch()}
@@ -456,6 +554,23 @@ const App: React.FC = () => {
 
                 <Hero />
 
+                {/* Contador de Eventos */}
+                <div className="mb-4">
+                    <EventCounter 
+                        total={events.filter(e => !e.id.startsWith('ad-')).length} 
+                        onClick={() => {
+                            setSelectedTowns([]);
+                            setSelectedCategories([]);
+                            setSearchQuery('');
+                            setStartDate(null);
+                            setEndDate(null);
+                            setFilterType('all');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                            history.pushState("", document.title, window.location.pathname + window.location.search);
+                        }}
+                    />
+                </div>
+
                 {view === 'calendar' ? (
                     <EventCalendar events={filteredEvents} onSelectEvent={setSelectedEventId} />
                 ) : (
@@ -468,6 +583,7 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setSearchQuery('');
+                            history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
                         onCategoryFilterClick={(cat) => setSelectedCategories([cat])}
                         isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery}
@@ -492,14 +608,13 @@ const App: React.FC = () => {
             onHomeClick={() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setSelectedEventId(null);
+                history.pushState("", document.title, window.location.pathname + window.location.search);
             }}
-            onInfoClick={() => setShowInfoModal(true)}
+            onMenuClick={() => setShowMenuModal(true)}
             onFaqClick={() => setShowFaqModal(true)}
             onGuideClick={() => setShowGuideModal(true)}
             onFilterClick={() => setIsFilterModalOpen(true)}
         />
-
-        <ScrollToTopButton />
 
         {/* MODALS */}
         {isFilterModalOpen && (
@@ -518,6 +633,10 @@ const App: React.FC = () => {
                 onDateChange={(s, e) => { setStartDate(s); setEndDate(e); }}
                 availableCategories={availableCategories}
                 eventCounts={eventCounts}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                filterType={filterType}
+                onFilterTypeChange={setFilterType}
             />
         )}
 
@@ -566,6 +685,23 @@ const App: React.FC = () => {
             />
         )}
 
+        {showMenuModal && (
+            <MenuModal 
+                onClose={() => setShowMenuModal(false)}
+                onInstall={() => setShowInstallModal(true)}
+                onSuggest={() => setShowSuggestModal(true)}
+                toggleTheme={handleToggleTheme}
+                onInfo={() => setShowInfoModal(true)}
+                onProvinceEvents={() => setShowProvinceEventsModal(true)}
+                isPwaInstallable={true}
+                theme={theme}
+            />
+        )}
+
+        {showProvinceEventsModal && (
+            <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
+        )}
+
         {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}
         {showFaqModal && <FaqModal onClose={() => setShowFaqModal(false)} />}
         {showGuideModal && <HowItWorksModal onClose={() => setShowGuideModal(false)} />}
@@ -574,15 +710,6 @@ const App: React.FC = () => {
         
         {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
         
-        {ENABLE_AI_SEARCH && (
-            <button 
-                onClick={() => setShowAiAssistant(true)}
-                className="fixed bottom-24 right-4 z-40 bg-purple-600 text-white p-3 rounded-full shadow-lg hover:bg-purple-700 transition-colors animate-bounce-slow"
-                title="Asistente de Viaje IA"
-            >
-                {ICONS.sparkles}
-            </button>
-        )}
       </div>
     </div>
   );
