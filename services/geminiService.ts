@@ -1,11 +1,20 @@
 
-
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { EventType, EventCategory } from '../types';
 
+// Safe access to environment variable to prevent "Script error" / "process is not defined"
+const getEnvApiKey = () => {
+    try {
+        // @ts-ignore
+        return (typeof process !== 'undefined' && process.env && process.env.API_KEY) || "";
+    } catch (e) {
+        return "";
+    }
+};
+
 export const parseEventsFromText = async (text: string): Promise<Omit<EventType, 'id'>[] | null> => {
   // This function still relies on an environment key, as it's an admin-only feature.
-  const apiKey = (process.env.API_KEY || "").trim();
+  const apiKey = getEnvApiKey().trim();
   if (!apiKey) {
       console.error("API Key is missing or empty in process.env for parseEventsFromText");
       return null;
@@ -88,7 +97,7 @@ export const parseEventsFromText = async (text: string): Promise<Omit<EventType,
 
 // Nueva función para autocompletar detalles (Interest Info e Itinerary)
 export const generateEventDetails = async (title: string, town: string, description: string, date: string): Promise<{ interestInfo: string, itinerary: string } | null> => {
-  const apiKey = (process.env.API_KEY || "").trim();
+  const apiKey = getEnvApiKey().trim();
   if (!apiKey) return null;
 
   const ai = new GoogleGenAI({ apiKey });
@@ -181,10 +190,90 @@ export const generatePlanFromQuery = async (query: string, apiKey: string, event
     }
 };
 
+// Función para buscar eventos en el RESTO de la provincia (Excluyendo Sierra)
+export const findProvinceEvents = async (apiKey: string): Promise<any[]> => {
+  if (!apiKey) throw new Error("API_KEY_MISSING");
 
-// Función antigua (ya no se usa en producción para el usuario final, pero la mantenemos por compatibilidad si es necesario)
+  const ai = new GoogleGenAI({ apiKey });
+
+  const prompt = `
+    Busca eventos de Navidad para Diciembre 2025 y Enero 2026 en la provincia de Huelva, EXCLUYENDO los pueblos de la Sierra de Aracena.
+    Céntrate en: Huelva Capital, Costa (Lepe, Ayamonte, Punta Umbría) y Condado (Almonte, Moguer, La Palma).
+    Busca: Alumbrados, Zambombas, Mercados, Belenes Vivientes, Cabalgatas.
+    
+    Devuelve un array JSON con EXACTAMENTE 5 eventos variados y aleatorios encontrados. 
+    Sé conciso y eficiente. No inventes eventos, busca información real en Google Search.
+    
+    Estructura:
+    [
+      {
+        "title": "Nombre del evento",
+        "location": "Pueblo/Ciudad",
+        "date": "Fecha aproximada o texto (ej: 6-8 Dic)",
+        "short_desc": "Breve descripción de 10 palabras"
+      }
+    ]
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+        // responseMimeType no compatible con tools en esta versión del SDK a veces, parsing manual mejor
+      }
+    }) as GenerateContentResponse;
+
+    const text = response.text || "";
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+    }
+    return [];
+
+  } catch (error: any) {
+    console.error("Error en findProvinceEvents:", error);
+    throw error;
+  }
+};
+
+// Generar detalles específicos de un evento al hacer click
+export const generateProvinceEventDetails = async (apiKey: string, title: string, location: string): Promise<string> => {
+    if (!apiKey) throw new Error("API_KEY_MISSING");
+  
+    const ai = new GoogleGenAI({ apiKey });
+  
+    const prompt = `
+      El usuario quiere saber más sobre el evento "${title}" en "${location}" (Huelva) para Navidad 2025.
+      Usa Google Search para encontrar información actualizada.
+      
+      Escribe un texto breve y atractivo (formato Markdown) que incluya:
+      1. **Qué es**: Descripción del evento.
+      2. **Cuándo y Dónde**: Horarios y lugar si los encuentras.
+      3. **Por qué ir**: Qué lo hace especial.
+      
+      Si no encuentras información exacta de 2025, basa tu respuesta en lo que se suele hacer tradicionalmente en ese evento, indicando que son "datos basados en ediciones anteriores".
+      Sé conciso, usa emojis y un tono festivo.
+    `;
+  
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          tools: [{ googleSearch: {} }],
+        }
+      }) as GenerateContentResponse;
+  
+      return response.text || "No se ha podido obtener información detallada.";
+  
+    } catch (error: any) {
+      console.error("Error en generateProvinceEventDetails:", error);
+      throw error;
+    }
+  };
+
 export const generateItinerary = async (event: EventType): Promise<string | null> => {
-    // Esta función se mantiene como legacy o fallback, pero la lógica principal ahora es precargar los datos.
-    // Retornamos null para forzar el uso de datos estáticos o mostrar mensaje de error si no hay datos.
     return null;
 };

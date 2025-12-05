@@ -22,7 +22,7 @@ export const ARACENA_EVENTS: EventType[] = [
     "town": "Aracena",
     "date": "2025-12-07",
     "category": EventCategory.OTRO,
-    "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-ALAJAR-1-Rafael-Caballero-Vazquez.png",
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-41.png",
     "interestInfo": INFO_ARACENA,
     "itinerary": "**☕ Desayuno:**\nEmpieza con dulces tradicionales en **Confitería Rufino** o un buen café en la Plaza de San Pedro.\n\n**🚶 Actividad Principal:**\nVisita el **Museo del Jamón** para abrir el apetito y aprende sobre la cultura del ibérico. Después, da un paseo por el **Parque de Arias Montano**.\n\n**🍽️ Almuerzo:**\nPrueba la gastronomía local en **Restaurante Casas**, un referente en guisos y carnes ibéricas.\n\n**🌙 Actividad Nocturna (Los Rehiletes):**\nA partir de las 18:30, recorre las plazas del pueblo (Plaza Alta, San Pedro, Santa Lucía). Únete a los vecinos alrededor de las candelas, ve girar los rehiletes de fuego y prueba los **buñuelos con chocolate** o el tostón de castañas.\n\n**🛏️ Hospedaje:**\nDescansa en el **Hotel Los Castaños** o en una de las casas rurales cercanas para disfrutar del silencio tras la fiesta."
   },

@@ -14,6 +14,6 @@ export const VALDELARCO_EVENTS: EventType[] = [
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-14-Rafael-Caballero-Vazquez.png",
     "interestInfo": INFO_VALDELARCO,
     "itinerary": "**🥾 Mañana:** Aprovecha el aire puro para hacer la **Ruta del Barranco de la Nava**, un bosque de galería mágico en otoño.\n**🍽️ Mediodía:** Degusta la gastronomía local (setas y cerdo ibérico) en los bares del pueblo.\n**📸 Tarde:** Descubre la arquitectura de las **\"solanas\"** y visita la **Iglesia del Divino Salvador**.\n**✨ Noche (18:30):** Adéntrate en el **Belén Viviente** por las calles empedradas del pueblo. Una experiencia inmersiva única.",
-    "sponsored": true
+    "sponsored": false
   }
 ];

@@ -24,7 +24,7 @@ export const AROCHE_EVENTS: EventType[] = [
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-10-Rafael-Caballero-Vazquez.png",
     "interestInfo": INFO_AROCHE,
     "itinerary": "**🏰 Mañana:** Visita el **Castillo de Aroche** y su plaza de toros interior. Disfruta de las vistas a Portugal. Después, baja al **Museo del Santo Rosario**, único en el mundo.\n**🍽️ Mediodía (El Evento):** A las 13:00, dirígete a **Cafetería Popo** para la **Fiesta del Picante**. Prueba las salsas y anima (o participa) en el concurso de comedores.\n**🏛️ Tarde:** Si sobrevives al picante, visita la ciudad romana de **Arucci Turóbriga** en los llanos de La Belleza.",
-    "sponsored": true
+    "sponsored": false
   },
   {
     "id": "belen-aroche-2025",

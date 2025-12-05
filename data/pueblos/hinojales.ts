@@ -18,7 +18,7 @@ export const HINOJALES_EVENTS: EventType[] = [
     ],
     "interestInfo": INFO_HINOJALES,
     "itinerary": "**🗓️ 5 Dic:** Encendido del alumbrado en Plaza de los Naranjos.\n**✨ 20 Dic:** Belén Viviente y Villancicos Flamencos.\n**🎁 27 Dic:** Paje Real y Tardeo con Grupo Malahe.\n**❄️ 3 Ene:** Gran Nevada Artificial en el Paseo.\n**👑 5 Ene:** Cabalgata de Reyes Magos.",
-    "sponsored": true
+    "sponsored": false
   },
   {
     "id": "belen-viviente-hinojales-2025",

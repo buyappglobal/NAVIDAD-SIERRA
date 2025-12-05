@@ -1,3 +1,4 @@
+
 import React, { useState, ReactNode } from 'react';
 
 interface CollapsibleFilterSectionProps {
@@ -30,7 +31,7 @@ const CollapsibleFilterSection: React.FC<CollapsibleFilterSectionProps> = ({ tit
       </button>
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-[1000px] opacity-100 pb-4 md:pt-4' : 'max-h-0 opacity-0'
+          isOpen ? 'max-h-[5000px] opacity-100 pb-4 md:pt-4' : 'max-h-0 opacity-0'
         }`}
       >
         {children}

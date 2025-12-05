@@ -1,0 +1,27 @@
+
+import { EventType, EventCategory } from '../../types';
+
+export const INFO_JABUGO = "🍖 Jabugo: La Cuna del Jamón\nJabugo es mundialmente conocido por ser el epicentro de la producción del mejor jamón ibérico de bellota del mundo. Sede de la Denominación de Origen Protegida Jabugo.\n\nEdificio El Tiro: Un edificio emblemático diseñado por Aníbal González, sede de la DOP Jabugo.\n\nPlaza del Jamón: El corazón del pueblo, donde se respira la tradición chacinera.\n\nEntorno: Situado en el Parque Natural, ofrece rutas de senderismo entre dehesas de encinas y alcornoques.";
+
+export const JABUGO_EVENTS: EventType[] = [
+  {
+    "id": "navidad-jabugo-2025",
+    "title": "Navidad en Jabugo",
+    "description": "Jabugo Enciende la Magia: Guía Completa de Actividades para la Navidad 2025-2026\n\n¿Estás listo para vivir una Navidad inolvidable en el corazón de la Sierra?\n\nBajo el lema \"Enciende la magia de la Navidad\", el Ayuntamiento de Jabugo ha presentado una programación vibrante y cargada de tradición para despedir el 2025 y dar la bienvenida al 2026. Desde el encendido del alumbrado hasta la ilusión de los Reyes Magos, este año Jabugo, El Repilado y Los Romeros se llenan de música, gastronomía y actividades para toda la familia.\n\nA continuación, desglosamos los momentos clave que no te puedes perder estas fiestas.\n\n🎄 El Inicio de la Navidad: Luces y Música\nTodo comienza el viernes 5 de diciembre. Jabugo dará el pistoletazo de salida oficial con la inauguración del alumbrado, un momento mágico que vendrá acompañado de una fuerte apuesta musical.\n\nEl ambiente festivo estará garantizado con las actuaciones de las Campanilleras de Jabugo y El Campillo, la Banda Municipal de Música y la tradicional Zambombá \"A Belén Pastores\". Es el momento perfecto para salir a la calle y sentir el primer calor de la Navidad.\n\nDato clave: Las tradicionales Campanilleras no solo actuarán en la inauguración; recorrerán el pueblo del 6 al 21 de diciembre, manteniendo viva la banda sonora de nuestras fiestas.\n\n🍽️ Gastronomía, Mercados y Tradición\nLa Navidad en Jabugo no se entiende sin su riqueza gastronómica y artesanal. El puente de diciembre viene cargado de planes:\n\nSábado 6 de diciembre: Los amantes del buen comer tienen una cita ineludible en Los Romeros con el tradicional Cocido Serrano. Además, en Jabugo se podrá disfrutar del Mercado de Artesanía y más música con la Zambombá.\n\nDomingo 7 de diciembre: Los mercados de artesanía se extienden tanto a Jabugo como a El Repilado, donde también se celebrará una Zambombá.\n\nRuta de Belenes: Del 6 al 31 de diciembre, no olvides visitar la Exposición de Belenes de la Hdad. San Miguel en Jabugo.\n\n🎅 Ilusión para los Más Pequeños\nLos niños son los verdaderos protagonistas y tendrán múltiples oportunidades para entregar sus cartas y divertirse:\n\nEl Cartero Real hará su recorrido en varias fechas:\n\n6 de diciembre: Jabugo.\n\n7 de diciembre: Jabugo.\n\n14 de diciembre: El Repilado.\n\nViernes 12 de diciembre: Los niños podrán disfrutar de su propia Zambombá Infantil en Jabugo.\n\nLunes 29 de diciembre: Tarde de película con el Cine de Navidad en Jabugo.\n\n🎶 Conciertos y Eventos Especiales\nLa música de banda y la cultura local tienen un peso importante en la agenda de finales de mes:\n\n16 de diciembre: Presentación del Plan de Acción Local en Salud.\n\n20 de diciembre: Concierto de Navidad de la Banda Municipal en Los Romeros.\n\n21 de diciembre: Doble cita con el Concierto de Navidad de la Banda Municipal en El Repilado y Jabugo.\n\n🍇 Fin de Año y Reyes Magos: La Traca Final\nPara despedir el 2025, Jabugo propone una mezcla de deporte, fiesta y originalidad:\n\n30 de diciembre: ¡Atención a este evento! Se celebran las IV PreCampanadas Ibéricas. Una forma única y deliciosa de ensayar para el fin de año.\n\n31 de diciembre: Para los deportistas, la San Silvestre Jabugueña, y para los fiesteros, el gran Cotillón de Fin de Año.\n\nY para cerrar las fiestas con broche de oro:\n\n5 de enero de 2026: Sus Majestades de Oriente recorrerán las calles en las Cabalgatas de Reyes Magos.",
+    "town": "Jabugo",
+    "date": "2025-12-05",
+    "endDate": "2026-01-06",
+    "category": EventCategory.OTRO,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-24.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/594667976_1262036495961895_7127856057809355008_n.jpg",
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/591908146_1262047622627449_7942561270210191704_n.jpg",
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/595083692_1262047559294122_8994714276070456952_n.jpg",
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/591859878_1262047685960776_5878919012814984211_n.jpg",
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/595209041_1262036685961876_4460213714511927203_n.jpg",
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/594769641_1262036689295209_4207102364200101050_n.jpg"
+    ],
+    "interestInfo": INFO_JABUGO,
+    "itinerary": "**🎄 5 Dic:** Encendido del Alumbrado y Zambombá \"A Belén Pastores\".\n**🥘 6 Dic:** Tradicional Cocido Serrano en Los Romeros y Mercado de Artesanía.\n**🎅 12 Dic:** Diversión para los peques con la Zambombá Infantil.\n**🍇 30 Dic:** IV PreCampanadas Ibéricas. ¡No faltes!"
+  }
+];

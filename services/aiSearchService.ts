@@ -7,8 +7,9 @@ import { TOWNS } from '../constants';
 export interface SearchIntent {
   townIds: string[];
   categories: EventCategory[];
+  startDate?: string;
+  endDate?: string;
   keywords: string[];
-  isComplex: boolean; // Si es false, mejor usar búsqueda normal
 }
 
 // Mapa de normalización de pueblos para ayudar a la IA (enviamos nombres normalizados)
@@ -20,19 +21,31 @@ export const analyzeSearchIntent = async (query: string, apiKey: string): Promis
   const ai = new GoogleGenAI({ apiKey });
 
   const systemInstruction = `
-    Eres un motor de búsqueda inteligente para una agenda cultural en la Sierra de Huelva.
-    Tu trabajo es interpretar la búsqueda del usuario y devolver un filtro estructurado JSON.
+    Eres un motor de búsqueda inteligente para una agenda cultural en la Sierra de Huelva (España). Año de referencia: 2025.
+    Tu trabajo es interpretar la búsqueda del usuario, corregir errores ortográficos severos (ej: "puentwe" -> "puente", "faborito" -> "favorito"), y devolver un filtro estructurado JSON.
     
-    Tus herramientas son:
+    Tus herramientas y datos de referencia:
     1. Lista de pueblos disponibles: ${townNames.join(", ")}.
     2. Categorías disponibles: ${Object.values(EventCategory).join(", ")}.
     
-    Reglas:
-    - Si el usuario menciona un pueblo (o parecido), añádelo a 'townIds' (usa el nombre exacto de la lista).
-    - Si el usuario busca un tipo de evento (ej: "música", "comer", "belén"), asígnalo a la 'categories' más adecuada.
-    - Extrae palabras clave importantes (ej: "gratis", "infantil", "noche") en 'keywords'.
-    - Si la búsqueda es muy simple (ej: solo una palabra que parece un pueblo o categoría), marca 'isComplex': false.
-    - Si la búsqueda requiere entender contexto (ej: "planes con niños", "fiesta de nochevieja"), marca 'isComplex': true.
+    Reglas de interpretación:
+    - PUEBLOS: Si el usuario menciona un pueblo (o parecido), añádelo a 'townIds' usando el nombre exacto de la lista.
+    - CATEGORÍAS: Si busca un tipo de evento, asígnalo a la 'categories' más adecuada.
+      - "belen", "nacimiento", "portal" -> Belén Viviente.
+      - "comer", "tapa", "jamón", "gastronomía" -> Feria Gastronómica.
+      - "reyes", "cabalgata", "cartero" -> Cabalgata de Reyes.
+      - "música", "concierto", "zambomba" -> Fiesta / Zambomba.
+    - FECHAS: Interpreta expresiones temporales para Diciembre 2025 / Enero 2026.
+      - "Puente de diciembre", "el puente", "puentwe": Del 2025-12-05 al 2025-12-08.
+      - "Este fin de semana": Calcula el próximo fin de semana relativo a la fecha actual (asume hoy es inicio de diciembre 2025).
+      - "Navidad": 2025-12-24 a 2025-12-25.
+      - "Reyes": 2026-01-05.
+    - KEYWORDS (IMPORTANTE): Extrae palabras clave adicionales para filtrar por texto en el título o descripción.
+      - CORRIGE la ortografía antes de devolverlas (ej: "familia" si escribe "famila", "puente" si escribe "puentwe").
+      - LIMPIEZA INTELIGENTE: EXCLUYE palabras que ya se hayan usado para determinar el Pueblo, la Categoría o la Fecha.
+      - Ejemplo 1: Si busca "belen en aracena" -> Pueblo="Aracena", Categoría="Belén Viviente", Keywords=[] (vacío, porque "belen" ya definió la categoría).
+      - Ejemplo 2: Si busca "plan familiar puentwe" -> Fecha="2025-12-05 a 08", Keywords=["familiar"] (corrige "puentwe" a fecha y extrae "familiar").
+      - Ejemplo 3: Si busca "gratis" -> Keywords=["gratis"].
   `;
 
   const prompt = `Analiza esta búsqueda: "${query}"`;
@@ -57,14 +70,18 @@ export const analyzeSearchIntent = async (query: string, apiKey: string): Promis
               items: { type: Type.STRING, enum: Object.values(EventCategory) },
               description: "Categorías detectadas."
             },
+            startDate: {
+              type: Type.STRING,
+              description: "Fecha inicio (YYYY-MM-DD).",
+            },
+            endDate: {
+              type: Type.STRING,
+              description: "Fecha fin (YYYY-MM-DD).",
+            },
             keywords: {
               type: Type.ARRAY,
               items: { type: Type.STRING },
-              description: "Palabras clave adicionales para búsqueda de texto."
-            },
-            isComplex: {
-              type: Type.BOOLEAN,
-              description: "True si es una búsqueda semántica compleja, False si es simple."
+              description: "Palabras clave adicionales limpias y corregidas (sin faltas). Si la palabra definió una categoría, NO la incluyas aquí."
             }
           }
         }
@@ -84,8 +101,9 @@ export const analyzeSearchIntent = async (query: string, apiKey: string): Promis
       return {
         townIds: mappedTownIds,
         categories: result.categories || [],
-        keywords: result.keywords || [],
-        isComplex: result.isComplex ?? false
+        startDate: result.startDate || undefined,
+        endDate: result.endDate || undefined,
+        keywords: result.keywords || []
       };
     }
     return null;

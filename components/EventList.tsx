@@ -109,13 +109,13 @@ const EventList: React.FC<EventListProps> = ({
   }
 
   const renderFilterResetBanner = () => (
-    <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in border border-slate-200 dark:border-slate-700">
-      <p className="text-slate-600 dark:text-slate-300 text-center sm:text-left">
+    <div className="sticky top-20 z-30 bg-slate-100/95 dark:bg-slate-800/95 backdrop-blur-md p-4 rounded-lg mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-fade-in border border-slate-200 dark:border-slate-700 shadow-md">
+      <p className="text-slate-600 dark:text-slate-300 text-center sm:text-left font-medium">
         Estás viendo una lista filtrada.
       </p>
       <button
         onClick={onResetFilters}
-        className="bg-amber-400 text-slate-900 font-bold py-2 px-6 rounded-md hover:bg-amber-500 dark:hover:bg-amber-300 transition-colors whitespace-nowrap"
+        className="bg-amber-400 text-slate-900 font-bold py-2 px-6 rounded-md hover:bg-amber-500 dark:hover:bg-amber-300 transition-colors whitespace-nowrap shadow-sm"
       >
         Limpiar todos los filtros
       </button>

@@ -20,6 +20,34 @@ export const FUENTEHERIDOS_EVENTS: EventType[] = [
     "itinerary": "**☕ Mañana:**\nEmpieza el día paseando por el **Mercado de Otoño** (abre a las 11:00h). Es el momento perfecto para comprar productos locales y disfrutar de las primeras **degustaciones de jamón y vino** en la plaza.\n\n**🍽️ Almuerzo:**\nDirígete a la carpa del **Restaurante LIEVA** a las 14:30h. No te pierdas el plato estrella: la tradicional **olla de patatas con castañas y costillas ibéricas**, ideal para entrar en calor.\n\n**🌰 Tarde:**\nA las 17:00h, acércate a la **Plaza el Coso** para el momento más esperado: el **Tostón de Castañas**. Disfruta del ambiente festivo con los vecinos alrededor del fuego.\n\n**🎭 Noche:**\nTermina el día en el teleclub con el **Baile de la Castaña** y la música de los campanilleros. Si te quedas a dormir, la **Posada de Fuenteheridos** es un lugar con mucho encanto."
   },
   {
+    "id": "concurso-reposteria-fuenteheridos-2025",
+    "title": "3º Concurso de Repostería",
+    "description": "Fuenteheridos busca el bocado más dulce del otoño: Llega el 3º Concurso de Repostería con Castañas\n\nSi hay un aroma que define el otoño en la Sierra, es el de la castaña. Y si hay un lugar donde este fruto se convierte en protagonista absoluto, es en Fuenteheridos. En el marco de la próxima Feria de la Castaña 2025, la localidad se prepara para celebrar una de sus citas más deliciosas y creativas: el 3º Concurso de Repostería con Castañas.\n\nEste evento, organizado por el Ayuntamiento de Fuenteheridos con la colaboración de la Diputación de Huelva y la asociación VXF, no es solo una competición culinaria; es una oda a la gastronomía local y una oportunidad perfecta para que vecinos y visitantes demuestren su talento en la cocina.\n\n📅 Una cita para el paladar\nEl evento tendrá lugar el próximo lunes 8 de diciembre, aprovechando el ambiente festivo del puente. La cita comenzará a partir de las 16:00 horas en un escenario inmejorable: la Plaza del Coso. Allí, los dulces no solo serán juzgados, sino que se expondrán al público, convirtiendo la plaza en un escaparate de tentaciones artesanales.\n\n🍰 El Reto: Creatividad con Sabor a Castaña\nLa premisa del concurso es sencilla pero exigente: la castaña debe ser el ingrediente principal. Sin embargo, la organización apuesta por la libertad creativa total. Los participantes pueden presentar sus propuestas en el formato que deseen:\n\nTartas y pasteles tradicionales.\n\nMermeladas y confituras.\n\nSorbetes refrescantes.\n\nFruta confitada.\n\nLo importante es innovar y sorprender, ya que se valorarán tres pilares fundamentales: el sabor, la presentación y la originalidad.\n\nUn detalle para los participantes: Para facilitar la elaboración de estas obras maestras, a cada concursante inscrito se le entregará gratuitamente ½ kilo de harina de castaña.\n\n🏆 Premios y Votación Popular\n¿Quién decide al ganador? En este concurso, la opinión del pueblo cuenta. La votación será popular, lo que garantiza un ambiente interactivo y emocionante durante la exposición.\n\nLos incentivos para participar son muy atractivos, con premios en metálico para los tres mejores:\n\n🥇 1º Premio: 300 €\n\n🥈 2º Premio: 100 €\n\n🥉 3º Premio: 50 €\n\nAdemás, la organización quiere premiar el esfuerzo de todos. Por ello, entre el resto de concursantes que no resulten premiados, se sorteará una noche en el Hotel Los Molinos.\n\n📝 ¿Cómo inscribirse?\nSi tienes una receta guardada o quieres experimentar con la harina de castaña, no dejes pasar la fecha.\n\nPlazo de inscripción: Hasta el 5 de diciembre.\n\nLugar: Ayuntamiento de Fuenteheridos.\n\nEste 8 de diciembre, Fuenteheridos no solo celebra la castaña, celebra la tradición, el sabor y la convivencia. ¡Enciende el horno y participa!",
+    "town": "Fuenteheridos",
+    "date": "2025-12-08",
+    "category": EventCategory.FERIA_GASTRONOMICA,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-35.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/593332177_1338997964937664_8037662729766167335_n.jpg"
+    ],
+    "interestInfo": INFO_FUENTEHERIDOS,
+    "itinerary": "**🥾 Mañana:** Aprovecha la mañana para hacer el **Sendero 'Entre Castaños'** o pasea por el **Mercado de Otoño** para las últimas compras.\n**🍽️ Mediodía:** Tapea en los chiringuitos de la Feria o prueba el **\"mosto papero\"** en el Paseo de los Poetas.\n**🍰 16:00 - Concurso:** Acude a la **Plaza del Coso** para ver (¡y ojalá probar!) las creaciones del Concurso de Repostería.\n**🏆 Tarde:** Participa en la votación popular y disfruta del ambiente de clausura."
+  },
+  {
+    "id": "concurso-mosto-fuenteheridos-2025",
+    "title": "Concurso Degustación de Mosto",
+    "description": "Brindis de Otoño en Fuenteheridos: Nace el I Concurso Degustación de Mosto\nSi la castaña es la reina de la sierra, el mosto es su compañero ideal. Este año, la Feria de la Castaña 2025 de Fuenteheridos amplía su oferta gastronómica y cultural con una novedad que promete convertirse en tradición: el I Concurso Degustación de Mosto.\n\nOrganizado por el Ayuntamiento de Fuenteheridos y con el respaldo de la Diputación de Huelva, este evento busca poner en valor la cultura vitivinícola de la zona y el arduo trabajo de los cosecheros locales. Es una invitación a disfrutar de los sabores auténticos de la tierra en un entorno incomparable.\n\n🍇 Una Cita con la Tradición Vinícola\nEl evento se celebrará el lunes 8 de diciembre, coincidiendo con el día festivo, lo que lo convierte en el plan perfecto para cerrar el puente. La actividad dará comienzo a las 13:00 horas, un horario ideal para disfrutar del aperitivo antes del almuerzo.\n\nEl escenario elegido para este estreno es el emblemático Paseo de los Poetas, un rincón con encanto que se llenará del aroma a vendimia y campo.\n\n🍷 Degustación Gratuita y Producto \"Km 0\"\nLo más destacado de esta jornada es su carácter abierto y participativo. Los asistentes podrán disfrutar de una degustación gratuita de mosto autóctono.\n\nNo se trata de vinos industriales, sino de caldos elaborados por los diferentes cosecheros de la zona, producto del esfuerzo artesanal y de las viñas serranas. Es una oportunidad única para probar matices y sabores que difícilmente se encuentran en los circuitos comerciales habituales.\n\n🥇 En Busca del Mejor Mosto 2025\nAunque el ambiente será festivo y de convivencia, también habrá espacio para la sana competencia. La organización ha establecido un jurado especializado que tendrá la difícil (pero deliciosa) tarea de catar las diferentes propuestas.\n\nEl objetivo es reconocer la excelencia y el buen hacer de los productores locales, premiando a los 3 mejores mostos del certamen.\n\n📝 Resumen del Evento\nPara que no te pierdas nada de esta primera edición:\n\n📅 Fecha: Lunes, 8 de diciembre.\n\n⏰ Hora: A partir de las 13:00 h.\n\n📍 Lugar: Paseo de los Poetas, Fuenteheridos.\n\n🎟️ Entrada: Acceso libre y degustación gratuita.\n\nFuenteheridos te espera con la copa en la mano para celebrar el sabor de su tierra. ¡Ven a brindar por la primera de muchas ediciones!",
+    "town": "Fuenteheridos",
+    "date": "2025-12-08",
+    "category": EventCategory.FERIA_GASTRONOMICA,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-36.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/590565537_1338989681605159_6966653066823133531_n.jpg"
+    ],
+    "interestInfo": INFO_FUENTEHERIDOS,
+    "itinerary": "**🌄 Mañana:** Disfruta de un paseo por la **Fuente de los Doce Caños** y el entorno del **Nacimiento del Múrtiga**.\n**🍷 13:00 - Degustación de Mosto:** Acude al **Paseo de los Poetas** para probar el mosto local de forma gratuita.\n**🍽️ Mediodía:** Tapea en la feria o en los bares del pueblo.\n**🍰 16:00 - Postre:** No te pierdas el **Concurso de Repostería** en la Plaza del Coso para cerrar el día con algo dulce."
+  },
+  {
     "id": "expo-fuenteheridos",
     "title": "Exposición de Arte en Fuenteheridos",
     "description": "El Museo de Fuenteheridos acoge una exposición especial durante el puente de diciembre, mostrando obras de artistas locales inspiradas en el otoño serrano.",
@@ -28,5 +56,19 @@ export const FUENTEHERIDOS_EVENTS: EventType[] = [
     "endDate": "2025-12-09",
     "category": EventCategory.OTRO,
     "imageUrl": "https://solonet.es/wp-content/uploads/2025/11/AGENDA-TURISTEANDO-Rafael-Caballero-Vazquez-2.png"
+  },
+  {
+    "id": "encendido-alumbrado-fuenteheridos-2025",
+    "title": "Encendido del Alumbrado Navideño",
+    "description": "🎄 Luces, Magia y Alegría: ¡La Navidad Llega a Fuenteheridos! 🌟\n\nFuenteheridos se prepara para dar la bienvenida oficial a la época más mágica del año con el esperado encendido del alumbrado navideño, un evento que marca el inicio de la ilusión en el municipio.\n\nEste viernes, 5 de diciembre, la Plaza El Coso se convertirá en el corazón de la celebración. A partir de las 18:30 horas, vecinos y visitantes están invitados a reunirse para presenciar el momento cumbre: cuando miles de luces festivas se enciendan para transformar las calles de Fuenteheridos en un auténtico cuento de Navidad.\n\n✨ Una Tarde Llena de Fantasía\n\nPero la magia no termina con el encendido. Inmediatamente después, dará comienzo la animación infantil con duendes, asegurando risas y diversión para los más pequeños. Los duendes de la Navidad llenarán la plaza de juegos y actividades, creando un ambiente festivo perfecto para inaugurar estas fechas tan señaladas.\n\nNo te lo pierdas:\n\nEvento: Encendido del Alumbrado Navideño\n\nDía: Viernes 5 de diciembre\nHora: Desde las 18:30 horas\nLugar: Plaza El Coso",
+    "town": "Fuenteheridos",
+    "date": "2025-12-05",
+    "category": EventCategory.FIESTA,
+    "imageUrl": "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/AGENDA-TURISTEANDO-000-23.png",
+    "galleryUrls": [
+      "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/588807375_1340231288147665_2020125021043266046_n.jpg"
+    ],
+    "interestInfo": INFO_FUENTEHERIDOS,
+    "itinerary": "**✨ 18:30 - Encendido:** Asiste al encendido oficial del alumbrado en la Plaza El Coso.\n**🧝‍♀️ Animación:** Disfruta de la animación infantil con duendes después del encendido."
   }
 ];

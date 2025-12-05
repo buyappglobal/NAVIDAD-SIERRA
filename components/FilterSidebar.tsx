@@ -1,7 +1,6 @@
 
 import React from 'react';
 import TownFilter from './TownFilter';
-import SearchBar from './SearchBar';
 import CategoryFilter from './CategoryFilter';
 import DateRangeFilter from './DateRangeFilter';
 import { EventCategory } from '../types';
@@ -17,8 +16,6 @@ interface FilterSidebarProps {
   towns: Town[];
   selectedTowns: string[];
   onSelectTown: (townId: string) => void;
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
   selectedCategories: string[];
   onCategoryToggle: (category: EventCategory) => void;
   startDate: string | null;
@@ -28,6 +25,10 @@ interface FilterSidebarProps {
   availableCategories?: EventCategory[];
   eventCounts?: Record<string, number>;
   
+  // Search props
+  searchQuery: string;
+  onSearchQueryChange: (query: string) => void;
+
   // New props for sorting and personal filters
   sortBy: 'date' | 'popularity';
   onSortChange: (sort: 'date' | 'popularity') => void;
@@ -35,14 +36,12 @@ interface FilterSidebarProps {
   onFilterTypeChange: (type: 'all' | 'favorites' | 'attending') => void;
 }
 
-const SIDEBAR_BANNER_URL = "https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-02-at-14.11.06-1.jpeg";
+const SIDEBAR_BANNER_URL = "https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-04-at-13.27.18-1.jpeg";
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ 
     towns, 
     selectedTowns, 
     onSelectTown, 
-    searchQuery, 
-    onSearchQueryChange,
     selectedCategories,
     onCategoryToggle,
     startDate,
@@ -51,6 +50,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     onFilterAndClose,
     availableCategories,
     eventCounts,
+    searchQuery,
+    onSearchQueryChange,
     sortBy,
     onSortChange,
     filterType,
@@ -136,10 +137,6 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                 Popularidad
             </button>
          </div>
-      </CollapsibleFilterSection>
-
-      <CollapsibleFilterSection title="Buscar Evento">
-        <SearchBar query={searchQuery} onQueryChange={onSearchQueryChange} />
       </CollapsibleFilterSection>
       
       <CollapsibleFilterSection title="Filtrar por Fecha">

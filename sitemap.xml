@@ -1,27 +1,97 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://huelvalate.es/</loc>
-    <lastmod>2025-11-25</lastmod>
+    <lastmod>2025-12-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  <url><loc>https://huelvalate.es/#/evento/migas-umbria</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/rehiletes-aracena</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/zambomba-linares</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/pueblo-higuera</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/belen-higuera-charcon</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/belen-alajar-2025</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/pueblo-almonaster</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/belen-puerto-moral</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/feria-castana-fuenteheridos</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/belen-galaroza</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/saborea-cumbres</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/feria-mosto-marines</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/navidad-navahermosa</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/zambomba-encinasola</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/aroche-navidad</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/expo-fuenteheridos</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://huelvalate.es/#/evento/ruta-amantes-galaroza</loc><lastmod>2025-11-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  
+  <!-- Pueblos -->
+  <url><loc>https://huelvalate.es/#/pueblo/alajar</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/almonasterlareal</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/aracena</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/aroche</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/arroyomolinosdeleon</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/cala</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/castanodelrobledo</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/cortegana</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/corteconcepcion</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/cortelazor</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/cumbresdeenmedio</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/cumbresdesanbartolome</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/cumbresmayores</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/encinasola</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/fuenteheridos</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/galaroza</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/higueradelasierra</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/hinojales</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/jabugo</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/lanava</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/linaresdelasierra</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/losmarines</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/puertomoral</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/rosaldelafrontera</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/santaanalareal</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/santaolalladelcala</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/valdelarco</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://huelvalate.es/#/pueblo/zufre</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+
+  <!-- Eventos -->
+  <url><loc>https://huelvalate.es/#/evento/migas-umbria</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/rehiletes-aracena</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/1764445901541</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-flamenca-aracena-barcelo</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/gala-benefica-afa-aracena-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-linares</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-higuera-charcon</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/suena-navidad-higuera</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-alajar-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-playmobil-alajar</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-alajar-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-almonaster-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/cartero-real-almonaster</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/convivencia-joven-almonaster</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/monologo-guelmi-almonaster</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/encendido-alumbrado-almonaster</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/aroche-navidad</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/fiesta-picante-aroche</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-aroche-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/visita-guiada-aroche</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/moto-burra-fest</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/taller-macellum-aroche</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/taller-lucernae-aroche</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/taller-joyeria-aroche</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-cortegana-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/talleres-infantiles-cortegana-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/14</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/expo-fuenteheridos</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-rosal-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/pista-patinaje-rosal</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/concierto-sixko-rosal</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/flamenco-fados-rosal</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-paymogo-rosal</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/flamenco-flora-rosal</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/16</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-navahermosa</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/ruta-amantes-galaroza</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/festival-musica-antigua-galaroza</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-valdelarco-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/18</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-cumbres-mayores-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-puerto-moral</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-puerto-moral-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/feria-mosto-marines</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-encinasola</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/potaje-solidario-encinasola-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-cala-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/mercado-navideno-santa-olalla-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/ruta-senderismo-teuler-santa-olalla</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-santa-olalla-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/navidad-hinojales-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/belen-viviente-hinojales-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/zambomba-cumbres-bartolome-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/puente-castano-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/jornadas-organo-castano-2025</loc><priority>0.8</priority></url>
+  <url><loc>https://huelvalate.es/#/evento/mercado-navideno-arroyomolinos-2025</loc><priority>0.8</priority></url>
 </urlset>

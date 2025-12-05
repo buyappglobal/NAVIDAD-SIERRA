@@ -17,7 +17,8 @@ export const ALMONASTER_EVENTS: EventType[] = [
       "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-11-27-at-11.27.26.jpeg"
     ],
     "interestInfo": INFO_ALMONASTER,
-    "itinerary": "**✨ 5 Dic (Inauguración):** 19:00h Encendido del Alumbrado en Plaza de la Constitución.\n**🎁 Puente (6-8 Dic):** Visita el Mercadillo Solidario y la Feria del Libro.\n**🎶 Navidad en Aldeas:** Disfruta de las Zambombas programadas (Mina Concepción, Cueva de la Mora...).\n**🎉 Fin de Año:** Pasacalles a las 12:00h y Preuvas en la Carpa Municipal."
+    "itinerary": "**✨ 5 Dic (Inauguración):** 19:00h Encendido del Alumbrado en Plaza de la Constitución.\n**🎁 Puente (6-8 Dic):** Visita el Mercadillo Solidario y la Feria del Libro.\n**🎶 Navidad en Aldeas:** Disfruta de las Zambombas programadas (Mina Concepción, Cueva de la Mora...).\n**🎉 Fin de Año:** Pasacalles a las 12:00h y Preuvas en la Carpa Municipal.",
+    "sponsored": true
   },
   {
     "id": "cartero-real-almonaster",

@@ -28,6 +28,8 @@ import HowItWorksModal from './components/HowItWorksModal';
 import EventCounter from './components/EventCounter';
 import MenuModal from './components/MenuModal';
 import ProvinceEventsModal from './components/ProvinceEventsModal';
+import WeekendHighlightModal from './components/WeekendHighlightModal';
+import PromoModal from './components/PromoModal';
 import { analyzeSearchIntent } from './services/aiSearchService';
 import { getEventMetrics } from './services/interactionService';
 import { exportEventsToCSV } from './services/googleSheetsService';
@@ -37,13 +39,17 @@ const shuffleArray = <T,>(array: T[]): T[] => {
     return [...array].sort(() => Math.random() - 0.5);
 };
 
+// Helper for text normalization (remove accents, lowercase)
+const normalizeText = (text: string) => {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+};
+
 // --- LOGIC RESTORATION START ---
 // 1. Process metrics for all items
 const processedEvents = ALL_EVENTS.map(getEventMetrics);
 const processedAds = ADS.map(getEventMetrics);
 
 // 2. Separate Sponsored vs Regular
-// Note: We treat ADS separately for injection, so we exclude them from 'sponsoredEvents' to avoid duplication if they were in ALL_EVENTS (they are not, but safe check)
 const sponsoredEvents = processedEvents.filter(e => e.sponsored);
 const regularEvents = processedEvents.filter(e => !e.sponsored);
 
@@ -54,9 +60,18 @@ const shuffledSponsored = shuffleArray(sponsoredEvents);
 const sortedRegular = regularEvents.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 // 5. Combine: [Random Sponsored] + [Sorted Regular] + [Ads]
-// We include Ads at the end initially; they will be repositioned during rendering.
 const INITIAL_EVENTS = [...shuffledSponsored, ...sortedRegular, ...processedAds];
 // --- LOGIC RESTORATION END ---
+
+// Safe API Key Access
+const getApiKey = () => {
+    try {
+        // @ts-ignore
+        return (typeof process !== 'undefined' && process.env && process.env.API_KEY) || sessionStorage.getItem('gemini-api-key');
+    } catch (e) {
+        return sessionStorage.getItem('gemini-api-key');
+    }
+};
 
 const App: React.FC = () => {
   // --- STATE ---
@@ -65,50 +80,39 @@ const App: React.FC = () => {
   
   // --- ROUTING LOGIC ---
   const parseRoute = () => {
+      const hash = window.location.hash; 
+      const params = new URLSearchParams(window.location.search); 
+      
       let initialTowns: string[] = [];
       let initialEventId: string | null = null;
 
-      try {
-          const hash = window.location.hash; // e.g. #/pueblo/aroche
-          const params = new URLSearchParams(window.location.search); 
-          
-          // 1. Hash Routing (Priority) - /#/pueblo/ID o /#/evento/ID
-          if (hash.includes('#/pueblo/')) {
-              // Extract everything after #/pueblo/
-              const parts = hash.split('#/pueblo/');
-              if (parts.length > 1) {
-                  const rawTown = decodeURIComponent(parts[1].split('/')[0]); // Handle trailing slash
-                  const townEntry = TOWNS.find(t => 
-                      t.id.toLowerCase() === rawTown.toLowerCase() || 
-                      t.name.toLowerCase() === rawTown.toLowerCase()
-                  );
-                  if (townEntry) initialTowns = [townEntry.id];
-              }
-          } else if (hash.includes('#/evento/')) {
-              const parts = hash.split('#/evento/');
-              if (parts.length > 1) {
-                  const eventId = decodeURIComponent(parts[1].split('/')[0]); // Handle trailing slash
-                  if (INITIAL_EVENTS.some(e => e.id === eventId)) {
-                      initialEventId = eventId;
-                  }
-              }
-          } 
-          // 2. Query Param Fallback (Legacy support for ?town=...)
-          else if (params.get('town')) {
-              const townParam = params.get('town')!;
-              const townEntry = TOWNS.find(t => 
-                  t.id.toLowerCase() === townParam.toLowerCase() || 
-                  t.name.toLowerCase() === townParam.toLowerCase()
-              );
-              if (townEntry) initialTowns = [townEntry.id];
-          } else if (params.get('event')) {
-              const eventParam = params.get('event');
-              if (eventParam && INITIAL_EVENTS.some(e => e.id === eventParam)) {
-                  initialEventId = eventParam;
-              }
+      // 1. Hash Routing (Priority)
+      if (hash.includes('#/pueblo/')) {
+          const rawTown = decodeURIComponent(hash.split('#/pueblo/')[1]);
+          const townEntry = TOWNS.find(t => 
+              t.id.toLowerCase() === rawTown.toLowerCase() || 
+              t.name.toLowerCase() === rawTown.toLowerCase()
+          );
+          if (townEntry) initialTowns = [townEntry.id];
+      } else if (hash.includes('#/evento/')) {
+          const eventId = decodeURIComponent(hash.split('#/evento/')[1]);
+          if (INITIAL_EVENTS.some(e => e.id === eventId)) {
+              initialEventId = eventId;
           }
-      } catch (err) {
-          console.warn("Route parsing failed safely:", err);
+      } 
+      // 2. Query Param Fallback
+      else if (params.get('town')) {
+          const townParam = params.get('town')!;
+          const townEntry = TOWNS.find(t => 
+              t.id.toLowerCase() === townParam.toLowerCase() || 
+              t.name.toLowerCase() === townParam.toLowerCase()
+          );
+          if (townEntry) initialTowns = [townEntry.id];
+      } else if (params.get('event')) {
+          const eventParam = params.get('event');
+          if (eventParam && INITIAL_EVENTS.some(e => e.id === eventParam)) {
+              initialEventId = eventParam;
+          }
       }
 
       return { initialTowns, initialEventId };
@@ -143,7 +147,14 @@ const App: React.FC = () => {
   const [showFaqModal, setShowFaqModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showMenuModal, setShowMenuModal] = useState(false);
-  const [showProvinceEventsModal, setShowProvinceEventsModal] = useState(false);
+  
+  // Initialize Province Modal state based on Hash - Check for various formats
+  const [showProvinceEventsModal, setShowProvinceEventsModal] = useState(
+      window.location.hash.includes('provincia')
+  );
+  
+  const [showWeekendModal, setShowWeekendModal] = useState(false);
+  const [showPromoModal, setShowPromoModal] = useState(false);
 
   // Auth & Toast
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -158,22 +169,93 @@ const App: React.FC = () => {
     }
     
     // Cookie consent check
-    try {
-        const consent = localStorage.getItem('cookie_consent');
-        if (!consent) {
-          setTimeout(() => setShowCookieConsent(true), 2000);
-        }
-    } catch (e) {}
+    const consent = localStorage.getItem('cookie_consent');
+    if (!consent) {
+      setTimeout(() => setShowCookieConsent(true), 2000);
+    }
 
-    // Listen for Hash Changes (Back/Forward navigation)
+    // --- PWA ANALYTICS TRACKING START ---
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+    
+    if (window.gtag) {
+        window.gtag('set', 'user_properties', { 
+            app_platform: isStandalone ? 'pwa' : 'web' 
+        });
+    }
+
+    if (isStandalone) {
+        if (!sessionStorage.getItem('pwa_analytics_sent') && window.gtag) {
+            window.gtag('event', 'pwa_open', {
+                'event_category': 'pwa',
+                'event_label': 'standalone_launch',
+                'value': 1
+            });
+            sessionStorage.setItem('pwa_analytics_sent', 'true');
+        }
+    }
+
+    const handleAppInstalled = () => {
+        if (window.gtag) {
+            window.gtag('event', 'pwa_install', {
+                'event_category': 'pwa',
+                'event_label': 'install_completed',
+                'value': 1
+            });
+        }
+    };
+    
+    window.addEventListener('appinstalled', handleAppInstalled);
+    // --- PWA ANALYTICS TRACKING END ---
+
+    // --- 1. PROMO MODAL LOGIC (Priority 1) ---
+    const promoShowTimer = setTimeout(() => {
+        setShowPromoModal(true);
+    }, 5000);
+
+    const promoHideTimer = setTimeout(() => {
+        setShowPromoModal(false);
+    }, 10000); 
+
+    // --- 2. WEEKEND HIGHLIGHT LOGIC (Priority 2) ---
+    let weekendTimer: ReturnType<typeof setTimeout>;
+    
+    try {
+        const visitKey = 'sierra_weekend_highlight_visits_v1';
+        const currentVisits = parseInt(localStorage.getItem(visitKey) || '0', 10);
+        const newVisits = currentVisits + 1;
+        localStorage.setItem(visitKey, newVisits.toString());
+
+        if ((newVisits - 1) % 3 === 0) {
+            weekendTimer = setTimeout(() => {
+                setShowPromoModal(prevIsPromoOpen => {
+                    if (!prevIsPromoOpen) {
+                        setShowWeekendModal(true);
+                    }
+                    return prevIsPromoOpen; 
+                });
+            }, 20000); 
+        }
+    } catch (e) {
+        console.warn("Local storage error for visits", e);
+    }
+
+    // Listen for Hash Changes
     const handleHashChange = () => {
         const { initialTowns, initialEventId } = parseRoute();
-        // Update state to match URL
         setSelectedTowns(initialTowns);
         setSelectedEventId(initialEventId);
         
-        // Reset other filters if we navigate back to home (empty hash)
-        if (initialTowns.length === 0 && !initialEventId && !window.location.hash.includes('#/')) {
+        // Handle Province Route
+        if (window.location.hash.includes('provincia')) {
+            setShowProvinceEventsModal(true);
+        } else {
+            // Close modal if navigating away to home or another route
+            // This ensures if user clicks 'back' from the modal url, it closes
+            setShowProvinceEventsModal(false);
+        }
+        
+        // Clear filters if going back to pure root (empty hash) or just root hash
+        if (initialTowns.length === 0 && !initialEventId && (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#')) {
             setSelectedCategories([]);
             setSearchQuery('');
             setStartDate(null);
@@ -182,56 +264,18 @@ const App: React.FC = () => {
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    
+    // Trigger on mount to handle initial URL (e.g. refresh on #/provincia)
+    handleHashChange();
+
+    return () => {
+        window.removeEventListener('hashchange', handleHashChange);
+        window.removeEventListener('appinstalled', handleAppInstalled);
+        clearTimeout(promoShowTimer);
+        clearTimeout(promoHideTimer);
+        if (weekendTimer) clearTimeout(weekendTimer);
+    };
   }, []);
-
-  // Sync State to URL Hash (Enable sharing)
-  useEffect(() => {
-      try {
-          // 1. Sync Event Detail URL
-          if (selectedEventId) {
-              const newHash = `#/evento/${selectedEventId}`;
-              if (window.location.hash !== newHash) {
-                  // Safe update for blob/preview environments
-                  try {
-                    window.history.replaceState(null, '', newHash);
-                  } catch (e) {
-                    // Fallback to simple hash assignment if replaceState is blocked
-                    window.location.hash = newHash;
-                  }
-              }
-              return;
-          }
-
-          // 2. Sync Town Filter URL
-          // If we have selected exactly one town (and not viewing an event), update the URL
-          if (selectedTowns.length === 1) {
-              const townId = selectedTowns[0];
-              const newHash = `#/pueblo/${townId}`;
-              if (window.location.hash !== newHash) {
-                  try {
-                    window.history.replaceState(null, '', newHash);
-                  } catch (e) {
-                    window.location.hash = newHash;
-                  }
-              }
-          } else if (selectedTowns.length === 0 && !selectedEventId) {
-              // If no towns selected, clear specific hash if present
-              if (window.location.hash.includes('#/pueblo/') || window.location.hash.includes('#/evento/')) {
-                   const baseUrl = window.location.pathname + window.location.search;
-                   try {
-                        window.history.replaceState(null, '', baseUrl);
-                   } catch (e) {
-                        // If we can't clear it cleanly, just empty the hash
-                        window.location.hash = '';
-                   }
-              }
-          }
-      } catch (err) {
-          // Suppress errors in strict environments to prevent app crash
-          console.debug("Routing sync suppressed in this environment.");
-      }
-  }, [selectedTowns, selectedEventId]);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -252,7 +296,6 @@ const App: React.FC = () => {
   };
 
   const handleLogin = (email: string, pass: string) => {
-      // Mock login
       if (email === 'admin@huelvalate.es' && pass === 'sierra2025') {
           setIsLoggedIn(true);
           setShowLoginModal(false);
@@ -292,14 +335,9 @@ const App: React.FC = () => {
       if (!searchQuery.trim()) return;
       
       setIsAiSearching(true);
-      // Try process.env first as per instructions, then session storage as fallback for existing behavior
-      let apiKey = process.env.API_KEY;
-      if (!apiKey) {
-          try { apiKey = sessionStorage.getItem('gemini-api-key'); } catch(e) {}
-      }
+      const apiKey = getApiKey();
       
       if (!apiKey) {
-          // Fallback: Open AI Assistant Modal to setup key or ask
           setShowAiAssistant(true);
           setIsAiSearching(false);
           return;
@@ -308,10 +346,55 @@ const App: React.FC = () => {
       try {
           const result = await analyzeSearchIntent(searchQuery, apiKey);
           if (result) {
-              if (result.townIds.length > 0) setSelectedTowns(result.townIds);
-              if (result.categories.length > 0) setSelectedCategories(result.categories.map(c => c.toString()));
+              let appliedFilters = false;
+
+              // Apply Town Filters
+              if (result.townIds.length > 0) {
+                  setSelectedTowns(result.townIds);
+                  appliedFilters = true;
+              } else {
+                  setSelectedTowns([]);
+              }
+
+              // Apply Category Filters
+              if (result.categories.length > 0) {
+                  setSelectedCategories(result.categories.map(c => c.toString()));
+                  appliedFilters = true;
+              } else {
+                  setSelectedCategories([]);
+              }
+
+              // Apply Date Filters
+              if (result.startDate) {
+                  setStartDate(result.startDate);
+                  appliedFilters = true;
+              } else {
+                  setStartDate(null);
+              }
               
-              showToastMessage("Búsqueda inteligente aplicada", ICONS.sparkles);
+              if (result.endDate) {
+                  setEndDate(result.endDate);
+                  appliedFilters = true;
+              } else {
+                  setEndDate(null);
+              }
+
+              // Handle Search Query Text
+              // If AI found keywords (e.g. "familiar"), set them as search text.
+              // If AI mapped everything to categories/dates/towns (e.g. "belen"), CLEAR the search text
+              // to prevent the text filter from blocking results due to missing accents or mismatches.
+              if (result.keywords.length > 0) {
+                  setSearchQuery(result.keywords.join(' '));
+                  appliedFilters = true;
+              } else if (appliedFilters) {
+                  setSearchQuery(''); // Clear text if other filters applied successfully
+              }
+              
+              if (appliedFilters) {
+                  showToastMessage("Búsqueda inteligente aplicada", ICONS.sparkles);
+              } else {
+                  showToastMessage("No se encontraron criterios específicos", ICONS.question);
+              }
           } else {
               showToastMessage("No se pudo interpretar la búsqueda", ICONS.question);
           }
@@ -323,92 +406,56 @@ const App: React.FC = () => {
       }
   };
 
-  // Logic to show install modal after closing an event
   const handleCloseDetail = () => {
       setSelectedEventId(null);
-      // Remove hash from URL when closing detail without refreshing
       if (window.location.hash.includes('#/evento/')) {
-          try {
-            const baseUrl = window.location.pathname + window.location.search;
-            // Restore town filter hash if one town was selected, otherwise clean
-            if (selectedTowns.length === 1) {
-                 const newHash = `#/pueblo/${selectedTowns[0]}`;
-                 window.history.replaceState(null, '', newHash);
-            } else {
-                 window.history.replaceState(null, '', baseUrl);
-            }
-          } catch(e) {
-             // Fallback
-             window.location.hash = '';
-          }
+          history.pushState("", document.title, window.location.pathname + window.location.search);
       }
       
-      // 1. Check if app is running in Standalone mode (Already installed)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
-      
-      // 2. Check if user has previously installed (Local Storage - Permanent flag)
-      let hasInstalledStorage = false;
-      try { hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true'; } catch(e) {}
+      const hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true';
+      const hasShownSession = sessionStorage.getItem('pwa_prompt_shown_session') === 'true';
 
-      // 3. Check if we have already shown the modal in THIS session (Session Storage - Temporary flag)
-      let hasShownSession = false;
-      try { hasShownSession = sessionStorage.getItem('pwa_prompt_shown_session') === 'true'; } catch(e) {}
-
-      // Logic: Show only if NOT installed, NOT marked as installed, and NOT shown this session
       if (!isStandalone && !hasInstalledStorage && !hasShownSession) {
           setTimeout(() => {
               setShowInstallModal(true);
-              // Mark as shown for this session immediately so it doesn't pop up again until tab refresh
-              try { sessionStorage.setItem('pwa_prompt_shown_session', 'true'); } catch(e) {}
-          }, 1500); // 1.5s delay for smooth transition after closing event
+              sessionStorage.setItem('pwa_prompt_shown_session', 'true');
+          }, 1500); 
       }
   };
 
   // --- FILTERING & SORTING LOGIC ---
 
   const filteredEvents = useMemo(() => {
-    // 1. Filter Pass
     const filtered = events.filter(event => {
       const isAd = event.id.startsWith('ad-');
-
-      // Always allow Ads to pass text/town filters in 'all' view to ensure they appear in the feed
       if (isAd && filterType === 'all') return true;
+      if (filterType === 'favorites') { if (!event.isFavorite) return false; }
+      if (filterType === 'attending') { if (!event.isAttending) return false; }
 
-      // Personal Lists Filters
-      if (filterType === 'favorites') {
-          if (!event.isFavorite) return false;
-      }
-      if (filterType === 'attending') {
-          if (!event.isAttending) return false;
-      }
-
-      // 1. Text Search
       if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        const matchTitle = event.title.toLowerCase().includes(q);
-        const matchDesc = event.description.toLowerCase().includes(q);
-        const matchTown = event.town.toLowerCase().includes(q);
+        // Updated text search to be accent-insensitive
+        const q = normalizeText(searchQuery);
+        const matchTitle = normalizeText(event.title).includes(q);
+        const matchDesc = normalizeText(event.description).includes(q);
+        const matchTown = normalizeText(event.town).includes(q);
         if (!matchTitle && !matchDesc && !matchTown) return false;
       }
 
-      // 2. Town Filter
       if (selectedTowns.length > 0 && !selectedTowns.includes('all')) {
          const townObj = TOWNS.find(t => t.name === event.town);
          if (!townObj || !selectedTowns.includes(townObj.id)) return false;
       }
 
-      // 3. Category Filter
       if (selectedCategories.length > 0 && !selectedCategories.includes(event.category)) {
           return false;
       }
 
-      // 4. Date Filter
       if (startDate) {
           const eventStart = new Date(event.date);
           const filterStart = new Date(startDate);
           if (event.endDate) {
               const eventEnd = new Date(event.endDate);
-              // Overlap logic
               if (eventEnd < filterStart) return false;
           } else {
               if (eventStart < filterStart) return false;
@@ -424,36 +471,22 @@ const App: React.FC = () => {
       return true;
     });
 
-    // 2. Sorting and Positioning Pass
     if (sortBy === 'date') {
-        // Here we implement the "Sponsored First, then Date, with Ad at pos 4" logic
-        
-        // Separate content from ads
         const adsList = filtered.filter(e => e.id.startsWith('ad-'));
         const contentList = filtered.filter(e => !e.id.startsWith('ad-'));
-
-        // Because 'events' (INITIAL_EVENTS) is already structure as [Shuffled Sponsored, Sorted Regular],
-        // and .filter() preserves array order, 'contentList' ALREADY has the correct order.
-        // We DO NOT want to run .sort() here because it would mix Sponsored and Regular based on date.
         
         const result = [...contentList];
 
-        // Inject Ad at Position 4 (Index 3)
         if (adsList.length > 0) {
-            const adToInject = adsList[0]; // Take the first available ad
+            const adToInject = adsList[0];
             if (result.length >= 3) {
                 result.splice(3, 0, adToInject);
             } else {
-                // If list is short, append at end
                 result.push(adToInject);
             }
         }
-
         return result;
-
     } else {
-        // Popularity Sort
-        // For popularity, we just sort by likes. Ads usually have 0 likes so they drop to bottom.
         return filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
     }
 
@@ -461,18 +494,84 @@ const App: React.FC = () => {
 
   const eventCounts = useMemo(() => {
       const counts: Record<string, number> = {};
-      filteredEvents.forEach(e => {
+      const eventsForCounts = events.filter(event => {
+          if (selectedCategories.length > 0 && !selectedCategories.includes(event.category)) return false;
+          if (startDate) {
+              const eventStart = new Date(event.date);
+              const filterStart = new Date(startDate);
+              if (event.endDate) {
+                  const eventEnd = new Date(event.endDate);
+                  if (eventEnd < filterStart) return false;
+              } else {
+                  if (eventStart < filterStart) return false;
+              }
+          }
+          if (endDate) {
+              const eventStart = new Date(event.date);
+              const filterEnd = new Date(endDate);
+              if (eventStart > filterEnd) return false;
+          }
+          if (searchQuery) {
+            const q = normalizeText(searchQuery);
+            const matchTitle = normalizeText(event.title).includes(q);
+            const matchDesc = normalizeText(event.description).includes(q);
+            const matchTown = normalizeText(event.town).includes(q);
+            if (!matchTitle && !matchDesc && !matchTown) return false;
+          }
+          const isAd = event.id.startsWith('ad-');
+          if (isAd && filterType === 'all') return true;
+          if (filterType === 'favorites' && !event.isFavorite) return false;
+          if (filterType === 'attending' && !event.isAttending) return false;
+
+          return true;
+      });
+
+      eventsForCounts.forEach(e => {
           const t = TOWNS.find(town => town.name === e.town);
           if (t) {
               counts[t.id] = (counts[t.id] || 0) + 1;
           }
       });
       return counts;
-  }, [filteredEvents]);
+  }, [events, searchQuery, selectedCategories, startDate, endDate, filterType]);
 
   const availableCategories = useMemo(() => {
-      return Array.from(new Set(filteredEvents.map(e => e.category)));
-  }, [filteredEvents]);
+      const eventsForCats = events.filter(event => {
+          if (selectedTowns.length > 0 && !selectedTowns.includes('all')) {
+             const townObj = TOWNS.find(t => t.name === event.town);
+             if (!townObj || !selectedTowns.includes(townObj.id)) return false;
+          }
+          if (startDate) {
+              const eventStart = new Date(event.date);
+              const filterStart = new Date(startDate);
+              if (event.endDate) {
+                  const eventEnd = new Date(event.endDate);
+                  if (eventEnd < filterStart) return false;
+              } else {
+                  if (eventStart < filterStart) return false;
+              }
+          }
+          if (endDate) {
+              const eventStart = new Date(event.date);
+              const filterEnd = new Date(endDate);
+              if (eventStart > filterEnd) return false;
+          }
+          if (searchQuery) {
+            const q = normalizeText(searchQuery);
+            const matchTitle = normalizeText(event.title).includes(q);
+            const matchDesc = normalizeText(event.description).includes(q);
+            const matchTown = normalizeText(event.town).includes(q);
+            if (!matchTitle && !matchDesc && !matchTown) return false;
+          }
+          const isAd = event.id.startsWith('ad-');
+          if (isAd && filterType === 'all') return true;
+          if (filterType === 'favorites' && !event.isFavorite) return false;
+          if (filterType === 'attending' && !event.isAttending) return false;
+
+          return true;
+      });
+      return Array.from(new Set(eventsForCats.map(e => e.category)));
+  }, [events, searchQuery, selectedTowns, startDate, endDate, filterType]);
 
   const selectedEvent = useMemo(() => 
     selectedEventId ? events.find(e => e.id === selectedEventId) : null
@@ -489,13 +588,13 @@ const App: React.FC = () => {
                         event={selectedEvent} 
                         onBack={handleCloseDetail}
                         isLoggedIn={isLoggedIn}
-                        onEdit={() => {/* TODO: Implement Edit Modal opening with event data */}}
+                        onEdit={() => {/* TODO */}}
                         onCategoryFilterClick={(cat) => { setSelectedCategories([cat]); setSelectedEventId(null); }}
                         showToast={showToastMessage}
                         onEngagement={() => {}}
                         onUpdateEvent={handleUpdateEvent}
-                        allEvents={events} // NEW: Passing all events for related slider
-                        onSelectEvent={setSelectedEventId} // NEW: Allow switching events from details
+                        allEvents={events}
+                        onSelectEvent={setSelectedEventId}
                     />
                 </div>
                 <BottomNav 
@@ -514,19 +613,28 @@ const App: React.FC = () => {
                     onSuggest={() => setShowSuggestModal(true)}
                     toggleTheme={handleToggleTheme}
                     onInfo={() => setShowInfoModal(true)}
-                    onProvinceEvents={() => setShowProvinceEventsModal(true)} // NEW
+                    onProvinceEvents={() => {
+                        window.location.hash = '/provincia';
+                        // The hash change listener will handle opening the modal
+                    }}
                     isPwaInstallable={true}
                     theme={theme}
                 />
             )}
             {showProvinceEventsModal && (
-                <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
+                <ProvinceEventsModal onClose={() => {
+                    setShowProvinceEventsModal(false);
+                    // Limpiar hash si estaba en provincia
+                    if (window.location.hash.includes('provincia')) {
+                        history.pushState("", document.title, window.location.pathname + window.location.search);
+                    }
+                }} />
             )}
             {showInstallModal && (
                 <InstallPwaModal 
                     onClose={() => setShowInstallModal(false)}
                     onInstall={() => {
-                        try { localStorage.setItem('pwa_installed', 'true'); } catch(e){}
+                        localStorage.setItem('pwa_installed', 'true');
                         setShowInstallModal(false);
                     }}
                 />
@@ -551,14 +659,11 @@ const App: React.FC = () => {
                 setSearchQuery('');
                 setStartDate(null);
                 setEndDate(null);
-                try {
-                    history.pushState("", document.title, window.location.pathname + window.location.search); // Clear hash
-                } catch(e) {}
+                history.pushState("", document.title, window.location.pathname + window.location.search);
             }}
         />
 
         <main className="container mx-auto p-4 md:flex gap-8">
-            {/* Sidebar Desktop */}
             <aside className="hidden md:block w-80 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2">
                 <FilterSidebar 
                     towns={TOWNS}
@@ -633,7 +738,7 @@ const App: React.FC = () => {
                 {/* Contador de Eventos */}
                 <div className="mb-4">
                     <EventCounter 
-                        total={events.filter(e => !e.id.startsWith('ad-')).length} 
+                        total={filteredEvents.filter(e => !e.id.startsWith('ad-')).length} 
                         onClick={() => {
                             setSelectedTowns([]);
                             setSelectedCategories([]);
@@ -642,9 +747,7 @@ const App: React.FC = () => {
                             setEndDate(null);
                             setFilterType('all');
                             window.scrollTo({ top: 0, behavior: 'smooth' });
-                            try {
-                                history.pushState("", document.title, window.location.pathname + window.location.search);
-                            } catch(e) {}
+                            history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
                     />
                 </div>
@@ -661,9 +764,7 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setSearchQuery('');
-                            try {
-                                history.pushState("", document.title, window.location.pathname + window.location.search);
-                            } catch(e) {}
+                            history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
                         onCategoryFilterClick={(cat) => setSelectedCategories([cat])}
                         isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery}
@@ -688,9 +789,7 @@ const App: React.FC = () => {
             onHomeClick={() => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setSelectedEventId(null);
-                try {
-                    history.pushState("", document.title, window.location.pathname + window.location.search);
-                } catch(e) {}
+                history.pushState("", document.title, window.location.pathname + window.location.search);
             }}
             onMenuClick={() => setShowMenuModal(true)}
             onFaqClick={() => setShowFaqModal(true)}
@@ -761,7 +860,7 @@ const App: React.FC = () => {
             <InstallPwaModal 
                 onClose={() => setShowInstallModal(false)}
                 onInstall={() => {
-                    try { localStorage.setItem('pwa_installed', 'true'); } catch(e){}
+                    localStorage.setItem('pwa_installed', 'true');
                     setShowInstallModal(false);
                 }}
             />
@@ -774,14 +873,36 @@ const App: React.FC = () => {
                 onSuggest={() => setShowSuggestModal(true)}
                 toggleTheme={handleToggleTheme}
                 onInfo={() => setShowInfoModal(true)}
-                onProvinceEvents={() => setShowProvinceEventsModal(true)}
+                onProvinceEvents={() => {
+                    window.location.hash = '/provincia';
+                    // The hash change listener will handle opening the modal
+                }}
                 isPwaInstallable={true}
                 theme={theme}
             />
         )}
 
         {showProvinceEventsModal && (
-            <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
+            <ProvinceEventsModal onClose={() => {
+                setShowProvinceEventsModal(false);
+                if (window.location.hash.includes('provincia')) {
+                    history.pushState("", document.title, window.location.pathname + window.location.search);
+                }
+            }} />
+        )}
+
+        {showWeekendModal && (
+            <WeekendHighlightModal 
+                onClose={() => setShowWeekendModal(false)}
+                onSelectEvent={setSelectedEventId}
+            />
+        )}
+
+        {showPromoModal && (
+            <PromoModal 
+                imageUrl="https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-04-at-13.27.18.jpeg"
+                onClose={() => setShowPromoModal(false)}
+            />
         )}
 
         {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}

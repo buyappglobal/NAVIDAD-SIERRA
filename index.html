@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Agenda Cultural Huelva - La Sierra en Navidad</title>
     
     <!-- Favicon (Icono de pestaña) -->
@@ -91,6 +92,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+      // Polyfill for process.env to avoid ReferenceError in some environments
+      window.process = window.process || { env: {} };
+
       // Set theme based on localStorage before the page loads to prevent FOUC
       // DEFAULT IS NOW LIGHT
       try {

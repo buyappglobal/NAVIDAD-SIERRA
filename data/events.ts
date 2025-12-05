@@ -21,6 +21,8 @@ import { HINOJALES_EVENTS } from './pueblos/hinojales';
 import { CORTECONCEPCION_EVENTS } from './pueblos/corteconcepcion';
 import { ARROYOMOLINOS_EVENTS } from './pueblos/arroyomolinos';
 import { CUMBRES_BARTOLOME_EVENTS } from './pueblos/cumbresbartolome';
+import { JABUGO_EVENTS } from './pueblos/jabugo';
+import { ZUFRE_EVENTS } from './pueblos/zufre';
 import { OTHER_EVENTS } from './pueblos/otros';
 
 export const ALL_EVENTS = [
@@ -46,5 +48,7 @@ export const ALL_EVENTS = [
     ...CORTECONCEPCION_EVENTS,
     ...ARROYOMOLINOS_EVENTS,
     ...CUMBRES_BARTOLOME_EVENTS,
+    ...JABUGO_EVENTS,
+    ...ZUFRE_EVENTS,
     ...OTHER_EVENTS
 ];
