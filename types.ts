@@ -24,6 +24,7 @@ export interface EventType {
   externalUrl?: string;
   itinerary?: string; // Plan de día pre-generado para evitar llamadas a la API
   galleryUrls?: string[]; // NUEVO: Galería de imágenes adicionales
+  hidden?: boolean; // NUEVO: Para ocultar eventos temporalmente (ej: suspendidos)
   
   // Social Metrics (Optional because they are injected at runtime)
   views?: number;

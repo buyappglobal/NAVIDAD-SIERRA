@@ -45,8 +45,9 @@ const normalizeText = (text: string) => {
 };
 
 // --- LOGIC RESTORATION START ---
-// 1. Process metrics for all items
-const processedEvents = ALL_EVENTS.map(getEventMetrics);
+// 1. Process metrics for all items AND Filter out hidden items
+const visibleEvents = ALL_EVENTS.filter(e => !e.hidden);
+const processedEvents = visibleEvents.map(getEventMetrics);
 const processedAds = ADS.map(getEventMetrics);
 
 // 2. Separate Sponsored vs Regular
@@ -138,6 +139,9 @@ const App: React.FC = () => {
   const [showInstallModal, setShowInstallModal] = useState(false);
   const [isAiSearching, setIsAiSearching] = useState(false);
   
+  // State for native install prompt
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  
   // Modals
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -174,6 +178,30 @@ const App: React.FC = () => {
       setTimeout(() => setShowCookieConsent(true), 2000);
     }
 
+    // --- PWA INSTALLATION LOGIC START ---
+    // 1. Listen for the native beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: any) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        setDeferredPrompt(e);
+        console.log("📱 PWA: Evento 'beforeinstallprompt' capturado.");
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // 2. Timer for Install Modal (1 minute = 60000ms)
+    // Agresive logic: Show every visit if not installed
+    const installTimer = setTimeout(() => {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
+        const hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true';
+
+        // Show if NOT in standalone mode AND NOT marked as installed in localStorage
+        if (!isStandalone && !hasInstalledStorage) {
+            setShowInstallModal(true);
+        }
+    }, 60000); 
+    // --- PWA INSTALLATION LOGIC END ---
+
     // --- PWA ANALYTICS TRACKING START ---
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
     
@@ -184,7 +212,9 @@ const App: React.FC = () => {
     }
 
     if (isStandalone) {
+        console.log("📱 PWA: Modo Standalone detectado.");
         if (!sessionStorage.getItem('pwa_analytics_sent') && window.gtag) {
+            console.log("📊 Analytics enviado: pwa_open (standalone_launch)");
             window.gtag('event', 'pwa_open', {
                 'event_category': 'pwa',
                 'event_label': 'standalone_launch',
@@ -192,13 +222,19 @@ const App: React.FC = () => {
             });
             sessionStorage.setItem('pwa_analytics_sent', 'true');
         }
+    } else {
+        console.log("🌍 Web: Modo Navegador detectado.");
     }
 
     const handleAppInstalled = () => {
+        console.log("🎉 PWA: Evento 'appinstalled' detectado por el navegador.");
+        localStorage.setItem('pwa_installed', 'true');
+        setShowInstallModal(false);
         if (window.gtag) {
+            console.log("📊 Analytics enviado: pwa_install (install_completed)");
             window.gtag('event', 'pwa_install', {
                 'event_category': 'pwa',
-                'event_label': 'install_completed',
+                'event_label': 'install_completed', // Browser event (Android/PC)
                 'value': 1
             });
         }
@@ -271,8 +307,10 @@ const App: React.FC = () => {
     return () => {
         window.removeEventListener('hashchange', handleHashChange);
         window.removeEventListener('appinstalled', handleAppInstalled);
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         clearTimeout(promoShowTimer);
         clearTimeout(promoHideTimer);
+        clearTimeout(installTimer);
         if (weekendTimer) clearTimeout(weekendTimer);
     };
   }, []);
@@ -380,9 +418,6 @@ const App: React.FC = () => {
               }
 
               // Handle Search Query Text
-              // If AI found keywords (e.g. "familiar"), set them as search text.
-              // If AI mapped everything to categories/dates/towns (e.g. "belen"), CLEAR the search text
-              // to prevent the text filter from blocking results due to missing accents or mismatches.
               if (result.keywords.length > 0) {
                   setSearchQuery(result.keywords.join(' '));
                   appliedFilters = true;
@@ -406,28 +441,65 @@ const App: React.FC = () => {
       }
   };
 
+  // Triggered when user clicks "Instalar" in the modal
+  const handleInstallApp = async () => {
+      if (deferredPrompt) {
+          // Show the native install prompt
+          deferredPrompt.prompt();
+          // Wait for the user to respond to the prompt
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+              console.log('User accepted the install prompt');
+              // TRACK: Prompt Accepted (Android/PC)
+              if (window.gtag) {
+                  console.log("📊 Analytics enviado: pwa_install (prompt_accepted)");
+                  window.gtag('event', 'pwa_install', {
+                      'event_category': 'pwa',
+                      'event_label': 'prompt_accepted',
+                      'value': 1
+                  });
+              }
+              localStorage.setItem('pwa_installed', 'true');
+          } else {
+              console.log('User dismissed the install prompt');
+          }
+          // We've used the prompt, and can't use it again, throw it away
+          setDeferredPrompt(null);
+          setShowInstallModal(false);
+      } else {
+          // For iOS or cases where prompt is not available, we assume instructions were followed
+          // or user clicked "Entendido"
+          console.log('User clicked manual install (likely iOS)');
+          // TRACK: Manual Install Intent (iOS)
+          if (window.gtag) {
+              console.log("📊 Analytics enviado: pwa_install (ios_manual_install)");
+              window.gtag('event', 'pwa_install', {
+                  'event_category': 'pwa',
+                  'event_label': 'ios_manual_install',
+                  'value': 1
+              });
+          }
+          localStorage.setItem('pwa_installed', 'true');
+          setShowInstallModal(false);
+      }
+  };
+
   const handleCloseDetail = () => {
       setSelectedEventId(null);
       if (window.location.hash.includes('#/evento/')) {
           history.pushState("", document.title, window.location.pathname + window.location.search);
       }
       
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
-      const hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true';
-      const hasShownSession = sessionStorage.getItem('pwa_prompt_shown_session') === 'true';
-
-      if (!isStandalone && !hasInstalledStorage && !hasShownSession) {
-          setTimeout(() => {
-              setShowInstallModal(true);
-              sessionStorage.setItem('pwa_prompt_shown_session', 'true');
-          }, 1500); 
-      }
+      // Removed install modal logic from here to favor the aggressive timer
   };
 
   // --- FILTERING & SORTING LOGIC ---
 
   const filteredEvents = useMemo(() => {
     const filtered = events.filter(event => {
+      // 0. Hidden check
+      if (event.hidden) return false;
+
       const isAd = event.id.startsWith('ad-');
       if (isAd && filterType === 'all') return true;
       if (filterType === 'favorites') { if (!event.isFavorite) return false; }
@@ -495,6 +567,7 @@ const App: React.FC = () => {
   const eventCounts = useMemo(() => {
       const counts: Record<string, number> = {};
       const eventsForCounts = events.filter(event => {
+          if (event.hidden) return false; // Don't count hidden events
           if (selectedCategories.length > 0 && !selectedCategories.includes(event.category)) return false;
           if (startDate) {
               const eventStart = new Date(event.date);
@@ -537,6 +610,7 @@ const App: React.FC = () => {
 
   const availableCategories = useMemo(() => {
       const eventsForCats = events.filter(event => {
+          if (event.hidden) return false;
           if (selectedTowns.length > 0 && !selectedTowns.includes('all')) {
              const townObj = TOWNS.find(t => t.name === event.town);
              if (!townObj || !selectedTowns.includes(townObj.id)) return false;
@@ -633,10 +707,7 @@ const App: React.FC = () => {
             {showInstallModal && (
                 <InstallPwaModal 
                     onClose={() => setShowInstallModal(false)}
-                    onInstall={() => {
-                        localStorage.setItem('pwa_installed', 'true');
-                        setShowInstallModal(false);
-                    }}
+                    onInstall={handleInstallApp}
                 />
             )}
             {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}
@@ -859,10 +930,7 @@ const App: React.FC = () => {
         {showInstallModal && (
             <InstallPwaModal 
                 onClose={() => setShowInstallModal(false)}
-                onInstall={() => {
-                    localStorage.setItem('pwa_installed', 'true');
-                    setShowInstallModal(false);
-                }}
+                onInstall={handleInstallApp}
             />
         )}
 
@@ -873,10 +941,7 @@ const App: React.FC = () => {
                 onSuggest={() => setShowSuggestModal(true)}
                 toggleTheme={handleToggleTheme}
                 onInfo={() => setShowInfoModal(true)}
-                onProvinceEvents={() => {
-                    window.location.hash = '/provincia';
-                    // The hash change listener will handle opening the modal
-                }}
+                onProvinceEvents={() => setShowProvinceEventsModal(true)}
                 isPwaInstallable={true}
                 theme={theme}
             />
@@ -895,6 +960,7 @@ const App: React.FC = () => {
             <WeekendHighlightModal 
                 onClose={() => setShowWeekendModal(false)}
                 onSelectEvent={setSelectedEventId}
+                onInstall={() => setShowInstallModal(true)}
             />
         )}
 

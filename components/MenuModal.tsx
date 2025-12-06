@@ -44,13 +44,28 @@ const MenuModal: React.FC<MenuModalProps> = ({
         onClose();
     };
 
+    const handleTestAnalytics = () => {
+        console.log("📊 Analytics Event: Sending 'test_pwa_connection'...");
+        if (window.gtag) {
+            window.gtag('event', 'test_pwa_connection', {
+                'event_category': 'debug',
+                'value': 1,
+                'debug_mode': true // Force debug mode
+            });
+            alert("✅ Evento de prueba enviado a Google Analytics.\n\nVe a 'Informes > En tiempo real' para verlo.");
+        } else {
+            console.error("❌ Google Analytics (gtag) no está cargado.");
+            alert("❌ Error: Google Analytics no está cargado en esta página.");
+        }
+    };
+
     const buttonClass = "w-full flex items-center gap-4 px-4 py-4 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors font-medium text-lg";
 
     return (
         <div className="fixed inset-0 z-[60] flex items-end justify-center pointer-events-none">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto transition-opacity" onClick={onClose} />
             
-            <div className="bg-white dark:bg-slate-900 w-full rounded-t-3xl shadow-2xl flex flex-col pointer-events-auto animate-slide-up transform transition-transform border-t border-slate-200 dark:border-slate-800 pb-safe">
+            <div className="bg-white dark:bg-slate-900 w-full rounded-t-3xl shadow-2xl flex flex-col pointer-events-auto animate-slide-up transform transition-transform border-t border-slate-200 dark:border-slate-800 pb-safe max-h-[85vh] overflow-y-auto">
                 
                 <div className="flex justify-center pt-4 pb-2 cursor-pointer" onClick={onClose}>
                     <div className="w-12 h-1.5 bg-slate-300 dark:bg-slate-600 rounded-full" />
@@ -90,6 +105,12 @@ const MenuModal: React.FC<MenuModalProps> = ({
                         <button onClick={() => { onInfo(); onClose(); }} className={buttonClass}>
                             <span className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300">{ICONS.info}</span>
                             <span>Sobre la App</span>
+                        </button>
+
+                        {/* Hidden/Debug Button */}
+                        <button onClick={handleTestAnalytics} className={`${buttonClass} opacity-50 hover:opacity-100 text-xs`}>
+                            <span className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-300">📊</span>
+                            <span>Probar Analytics (Debug)</span>
                         </button>
                     </div>
 

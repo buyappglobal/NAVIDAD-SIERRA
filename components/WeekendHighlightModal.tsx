@@ -7,9 +7,10 @@ import { EventCategory } from '../types';
 interface WeekendHighlightModalProps {
   onClose: () => void;
   onSelectEvent: (eventId: string) => void;
+  onInstall: () => void;
 }
 
-const WeekendHighlightModal: React.FC<WeekendHighlightModalProps> = ({ onClose, onSelectEvent }) => {
+const WeekendHighlightModal: React.FC<WeekendHighlightModalProps> = ({ onClose, onSelectEvent, onInstall }) => {
   
   // Helper para iconos según categoría
   const getIconForCategory = (category: EventCategory) => {
@@ -77,11 +78,11 @@ const WeekendHighlightModal: React.FC<WeekendHighlightModalProps> = ({ onClose, 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[90] backdrop-blur-sm animate-fade-in" onClick={onClose}>
       <div 
-        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm relative overflow-hidden border-2 border-amber-400/50"
+        className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm relative border-2 border-amber-400/50 flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Decorative Background Header */}
-        <div className="bg-gradient-to-r from-amber-500 to-orange-600 p-6 text-white text-center relative">
+        <div className="bg-gradient-to-r from-amber-500 to-orange-600 p-6 text-white text-center relative flex-shrink-0">
             <button 
                 onClick={onClose}
                 className="absolute top-2 right-2 text-white/80 hover:text-white bg-black/10 hover:bg-black/20 rounded-full p-1 transition-colors"
@@ -96,7 +97,7 @@ const WeekendHighlightModal: React.FC<WeekendHighlightModalProps> = ({ onClose, 
             <div className="absolute bottom-2 right-4 text-2xl opacity-30">❄️</div>
         </div>
 
-        <div className="p-5">
+        <div className="p-5 overflow-y-auto">
             <p className="text-slate-600 dark:text-slate-300 text-center text-sm mb-4">
                 No te pierdas nuestra selección de pueblos y eventos imprescindibles para estos días:
             </p>
@@ -139,10 +140,26 @@ const WeekendHighlightModal: React.FC<WeekendHighlightModalProps> = ({ onClose, 
 
             <button 
                 onClick={onClose}
-                className="w-full mt-6 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold py-3 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm"
+                className="w-full mt-4 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold py-3 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm"
             >
                 Ver agenda completa
             </button>
+
+            {/* Install App Recommendation */}
+            <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 text-center relative z-20">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                    Para una experiencia 100% completa te recomendamos que instales la app
+                </p>
+                <button
+                    onClick={() => {
+                        onInstall();
+                        onClose();
+                    }}
+                    className="text-white text-xs font-bold hover:scale-105 transition-transform flex items-center justify-center gap-2 mx-auto bg-purple-600 shadow-lg hover:bg-purple-700 px-6 py-3 rounded-full"
+                >
+                    {ICONS.addToHomeScreen} Instalar App
+                </button>
+            </div>
         </div>
       </div>
     </div>

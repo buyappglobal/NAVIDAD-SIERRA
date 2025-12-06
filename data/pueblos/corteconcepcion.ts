@@ -17,7 +17,8 @@ export const CORTECONCEPCION_EVENTS: EventType[] = [
       "https://turisteandoporhuelva.es/wp-content/uploads/2025/12/582031942_1237206451768184_5367029965469250056_n.jpg"
     ],
     "interestInfo": INFO_CORTECONCEPCION,
-    "itinerary": "**🎄 Viernes 6:**\n**12:00** Mercadillo Navideño.\n**18:00** Cartero Real y Churros con Chocolate.\n**19:30** Encendido del Alumbrado.\n\n**🔥 Sábado 7:**\n**Noche:** Candelas de la Inmaculada (hogueras) y fiesta DJ.\n\n**🙏 Domingo 8:**\n**11:00** Misa y Procesión de la Inmaculada."
+    "itinerary": "**🎄 Viernes 6:**\n**12:00** Mercadillo Navideño.\n**18:00** Cartero Real y Churros con Chocolate.\n**19:30** Encendido del Alumbrado.\n\n**🔥 Sábado 7:**\n**Noche:** Candelas de la Inmaculada (hogueras) y fiesta DJ.\n\n**🙏 Domingo 8:**\n**11:00** Misa y Procesión de la Inmaculada.",
+    "hidden": true
   },
   {
     "id": "mundo-disney-corteconcepcion-2025",

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { ICONS } from '../constants';
 
@@ -64,7 +65,8 @@ const InstallPwaModal: React.FC<InstallPwaModalProps> = ({ onInstall, onClose })
         </ol>
       </div>
        <div className="flex justify-center items-center p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-         <button type="button" onClick={onClose} className="bg-amber-400 text-slate-900 font-bold py-3 px-8 rounded-md hover:bg-amber-500 dark:hover:bg-amber-300 transition-colors">
+         {/* On iOS, clicking "Entendido" effectively means they are done or will do it manually. We use onInstall to set the flag as requested. */}
+         <button type="button" onClick={onInstall} className="bg-amber-400 text-slate-900 font-bold py-3 px-8 rounded-md hover:bg-amber-500 dark:hover:bg-amber-300 transition-colors">
            ¡Entendido!
          </button>
        </div>
