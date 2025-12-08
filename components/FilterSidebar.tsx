@@ -34,6 +34,10 @@ interface FilterSidebarProps {
   onSortChange: (sort: 'date' | 'popularity') => void;
   filterType: 'all' | 'favorites' | 'attending';
   onFilterTypeChange: (type: 'all' | 'favorites' | 'attending') => void;
+
+  // Past events
+  showPastEvents: boolean;
+  onTogglePastEvents: () => void;
 }
 
 const SIDEBAR_BANNER_URL = "https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-04-at-13.27.18-1.jpeg";
@@ -55,7 +59,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     sortBy,
     onSortChange,
     filterType,
-    onFilterTypeChange
+    onFilterTypeChange,
+    showPastEvents,
+    onTogglePastEvents
 }) => {
 
   const townSelectHandler = onSelectTown; 
@@ -144,6 +150,8 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           startDate={startDate}
           endDate={endDate}
           onDateChange={onDateChange}
+          showPastEvents={showPastEvents}
+          onTogglePastEvents={onTogglePastEvents}
         />
       </CollapsibleFilterSection>
       

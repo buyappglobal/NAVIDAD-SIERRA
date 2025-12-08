@@ -28,6 +28,8 @@ interface FilterSidebarModalProps {
     onSortChange: (sort: 'date' | 'popularity') => void;
     filterType: 'all' | 'favorites' | 'attending';
     onFilterTypeChange: (type: 'all' | 'favorites' | 'attending') => void;
+    showPastEvents: boolean;
+    onTogglePastEvents: () => void;
 }
 
 const FilterSidebarModal: React.FC<FilterSidebarModalProps> = (props) => {

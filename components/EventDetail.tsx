@@ -73,6 +73,14 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
 };
 
 const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement, onUpdateEvent, allEvents, onSelectEvent }) => {
+  // Logic to determine if event is passed
+  const today = new Date();
+  const offset = today.getTimezoneOffset();
+  const localToday = new Date(today.getTime() - (offset*60*1000));
+  const todayStr = localToday.toISOString().split('T')[0];
+  const eventEndStr = event.endDate || event.date;
+  const isExpired = eventEndStr < todayStr;
+
   const { title, description, town, date, category, imageUrl, interestInfo, galleryUrls, views, likes, attendees, isFavorite, isAttending, id } = event;
   const colors = categoryColors[category] || categoryColors[EventCategory.OTRO];
   const [isReading, setIsReading] = useState(false);
@@ -202,21 +210,21 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
-    const todayStr = `${year}-${month}-${day}`;
+    const todayStrFull = `${year}-${month}-${day}`;
 
     // 1. If event is in the future (Start Date > Today), show Start Date
-    if (date > todayStr) {
+    if (date > todayStrFull) {
         return date;
     }
 
     // 2. If event has started...
     if (event.endDate) {
         // If it is currently ongoing (Start <= Today <= End), show TODAY
-        if (todayStr >= date && todayStr <= event.endDate) {
-            return todayStr; 
+        if (todayStrFull >= date && todayStrFull <= event.endDate) {
+            return todayStrFull; 
         }
         // If it has ended, show End Date (The modal will handle "past event" message)
-        if (todayStr > event.endDate) {
+        if (todayStrFull > event.endDate) {
             return event.endDate;
         }
     }
@@ -231,9 +239,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
   const relatedEvents = useMemo(() => {
       if (!allEvents) return [];
       
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
       return allEvents.filter(e => {
           // Same town
           if (e.town !== town) return false;
@@ -243,12 +248,10 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
           if (e.externalUrl) return false;
           
           // Future check (checks if start date is >= today OR if end date is >= today)
-          const startDate = new Date(e.date + 'T00:00:00');
-          const endDate = e.endDate ? new Date(e.endDate + 'T00:00:00') : startDate;
-          
-          return endDate >= today;
+          const evtEndStr = e.endDate || e.date;
+          return evtEndStr >= todayStr;
       }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  }, [allEvents, town, id]);
+  }, [allEvents, town, id, todayStr]);
 
 
   // Construct explicit deep link for sharing using HASH
@@ -313,6 +316,35 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
       }
       if (onSelectEvent) onSelectEvent(eventId);
   };
+
+  // --- IF EXPIRED, RENDER EXPIRED VIEW ---
+  if (isExpired) {
+      return (
+        <div className="animate-fade-in max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
+            <div className="w-24 h-24 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </div>
+            
+            <h2 className="text-2xl font-bold font-display text-slate-800 dark:text-slate-200 mb-2">
+                ¡Vaya! Este evento ya ha terminado
+            </h2>
+            
+            <p className="text-slate-600 dark:text-slate-400 mb-8 max-w-sm">
+                El evento "{title}" en {town} ha finalizado. Pero no te preocupes, ¡la Sierra sigue llena de planes increíbles para ti!
+            </p>
+            
+            <button 
+                onClick={onBack}
+                className="w-full bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-xl hover:bg-amber-500 transition-all shadow-md flex items-center justify-center gap-2 transform hover:scale-105"
+            >
+                {ICONS.list}
+                Ver Agenda Actual
+            </button>
+        </div>
+      );
+  }
 
   return (
     <>

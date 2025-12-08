@@ -130,6 +130,7 @@ const App: React.FC = () => {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'date' | 'popularity'>('date');
   const [filterType, setFilterType] = useState<'all' | 'favorites' | 'attending'>('all');
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   // UI State
   const [isMapVisible, setIsMapVisible] = useState(false);
@@ -296,6 +297,7 @@ const App: React.FC = () => {
             setSearchQuery('');
             setStartDate(null);
             setEndDate(null);
+            setShowPastEvents(false); // Reset past events toggle
         }
     };
 
@@ -496,9 +498,27 @@ const App: React.FC = () => {
   // --- FILTERING & SORTING LOGIC ---
 
   const filteredEvents = useMemo(() => {
+    // Determine "Today" for filtering past events
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localToday = new Date(today.getTime() - (offset*60*1000));
+    const todayStr = localToday.toISOString().split('T')[0];
+
     const filtered = events.filter(event => {
       // 0. Hidden check
       if (event.hidden) return false;
+
+      // 0.1 Past Event Check (Ocultar eventos pasados o mostrar solo pasados)
+      // Check endDate first, fallback to date (start date)
+      const eventEndStr = event.endDate || event.date;
+      
+      if (showPastEvents) {
+          // If Past Mode is ON: Show ONLY events that have ended before today
+          if (eventEndStr >= todayStr) return false;
+      } else {
+          // If Past Mode is OFF (Default): Show ONLY current or future events
+          if (eventEndStr < todayStr) return false;
+      }
 
       const isAd = event.id.startsWith('ad-');
       if (isAd && filterType === 'all') return true;
@@ -547,7 +567,14 @@ const App: React.FC = () => {
         const adsList = filtered.filter(e => e.id.startsWith('ad-'));
         const contentList = filtered.filter(e => !e.id.startsWith('ad-'));
         
-        const result = [...contentList];
+        // If showing past events, maybe sort by date descending (newest past event first)?
+        // For now, keeping standard sort (chronological) is fine, or users can scroll to end.
+        // Actually, for past events, descending sort usually makes more sense (most recent history).
+        let result = [...contentList];
+        
+        if (showPastEvents) {
+             result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
 
         if (adsList.length > 0) {
             const adToInject = adsList[0];
@@ -562,12 +589,29 @@ const App: React.FC = () => {
         return filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
     }
 
-  }, [events, searchQuery, selectedTowns, selectedCategories, startDate, endDate, sortBy, filterType]);
+  }, [events, searchQuery, selectedTowns, selectedCategories, startDate, endDate, sortBy, filterType, showPastEvents]);
 
   const eventCounts = useMemo(() => {
       const counts: Record<string, number> = {};
+      // To get accurate counts for the filters, we should probably run a similar filter logic
+      // But for simplicity/performance, we can just base it on the currently filtered view
+      // or re-run the "all items" check.
+      // Re-running logic to ensure counts reflect "available" items matching filters:
+      const today = new Date();
+      const offset = today.getTimezoneOffset();
+      const localToday = new Date(today.getTime() - (offset*60*1000));
+      const todayStr = localToday.toISOString().split('T')[0];
+
       const eventsForCounts = events.filter(event => {
-          if (event.hidden) return false; // Don't count hidden events
+          if (event.hidden) return false; 
+          
+          const eventEndStr = event.endDate || event.date;
+          if (showPastEvents) {
+              if (eventEndStr >= todayStr) return false;
+          } else {
+              if (eventEndStr < todayStr) return false;
+          }
+
           if (selectedCategories.length > 0 && !selectedCategories.includes(event.category)) return false;
           if (startDate) {
               const eventStart = new Date(event.date);
@@ -606,11 +650,25 @@ const App: React.FC = () => {
           }
       });
       return counts;
-  }, [events, searchQuery, selectedCategories, startDate, endDate, filterType]);
+  }, [events, searchQuery, selectedCategories, startDate, endDate, filterType, showPastEvents]);
 
   const availableCategories = useMemo(() => {
+      // Same logic as eventCounts but for categories
+      const today = new Date();
+      const offset = today.getTimezoneOffset();
+      const localToday = new Date(today.getTime() - (offset*60*1000));
+      const todayStr = localToday.toISOString().split('T')[0];
+
       const eventsForCats = events.filter(event => {
           if (event.hidden) return false;
+          
+          const eventEndStr = event.endDate || event.date;
+          if (showPastEvents) {
+              if (eventEndStr >= todayStr) return false;
+          } else {
+              if (eventEndStr < todayStr) return false;
+          }
+
           if (selectedTowns.length > 0 && !selectedTowns.includes('all')) {
              const townObj = TOWNS.find(t => t.name === event.town);
              if (!townObj || !selectedTowns.includes(townObj.id)) return false;
@@ -645,7 +703,7 @@ const App: React.FC = () => {
           return true;
       });
       return Array.from(new Set(eventsForCats.map(e => e.category)));
-  }, [events, searchQuery, selectedTowns, startDate, endDate, filterType]);
+  }, [events, searchQuery, selectedTowns, startDate, endDate, filterType, showPastEvents]);
 
   const selectedEvent = useMemo(() => 
     selectedEventId ? events.find(e => e.id === selectedEventId) : null
@@ -730,6 +788,7 @@ const App: React.FC = () => {
                 setSearchQuery('');
                 setStartDate(null);
                 setEndDate(null);
+                setShowPastEvents(false);
                 history.pushState("", document.title, window.location.pathname + window.location.search);
             }}
         />
@@ -753,6 +812,16 @@ const App: React.FC = () => {
                     onSortChange={setSortBy}
                     filterType={filterType}
                     onFilterTypeChange={setFilterType}
+                    showPastEvents={showPastEvents}
+                    onTogglePastEvents={() => {
+                        const newState = !showPastEvents;
+                        setShowPastEvents(newState);
+                        if (newState) {
+                            // Clear date filters when switching to past mode to avoid conflicts
+                            setStartDate(null);
+                            setEndDate(null);
+                        }
+                    }}
                 />
             </aside>
 
@@ -806,6 +875,22 @@ const App: React.FC = () => {
 
                 <Hero />
 
+                {/* Banner de Modo Histórico */}
+                {showPastEvents && (
+                    <div className="bg-amber-100 dark:bg-amber-900/30 border-l-4 border-amber-500 text-amber-800 dark:text-amber-300 p-4 mb-4 rounded-r shadow-sm animate-fade-in flex justify-between items-center">
+                        <div>
+                            <p className="font-bold">Estás viendo eventos pasados</p>
+                            <p className="text-xs">Mostrando el historial de actividades finalizadas.</p>
+                        </div>
+                        <button 
+                            onClick={() => setShowPastEvents(false)}
+                            className="bg-amber-200 dark:bg-amber-800 px-3 py-1 rounded text-xs font-bold hover:bg-amber-300 dark:hover:bg-amber-700 transition-colors"
+                        >
+                            Ver Actuales
+                        </button>
+                    </div>
+                )}
+
                 {/* Contador de Eventos */}
                 <div className="mb-4">
                     <EventCounter 
@@ -817,6 +902,7 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setFilterType('all');
+                            setShowPastEvents(false);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                             history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
@@ -835,10 +921,11 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setSearchQuery('');
+                            setShowPastEvents(false);
                             history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
                         onCategoryFilterClick={(cat) => setSelectedCategories([cat])}
-                        isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery}
+                        isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery || showPastEvents}
                         selectedTownIds={selectedTowns}
                         onUpdateEvent={handleUpdateEvent}
                     />
@@ -889,6 +976,15 @@ const App: React.FC = () => {
                 onSortChange={setSortBy}
                 filterType={filterType}
                 onFilterTypeChange={setFilterType}
+                showPastEvents={showPastEvents}
+                onTogglePastEvents={() => {
+                    const newState = !showPastEvents;
+                    setShowPastEvents(newState);
+                    if (newState) {
+                        setStartDate(null);
+                        setEndDate(null);
+                    }
+                }}
             />
         )}
 
