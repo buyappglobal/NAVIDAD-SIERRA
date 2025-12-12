@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { EventCategory } from '../types';
 
@@ -10,6 +11,7 @@ const categoryColors: Record<EventCategory, string> = {
   [EventCategory.FIESTA]: 'bg-red-500 border-red-500 text-white',
   [EventCategory.MERCADO]: 'bg-blue-500 border-blue-500 text-white',
   [EventCategory.FERIA_GASTRONOMICA]: 'bg-orange-500 border-orange-500 text-white',
+  [EventCategory.TIERRA_DE_CULTURA]: 'bg-cyan-600 border-cyan-600 text-white',
   [EventCategory.OTRO]: 'bg-gray-500 border-gray-500 text-white',
 };
 

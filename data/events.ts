@@ -24,8 +24,10 @@ import { CUMBRES_BARTOLOME_EVENTS } from './pueblos/cumbresbartolome';
 import { JABUGO_EVENTS } from './pueblos/jabugo';
 import { ZUFRE_EVENTS } from './pueblos/zufre';
 import { OTHER_EVENTS } from './pueblos/otros';
+import { TIERRA_CULTURA_EVENTS } from './campaigns/tierra_cultura';
 
 export const ALL_EVENTS = [
+    ...TIERRA_CULTURA_EVENTS, // Añadido al principio para visibilidad del evento padre si está sponsored
     ...ARACENA_EVENTS,
     ...LINARES_EVENTS,
     ...HIGUERA_EVENTS,

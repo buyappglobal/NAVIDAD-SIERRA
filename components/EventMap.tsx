@@ -20,6 +20,7 @@ const categoryColorMap: Record<EventCategory, string> = {
   [EventCategory.FIESTA]: '#dc2626', // red-600
   [EventCategory.MERCADO]: '#2563eb', // blue-600
   [EventCategory.FERIA_GASTRONOMICA]: '#ea580c', // orange-600
+  [EventCategory.TIERRA_DE_CULTURA]: '#0891b2', // cyan-600
   [EventCategory.OTRO]: '#475569', // slate-600
 };
 

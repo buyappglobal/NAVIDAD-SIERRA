@@ -8,6 +8,8 @@ import ResourceGalleryModal from './ResourceGalleryModal';
 import WeatherModal from './WeatherModal';
 import { townCoordinates } from '../data/townCoordinates';
 import { incrementViewEvent, toggleLikeEvent, toggleAttendEvent } from '../services/interactionService';
+import { tryCheckIn, getPassportData } from '../services/passportService';
+import { triggerConfetti } from '../utils/confetti';
 
 interface EventDetailProps {
   event: EventType;
@@ -18,8 +20,9 @@ interface EventDetailProps {
   showToast: (message: string, icon: React.ReactNode) => void;
   onEngagement: () => void;
   onUpdateEvent: (updatedEvent: EventType) => void; 
-  allEvents?: EventType[]; // New prop for related events
-  onSelectEvent?: (eventId: string) => void; // New prop for redirection
+  allEvents?: EventType[]; 
+  onSelectEvent?: (eventId: string) => void; 
+  onOpenPassport?: () => void; // Nuevo prop
 }
 
 const categoryColors: Record<EventCategory, { bg: string, text: string, border: string }> = {
@@ -30,6 +33,7 @@ const categoryColors: Record<EventCategory, { bg: string, text: string, border: 
   [EventCategory.FIESTA]: { bg: 'bg-red-100 dark:bg-red-900/50', text: 'text-red-800 dark:text-red-300', border: 'border-red-500' },
   [EventCategory.MERCADO]: { bg: 'bg-blue-100 dark:bg-blue-900/50', text: 'text-blue-800 dark:text-blue-300', border: 'border-blue-500' },
   [EventCategory.FERIA_GASTRONOMICA]: { bg: 'bg-orange-100 dark:bg-orange-900/50', text: 'text-orange-800 dark:text-orange-300', border: 'border-orange-500' },
+  [EventCategory.TIERRA_DE_CULTURA]: { bg: 'bg-cyan-100 dark:bg-cyan-900/50', text: 'text-cyan-800 dark:text-cyan-300', border: 'border-cyan-600' },
   [EventCategory.OTRO]: { bg: 'bg-gray-200 dark:bg-gray-700/50', text: 'text-gray-800 dark:text-gray-300', border: 'border-gray-500' },
 };
 
@@ -72,7 +76,7 @@ const FormattedText: React.FC<{ text: string }> = ({ text }) => {
   );
 };
 
-const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement, onUpdateEvent, allEvents, onSelectEvent }) => {
+const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, onEdit, onCategoryFilterClick, showToast, onEngagement, onUpdateEvent, allEvents, onSelectEvent, onOpenPassport }) => {
   // Logic to determine if event is passed
   const today = new Date();
   const offset = today.getTimezoneOffset();
@@ -89,11 +93,18 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [showWeatherModal, setShowWeatherModal] = useState(false);
   
+  // Passport State
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
+  const [hasCheckedIn, setHasCheckedIn] = useState(false);
+  
   // Local interaction state to update UI immediately
   const [localLikes, setLocalLikes] = useState(likes || 0);
   const [localIsFavorite, setLocalIsFavorite] = useState(isFavorite || false);
   const [localAttendees, setLocalAttendees] = useState(attendees || 0);
   const [localIsAttending, setLocalIsAttending] = useState(isAttending || false);
+
+  // Sticky Back Button State
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Refs for Drag to Scroll
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -128,28 +139,35 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Increment view count when details open
     incrementViewEvent(id);
     
-    // Update hash for deep linking state without full reload
-    // Only if not already present to avoid loops
     if (!window.location.hash.includes(id)) {
-        // Use replaceState to avoid cluttering history stack if just viewing details
-        // Or assign to hash if you want back button to close detail (handled in App.tsx)
         window.location.hash = `/evento/${id}`;
     }
     
-    // Reset local state when event changes
     setLocalLikes(likes || 0);
     setLocalIsFavorite(isFavorite || false);
     setLocalAttendees(attendees || 0);
     setLocalIsAttending(isAttending || false);
     
+    // Check if already in passport
+    const passportData = getPassportData();
+    if (passportData.visitedTowns.includes(town)) {
+        setHasCheckedIn(true);
+    }
+
+    // Scroll listener for sticky button
+    const handleScroll = () => {
+        setIsScrolled(window.scrollY > 60);
+    };
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
       window.speechSynthesis.cancel();
       setIsReading(false);
+      window.removeEventListener('scroll', handleScroll);
     };
-  }, [id, likes, isFavorite, attendees, isAttending]);
+  }, [id, likes, isFavorite, attendees, isAttending, town]);
 
   const handleToggleSpeech = () => {
     if (isReading) {
@@ -174,12 +192,34 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     setShowPlanModal(true);
   };
   
+  const handlePassportCheckIn = async () => {
+      setIsCheckingIn(true);
+      try {
+          const result = await tryCheckIn(event);
+          if (result.success) {
+              setHasCheckedIn(true);
+              triggerConfetti(); // 🎉 CONFETI AQUI
+              showToast(result.message, ICONS.checkCircle);
+              if (result.newBadge) {
+                  setTimeout(() => {
+                      alert(`🎉 ¡Enhorabuena! Has desbloqueado la insignia: ${result.newBadge?.name} ${result.newBadge?.icon}`);
+                  }, 1000);
+              }
+          } else {
+              showToast(result.message, ICONS.map);
+          }
+      } catch (e) {
+          showToast("Error al verificar ubicación.", ICONS.close);
+      } finally {
+          setIsCheckingIn(false);
+      }
+  };
+  
   const handleLike = () => {
       const newStatus = toggleLikeEvent(id);
       setLocalIsFavorite(newStatus);
       setLocalLikes(prev => prev + (newStatus ? 1 : -1));
       
-      // Update global state immediately
       onUpdateEvent({
           ...event,
           isFavorite: newStatus,
@@ -194,7 +234,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
       setLocalIsAttending(newStatus);
       setLocalAttendees(prev => prev + (newStatus ? 1 : -1));
       
-      // Update global state immediately
       onUpdateEvent({
           ...event,
           isAttending: newStatus,
@@ -204,7 +243,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
       if (newStatus) showToast("¡Genial! Nos vemos allí", ICONS.checkCircle);
   };
 
-  // LOGIC: Determine relevant date for Weather Forecast
   const getRelevantWeatherDate = () => {
     const d = new Date();
     const year = d.getFullYear();
@@ -212,63 +250,43 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     const day = String(d.getDate()).padStart(2, '0');
     const todayStrFull = `${year}-${month}-${day}`;
 
-    // 1. If event is in the future (Start Date > Today), show Start Date
     if (date > todayStrFull) {
         return date;
     }
 
-    // 2. If event has started...
     if (event.endDate) {
-        // If it is currently ongoing (Start <= Today <= End), show TODAY
         if (todayStrFull >= date && todayStrFull <= event.endDate) {
             return todayStrFull; 
         }
-        // If it has ended, show End Date (The modal will handle "past event" message)
         if (todayStrFull > event.endDate) {
             return event.endDate;
         }
     }
-    
-    // Default fallback (e.g. single day event that is today or past)
     return date;
   };
 
   const weatherTargetDate = getRelevantWeatherDate();
 
-  // Related Events Logic
   const relatedEvents = useMemo(() => {
       if (!allEvents) return [];
       
       return allEvents.filter(e => {
-          // Same town
           if (e.town !== town) return false;
-          // Not the current event
           if (e.id === id) return false;
-          // Not an Ad
           if (e.externalUrl) return false;
-          
-          // Future check (checks if start date is >= today OR if end date is >= today)
           const evtEndStr = e.endDate || e.date;
           return evtEndStr >= todayStr;
       }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [allEvents, town, id, todayStr]);
 
-
-  // Construct explicit deep link for sharing using HASH
-  // FIX: Hardcode the base URL to huelvalate.es to ensure correct sharing links regardless of environment
   const cleanBaseUrl = "https://huelvalate.es";
-  
-  // Format: domain.com/#/evento/eventId
   const shareUrl = `${cleanBaseUrl}/#/evento/${id}`;
-  
   const shareText = `¡No te pierdas "${title}" en ${town}! Echa un vistazo a este evento de la Sierra de Aracena:`;
-  
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
   const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
   const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
   const emailUrl = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
 
-  // --- DRAG TO SCROLL HANDLERS ---
   const onMouseDown = (e: React.MouseEvent) => {
     isDown.current = true;
     mouseMoved.current = 0;
@@ -301,14 +319,13 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
     e.preventDefault();
     if (sliderRef.current) {
         const x = e.pageX - sliderRef.current.offsetLeft;
-        const walk = (x - startX.current) * 1.5; // Scroll speed
+        const walk = (x - startX.current) * 1.5; 
         sliderRef.current.scrollLeft = scrollLeftPos.current - walk;
         mouseMoved.current = Math.abs(x - startX.current);
     }
   };
 
   const handleRelatedEventClick = (e: React.MouseEvent, eventId: string) => {
-      // If moved significantly (> 5px), treat as drag, not click
       if (mouseMoved.current > 5) {
           e.preventDefault();
           e.stopPropagation();
@@ -317,7 +334,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
       if (onSelectEvent) onSelectEvent(eventId);
   };
 
-  // --- IF EXPIRED, RENDER EXPIRED VIEW ---
   if (isExpired) {
       return (
         <div className="animate-fade-in max-w-lg mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
@@ -348,22 +364,53 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
 
   return (
     <>
-      <div className="animate-fade-in max-w-4xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-            <button onClick={onBack} className="flex items-center gap-2 text-amber-600 dark:text-amber-300 hover:text-amber-500 dark:hover:text-amber-200 font-bold transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7 7-7" />
-                </svg>
-                Volver
-            </button>
-            {isLoggedIn && (
+      <div className="animate-fade-in max-w-4xl mx-auto relative">
+        {/* STICKY HEADER NAVIGATION */}
+        <div className={`sticky top-2 z-50 flex justify-between items-start pointer-events-none transition-all duration-300 ${isScrolled ? 'mb-0' : 'mb-6'}`}>
+            <div className="pointer-events-auto">
                 <button 
-                    onClick={onEdit}
-                    className="flex items-center gap-2 bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-bold py-2 px-4 rounded-md hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors"
+                    onClick={onBack} 
+                    className={`flex items-center gap-2 transition-all duration-300 ease-in-out ${
+                        isScrolled 
+                        ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-lg p-3 rounded-full text-slate-700 dark:text-slate-200 hover:scale-105 border border-slate-200 dark:border-slate-700' 
+                        : 'text-amber-600 dark:text-amber-300 hover:text-amber-500 dark:hover:text-amber-200 font-bold px-0 bg-transparent'
+                    }`}
+                    title="Volver"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536l12.232-12.232z" /></svg>
-                    Editar Evento
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7 7-7" />
+                    </svg>
+                    <span 
+                        className={`overflow-hidden transition-[max-width,opacity] duration-300 ease-in-out whitespace-nowrap ${
+                            isScrolled ? 'max-w-0 opacity-0' : 'max-w-[100px] opacity-100'
+                        }`}
+                    >
+                        Volver
+                    </span>
                 </button>
+            </div>
+
+            {isLoggedIn && (
+                <div className="pointer-events-auto">
+                    <button 
+                        onClick={onEdit}
+                        className={`flex items-center gap-2 transition-all duration-300 ${
+                            isScrolled
+                            ? 'bg-slate-200/90 dark:bg-slate-700/90 backdrop-blur-md p-3 rounded-full shadow-lg text-slate-800 dark:text-white'
+                            : 'bg-slate-200 dark:bg-slate-600 text-slate-800 dark:text-white font-bold py-2 px-4 rounded-md hover:bg-slate-300 dark:hover:bg-slate-500'
+                        }`}
+                        title="Editar Evento"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536l12.232-12.232z" /></svg>
+                        <span 
+                            className={`overflow-hidden transition-[max-width,opacity] duration-300 ease-in-out whitespace-nowrap ${
+                                isScrolled ? 'max-w-0 opacity-0' : 'max-w-[150px] opacity-100'
+                            }`}
+                        >
+                            Editar Evento
+                        </span>
+                    </button>
+                </div>
             )}
         </div>
 
@@ -393,7 +440,6 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
                     <h1 className="text-3xl sm:text-4xl font-display text-orange-800 dark:text-amber-300">{title}</h1>
                 </div>
                 
-                {/* Botones de Acción Social */}
                 <div className="flex gap-2">
                     <button 
                         onClick={handleLike}
@@ -437,6 +483,46 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
                 </div>
               )}
             </div>
+
+            {/* BOTÓN PASAPORTE CULTURAL */}
+            {hasCoordinates && (
+                <div className="mb-6">
+                    <button
+                        onClick={hasCheckedIn ? onOpenPassport : handlePassportCheckIn}
+                        disabled={isCheckingIn}
+                        className={`w-full py-4 rounded-xl font-bold text-lg shadow-md flex items-center justify-center gap-3 transition-all transform hover:scale-[1.01] ${
+                            hasCheckedIn 
+                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-2 border-green-500' 
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-lg'
+                        }`}
+                    >
+                        {isCheckingIn ? (
+                            <>
+                                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>Verificando ubicación...</span>
+                            </>
+                        ) : hasCheckedIn ? (
+                            <>
+                                {ICONS.checkCircle}
+                                <span>¡Pasaporte Sellado! (Ver)</span>
+                            </>
+                        ) : (
+                            <>
+                                {ICONS.passport}
+                                <span>Sellar Pasaporte Cultural</span>
+                            </>
+                        )}
+                    </button>
+                    {!hasCheckedIn && (
+                        <p className="text-center text-xs text-slate-500 mt-2">
+                            *Debes estar en {town} para conseguir el sello.
+                        </p>
+                    )}
+                </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
               {interestInfo && (
@@ -488,7 +574,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, onBack, isLoggedIn, on
               <FormattedText text={description} />
             </div>
 
-            {/* Related Events Slider with Mouse Drag */}
+            {/* Related Events Slider */}
             {relatedEvents.length > 0 && (
                 <div className="mb-8 pt-6 border-t border-slate-200 dark:border-slate-700/50">
                     <h3 className="text-xl font-bold font-display text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2">

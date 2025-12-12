@@ -32,28 +32,52 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
             </div>
           </div>
 
+          <div className="flex gap-4">
+            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+              {ICONS.location}
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">2. Eventos Cerca de Ti</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Pulsa el botón de ubicación 📍 para filtrar automáticamente los planes que ocurren a menos de 20km de ti. ¡Ideal para improvisar!
+              </p>
+            </div>
+          </div>
+
           {ENABLE_AI_SEARCH && (
             <div className="flex gap-4">
                 <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
                 {ICONS.sparkles}
                 </div>
                 <div>
-                <h3 className="font-bold text-slate-800 dark:text-slate-200">2. Buscador Mágico (IA)</h3>
+                <h3 className="font-bold text-slate-800 dark:text-slate-200">3. Buscador Mágico (IA)</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                    En la barra de búsqueda, escribe frases naturales como <em>"planes románticos para el sábado"</em> o <em>"conciertos gratis"</em> y pulsa el botón <strong>IA</strong>. Nuestra inteligencia artificial entenderá lo que buscas y te mostrará los mejores resultados.
+                    En la barra de búsqueda, escribe frases naturales como <em>"planes con niños"</em> o <em>"conciertos gratis"</em> y pulsa el botón <strong>IA</strong>.
                 </p>
                 </div>
             </div>
           )}
 
           <div className="flex gap-4">
-            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center text-green-600 dark:text-green-400 flex-shrink-0">
+              {ICONS.passport}
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "4." : "3."} Pasaporte Cultural</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                Viaja a los pueblos y <strong>sella tu pasaporte</strong> en la ficha del evento. ¡Ojo! Solo funciona si estás físicamente allí. Colecciona insignias y sube de nivel.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="w-12 h-12 rounded-full bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center text-sky-600 dark:text-sky-400 flex-shrink-0">
               {ICONS.magic}
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "3." : "2."} Planifica tu día</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "5." : "4."} Planifica tu día</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Dentro de cada evento, pulsa el botón "Planificar mi día" para obtener un itinerario personalizado con sugerencias de dónde comer y qué visitar.
+                Dentro de cada evento, pulsa el botón "Planificar mi día" para obtener un itinerario personalizado generado por IA con sugerencias de dónde comer y qué visitar.
               </p>
             </div>
           </div>
@@ -63,9 +87,9 @@ const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ onClose }) => {
               {ICONS.heart}
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "4." : "3."} Interactúa y Vota</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200">{ENABLE_AI_SEARCH ? "6." : "5."} Interactúa y Vota</h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Dale a <strong>Me Gusta</strong> ❤️ para guardar tus favoritos y marca <strong>Asistiré</strong> ✅ en los eventos a los que irás. Tus votos actualizan el Ranking de popularidad.
+                Dale a <strong>Me Gusta</strong> ❤️ y marca <strong>Asistiré</strong> ✅ en los eventos. Tus votos actualizan el Ranking de popularidad.
               </p>
             </div>
           </div>

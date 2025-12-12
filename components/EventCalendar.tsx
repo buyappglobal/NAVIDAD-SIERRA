@@ -12,6 +12,7 @@ const categoryColors: Record<EventCategory, string> = {
   [EventCategory.FIESTA]: 'bg-red-500',
   [EventCategory.MERCADO]: 'bg-blue-500',
   [EventCategory.FERIA_GASTRONOMICA]: 'bg-orange-500',
+  [EventCategory.TIERRA_DE_CULTURA]: 'bg-cyan-600',
   [EventCategory.OTRO]: 'bg-gray-500',
 };
 

@@ -28,6 +28,9 @@ import HowItWorksModal from './components/HowItWorksModal';
 import EventCounter from './components/EventCounter';
 import MenuModal from './components/MenuModal';
 import ProvinceEventsModal from './components/ProvinceEventsModal';
+import PassportModal from './components/PassportModal'; // NEW
+import WeekendHighlightModal from './components/WeekendHighlightModal';
+import PromoModal from './components/PromoModal';
 import { analyzeSearchIntent } from './services/aiSearchService';
 import { getEventMetrics } from './services/interactionService';
 import { exportEventsToCSV } from './services/googleSheetsService';
@@ -39,7 +42,8 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 
 // --- LOGIC RESTORATION START ---
 // 1. Process metrics for all items
-const processedEvents = ALL_EVENTS.map(getEventMetrics);
+const visibleEvents = ALL_EVENTS.filter(e => !e.hidden);
+const processedEvents = visibleEvents.map(getEventMetrics);
 const processedAds = ADS.map(getEventMetrics);
 
 // 2. Separate Sponsored vs Regular
@@ -116,6 +120,7 @@ const App: React.FC = () => {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'date' | 'popularity'>('date');
   const [filterType, setFilterType] = useState<'all' | 'favorites' | 'attending'>('all');
+  const [showPastEvents, setShowPastEvents] = useState(false);
 
   // UI State
   const [isMapVisible, setIsMapVisible] = useState(false);
@@ -135,6 +140,10 @@ const App: React.FC = () => {
   const [showGuideModal, setShowGuideModal] = useState(false);
   const [showMenuModal, setShowMenuModal] = useState(false);
   const [showProvinceEventsModal, setShowProvinceEventsModal] = useState(false);
+  const [showPassportModal, setShowPassportModal] = useState(false); // NEW
+
+  const [showWeekendModal, setShowWeekendModal] = useState(false);
+  const [showPromoModal, setShowPromoModal] = useState(false);
 
   // Auth & Toast
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -154,6 +163,38 @@ const App: React.FC = () => {
       setTimeout(() => setShowCookieConsent(true), 2000);
     }
 
+    // --- PROMO MODAL LOGIC (Priority 1) ---
+    const promoShowTimer = setTimeout(() => {
+        setShowPromoModal(true);
+    }, 5000);
+
+    const promoHideTimer = setTimeout(() => {
+        setShowPromoModal(false);
+    }, 10000); 
+
+    // --- WEEKEND HIGHLIGHT LOGIC (Priority 2) ---
+    let weekendTimer: ReturnType<typeof setTimeout>;
+    
+    try {
+        const visitKey = 'sierra_weekend_highlight_visits_v1';
+        const currentVisits = parseInt(localStorage.getItem(visitKey) || '0', 10);
+        const newVisits = currentVisits + 1;
+        localStorage.setItem(visitKey, newVisits.toString());
+
+        if ((newVisits - 1) % 3 === 0) {
+            weekendTimer = setTimeout(() => {
+                setShowPromoModal(prevIsPromoOpen => {
+                    if (!prevIsPromoOpen) {
+                        setShowWeekendModal(true);
+                    }
+                    return prevIsPromoOpen; 
+                });
+            }, 20000); 
+        }
+    } catch (e) {
+        console.warn("Local storage error for visits", e);
+    }
+
     // Listen for Hash Changes (Back/Forward navigation)
     const handleHashChange = () => {
         const { initialTowns, initialEventId } = parseRoute();
@@ -161,17 +202,33 @@ const App: React.FC = () => {
         setSelectedTowns(initialTowns);
         setSelectedEventId(initialEventId);
         
+        // Handle Province Route
+        if (window.location.hash.includes('provincia')) {
+            setShowProvinceEventsModal(true);
+        } else {
+            setShowProvinceEventsModal(false);
+        }
+
         // Reset other filters if we navigate back to home (empty hash)
-        if (initialTowns.length === 0 && !initialEventId && !window.location.hash.includes('#/')) {
+        if (initialTowns.length === 0 && !initialEventId && (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#')) {
             setSelectedCategories([]);
             setSearchQuery('');
             setStartDate(null);
             setEndDate(null);
+            setShowPastEvents(false);
         }
     };
 
     window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    // Trigger on mount
+    handleHashChange();
+
+    return () => {
+        window.removeEventListener('hashchange', handleHashChange);
+        clearTimeout(promoShowTimer);
+        clearTimeout(promoHideTimer);
+        if (weekendTimer) clearTimeout(weekendTimer);
+    };
   }, []);
 
   useEffect(() => {
@@ -193,7 +250,6 @@ const App: React.FC = () => {
   };
 
   const handleLogin = (email: string, pass: string) => {
-      // Mock login
       if (email === 'admin@huelvalate.es' && pass === 'sierra2025') {
           setIsLoggedIn(true);
           setShowLoginModal(false);
@@ -233,11 +289,9 @@ const App: React.FC = () => {
       if (!searchQuery.trim()) return;
       
       setIsAiSearching(true);
-      // Try process.env first as per instructions, then session storage as fallback for existing behavior
       const apiKey = process.env.API_KEY || sessionStorage.getItem('gemini-api-key');
       
       if (!apiKey) {
-          // Fallback: Open AI Assistant Modal to setup key or ask
           setShowAiAssistant(true);
           setIsAiSearching(false);
           return;
@@ -261,54 +315,50 @@ const App: React.FC = () => {
       }
   };
 
-  // Logic to show install modal after closing an event
   const handleCloseDetail = () => {
       setSelectedEventId(null);
-      // Remove hash from URL when closing detail without refreshing
       if (window.location.hash.includes('#/evento/')) {
-          // Reset hash to clean or to previous town filter if active?
-          // For simplicity, just remove hash if it was an event hash
           history.pushState("", document.title, window.location.pathname + window.location.search);
       }
       
-      // 1. Check if app is running in Standalone mode (Already installed)
+      // Check for PWA install prompt logic (simplified)
       const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone === true;
-      
-      // 2. Check if user has previously installed (Local Storage - Permanent flag)
       const hasInstalledStorage = localStorage.getItem('pwa_installed') === 'true';
-
-      // 3. Check if we have already shown the modal in THIS session (Session Storage - Temporary flag)
       const hasShownSession = sessionStorage.getItem('pwa_prompt_shown_session') === 'true';
 
-      // Logic: Show only if NOT installed, NOT marked as installed, and NOT shown this session
       if (!isStandalone && !hasInstalledStorage && !hasShownSession) {
           setTimeout(() => {
               setShowInstallModal(true);
-              // Mark as shown for this session immediately so it doesn't pop up again until tab refresh
               sessionStorage.setItem('pwa_prompt_shown_session', 'true');
-          }, 1500); // 1.5s delay for smooth transition after closing event
+          }, 1500); 
       }
   };
 
   // --- FILTERING & SORTING LOGIC ---
 
   const filteredEvents = useMemo(() => {
-    // 1. Filter Pass
+    // Determine "Today"
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localToday = new Date(today.getTime() - (offset*60*1000));
+    const todayStr = localToday.toISOString().split('T')[0];
+
     const filtered = events.filter(event => {
+      if (event.hidden) return false;
+
+      const eventEndStr = event.endDate || event.date;
+      
+      if (showPastEvents) {
+          if (eventEndStr >= todayStr) return false;
+      } else {
+          if (eventEndStr < todayStr) return false;
+      }
+
       const isAd = event.id.startsWith('ad-');
-
-      // Always allow Ads to pass text/town filters in 'all' view to ensure they appear in the feed
       if (isAd && filterType === 'all') return true;
+      if (filterType === 'favorites') { if (!event.isFavorite) return false; }
+      if (filterType === 'attending') { if (!event.isAttending) return false; }
 
-      // Personal Lists Filters
-      if (filterType === 'favorites') {
-          if (!event.isFavorite) return false;
-      }
-      if (filterType === 'attending') {
-          if (!event.isAttending) return false;
-      }
-
-      // 1. Text Search
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         const matchTitle = event.title.toLowerCase().includes(q);
@@ -317,24 +367,20 @@ const App: React.FC = () => {
         if (!matchTitle && !matchDesc && !matchTown) return false;
       }
 
-      // 2. Town Filter
       if (selectedTowns.length > 0 && !selectedTowns.includes('all')) {
          const townObj = TOWNS.find(t => t.name === event.town);
          if (!townObj || !selectedTowns.includes(townObj.id)) return false;
       }
 
-      // 3. Category Filter
       if (selectedCategories.length > 0 && !selectedCategories.includes(event.category)) {
           return false;
       }
 
-      // 4. Date Filter
       if (startDate) {
           const eventStart = new Date(event.date);
           const filterStart = new Date(startDate);
           if (event.endDate) {
               const eventEnd = new Date(event.endDate);
-              // Overlap logic
               if (eventEnd < filterStart) return false;
           } else {
               if (eventStart < filterStart) return false;
@@ -350,43 +396,35 @@ const App: React.FC = () => {
       return true;
     });
 
-    // 2. Sorting and Positioning Pass
     if (sortBy === 'date') {
-        // Here we implement the "Sponsored First, then Date, with Ad at pos 4" logic
-        
-        // Separate content from ads
         const adsList = filtered.filter(e => e.id.startsWith('ad-'));
         const contentList = filtered.filter(e => !e.id.startsWith('ad-'));
-
-        // Because 'events' (INITIAL_EVENTS) is already structure as [Shuffled Sponsored, Sorted Regular],
-        // and .filter() preserves array order, 'contentList' ALREADY has the correct order.
-        // We DO NOT want to run .sort() here because it would mix Sponsored and Regular based on date.
         
-        const result = [...contentList];
+        let result = [...contentList];
+        
+        if (showPastEvents) {
+             result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
 
-        // Inject Ad at Position 4 (Index 3)
         if (adsList.length > 0) {
-            const adToInject = adsList[0]; // Take the first available ad
+            const adToInject = adsList[0];
             if (result.length >= 3) {
                 result.splice(3, 0, adToInject);
             } else {
-                // If list is short, append at end
                 result.push(adToInject);
             }
         }
-
         return result;
-
     } else {
-        // Popularity Sort
-        // For popularity, we just sort by likes. Ads usually have 0 likes so they drop to bottom.
         return filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
     }
 
-  }, [events, searchQuery, selectedTowns, selectedCategories, startDate, endDate, sortBy, filterType]);
+  }, [events, searchQuery, selectedTowns, selectedCategories, startDate, endDate, sortBy, filterType, showPastEvents]);
 
   const eventCounts = useMemo(() => {
       const counts: Record<string, number> = {};
+      // Logic duplicated for count consistency... simplified for brevity here
+      // Ideally reuse filter logic or just count filteredEvents towns
       filteredEvents.forEach(e => {
           const t = TOWNS.find(town => town.name === e.town);
           if (t) {
@@ -415,13 +453,13 @@ const App: React.FC = () => {
                         event={selectedEvent} 
                         onBack={handleCloseDetail}
                         isLoggedIn={isLoggedIn}
-                        onEdit={() => {/* TODO: Implement Edit Modal opening with event data */}}
+                        onEdit={() => {}}
                         onCategoryFilterClick={(cat) => { setSelectedCategories([cat]); setSelectedEventId(null); }}
                         showToast={showToastMessage}
                         onEngagement={() => {}}
                         onUpdateEvent={handleUpdateEvent}
-                        allEvents={events} // NEW: Passing all events for related slider
-                        onSelectEvent={setSelectedEventId} // NEW: Allow switching events from details
+                        allEvents={events}
+                        onSelectEvent={setSelectedEventId}
                     />
                 </div>
                 <BottomNav 
@@ -433,6 +471,7 @@ const App: React.FC = () => {
                 />
             </div>
             {toast && <Toast message={toast.message} icon={toast.icon} onClose={() => setToast(null)} />}
+            
             {showMenuModal && (
                 <MenuModal 
                     onClose={() => setShowMenuModal(false)}
@@ -440,14 +479,26 @@ const App: React.FC = () => {
                     onSuggest={() => setShowSuggestModal(true)}
                     toggleTheme={handleToggleTheme}
                     onInfo={() => setShowInfoModal(true)}
-                    onProvinceEvents={() => setShowProvinceEventsModal(true)} // NEW
+                    onProvinceEvents={() => setShowProvinceEventsModal(true)}
+                    onPassport={() => setShowPassportModal(true)} // NEW
                     isPwaInstallable={true}
                     theme={theme}
                 />
             )}
-            {showProvinceEventsModal && (
-                <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
+            
+            {showPassportModal && (
+                <PassportModal onClose={() => setShowPassportModal(false)} />
             )}
+
+            {showProvinceEventsModal && (
+                <ProvinceEventsModal onClose={() => {
+                    setShowProvinceEventsModal(false);
+                    if (window.location.hash.includes('provincia')) {
+                        history.pushState("", document.title, window.location.pathname + window.location.search);
+                    }
+                }} />
+            )}
+            
             {showInstallModal && (
                 <InstallPwaModal 
                     onClose={() => setShowInstallModal(false)}
@@ -457,6 +508,7 @@ const App: React.FC = () => {
                     }}
                 />
             )}
+            
             {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}
             {showSuggestModal && <SuggestEventModal onClose={() => setShowSuggestModal(false)} />}
           </div>
@@ -477,12 +529,12 @@ const App: React.FC = () => {
                 setSearchQuery('');
                 setStartDate(null);
                 setEndDate(null);
-                history.pushState("", document.title, window.location.pathname + window.location.search); // Clear hash
+                setShowPastEvents(false);
+                history.pushState("", document.title, window.location.pathname + window.location.search);
             }}
         />
 
         <main className="container mx-auto p-4 md:flex gap-8">
-            {/* Sidebar Desktop */}
             <aside className="hidden md:block w-80 flex-shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2">
                 <FilterSidebar 
                     towns={TOWNS}
@@ -501,6 +553,15 @@ const App: React.FC = () => {
                     onSortChange={setSortBy}
                     filterType={filterType}
                     onFilterTypeChange={setFilterType}
+                    showPastEvents={showPastEvents}
+                    onTogglePastEvents={() => {
+                        const newState = !showPastEvents;
+                        setShowPastEvents(newState);
+                        if (newState) {
+                            setStartDate(null);
+                            setEndDate(null);
+                        }
+                    }}
                 />
             </aside>
 
@@ -554,10 +615,25 @@ const App: React.FC = () => {
 
                 <Hero />
 
+                {showPastEvents && (
+                    <div className="bg-amber-100 dark:bg-amber-900/30 border-l-4 border-amber-500 text-amber-800 dark:text-amber-300 p-4 mb-4 rounded-r shadow-sm animate-fade-in flex justify-between items-center">
+                        <div>
+                            <p className="font-bold">Estás viendo eventos pasados</p>
+                            <p className="text-xs">Mostrando el historial de actividades finalizadas.</p>
+                        </div>
+                        <button 
+                            onClick={() => setShowPastEvents(false)}
+                            className="bg-amber-200 dark:bg-amber-800 px-3 py-1 rounded text-xs font-bold hover:bg-amber-300 dark:hover:bg-amber-700 transition-colors"
+                        >
+                            Ver Actuales
+                        </button>
+                    </div>
+                )}
+
                 {/* Contador de Eventos */}
                 <div className="mb-4">
                     <EventCounter 
-                        total={events.filter(e => !e.id.startsWith('ad-')).length} 
+                        total={filteredEvents.filter(e => !e.id.startsWith('ad-')).length} 
                         onClick={() => {
                             setSelectedTowns([]);
                             setSelectedCategories([]);
@@ -565,6 +641,7 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setFilterType('all');
+                            setShowPastEvents(false);
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                             history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
@@ -583,12 +660,17 @@ const App: React.FC = () => {
                             setStartDate(null);
                             setEndDate(null);
                             setSearchQuery('');
+                            setShowPastEvents(false);
                             history.pushState("", document.title, window.location.pathname + window.location.search);
                         }}
                         onCategoryFilterClick={(cat) => setSelectedCategories([cat])}
-                        isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery}
+                        isAnyFilterActive={selectedTowns.length > 0 || selectedCategories.length > 0 || !!startDate || !!endDate || !!searchQuery || showPastEvents}
                         selectedTownIds={selectedTowns}
                         onUpdateEvent={handleUpdateEvent}
+                        
+                        onShowInterest={(event) => { /* Reuse logic if necessary, currently state in List not App */ }}
+                        onShowPlan={(event) => { /* same */ }}
+                        onShowWeather={(event) => { /* same */ }}
                     />
                 )}
             </div>
@@ -637,6 +719,15 @@ const App: React.FC = () => {
                 onSortChange={setSortBy}
                 filterType={filterType}
                 onFilterTypeChange={setFilterType}
+                showPastEvents={showPastEvents}
+                onTogglePastEvents={() => {
+                    const newState = !showPastEvents;
+                    setShowPastEvents(newState);
+                    if (newState) {
+                        setStartDate(null);
+                        setEndDate(null);
+                    }
+                }}
             />
         )}
 
@@ -693,13 +784,38 @@ const App: React.FC = () => {
                 toggleTheme={handleToggleTheme}
                 onInfo={() => setShowInfoModal(true)}
                 onProvinceEvents={() => setShowProvinceEventsModal(true)}
+                onPassport={() => setShowPassportModal(true)} // NEW
                 isPwaInstallable={true}
                 theme={theme}
             />
         )}
 
         {showProvinceEventsModal && (
-            <ProvinceEventsModal onClose={() => setShowProvinceEventsModal(false)} />
+            <ProvinceEventsModal onClose={() => {
+                setShowProvinceEventsModal(false);
+                if (window.location.hash.includes('provincia')) {
+                    history.pushState("", document.title, window.location.pathname + window.location.search);
+                }
+            }} />
+        )}
+
+        {showPassportModal && (
+            <PassportModal onClose={() => setShowPassportModal(false)} />
+        )}
+
+        {showWeekendModal && (
+            <WeekendHighlightModal 
+                onClose={() => setShowWeekendModal(false)}
+                onSelectEvent={setSelectedEventId}
+                onInstall={() => setShowInstallModal(true)}
+            />
+        )}
+
+        {showPromoModal && (
+            <PromoModal 
+                imageUrl="https://solonet.es/wp-content/uploads/2025/12/WhatsApp-Image-2025-12-04-at-13.27.18.jpeg"
+                onClose={() => setShowPromoModal(false)}
+            />
         )}
 
         {showInfoModal && <InfoAppModal onClose={() => setShowInfoModal(false)} />}

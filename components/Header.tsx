@@ -8,6 +8,7 @@ interface HeaderProps {
     isMapVisible?: boolean;
     onMapClick?: () => void;
     onHomeClick?: () => void;
+    onPassportClick?: () => void; // Nuevo prop
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -16,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({
     isMapVisible, 
     onMapClick, 
     onHomeClick,
+    onPassportClick
 }) => {
     return (
         <>
@@ -62,6 +64,18 @@ const Header: React.FC<HeaderProps> = ({
                     <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 -mt-1 hidden sm:block truncate">Sierra de Aracena y Picos de Aroche</p>
                 </div>
                 <div className="flex-shrink-0 flex items-center gap-1.5 sm:gap-2">
+                    
+                    {/* Botón Pasaporte (Nuevo) */}
+                    {onPassportClick && (
+                        <button
+                            onClick={onPassportClick}
+                            className="flex items-center justify-center p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors shadow-sm"
+                            title="Mi Pasaporte Cultural"
+                        >
+                            {ICONS.passport}
+                        </button>
+                    )}
+
                     {/* View Toggler */}
                     {setView && (
                         <div className="bg-slate-200 dark:bg-slate-800 p-1 rounded-md flex gap-0.5 sm:gap-1 shadow-inner">

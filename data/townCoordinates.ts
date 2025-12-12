@@ -1,6 +1,6 @@
 
-
 export const townCoordinates: Record<string, [number, number]> = {
+    // Sierra de Aracena
     "Alájar": [37.874, -6.668],
     "Almonaster la Real": [37.872, -6.782],
     "Aracena": [37.893, -6.561],
@@ -28,5 +28,54 @@ export const townCoordinates: Record<string, [number, number]> = {
     "Santa Ana la Real": [37.863, -6.711],
     "Santa Olalla del Cala": [37.905, -6.192],
     "Valdelarco": [37.949, -6.668],
-    "Zufre": [37.836, -6.340]
+    "Zufre": [37.836, -6.340],
+    
+    // Nuevos Pueblos añadidos desde Tierra de Cultura / Provincia
+    "Villablanca": [37.303, -7.340],
+    "Villalba del Alcor": [37.397, -6.476],
+    "Aljaraque": [37.269, -7.022],
+    "La Redondela": [37.221, -7.276],
+    "La Zarza-Perrunal": [37.717, -6.764],
+    "El Granado": [37.521, -7.416],
+    "La Granada de Río Tinto": [37.766, -6.508],
+    "Campofrío": [37.765, -6.578],
+    "Paymogo": [37.845, -7.345],
+    "Cabezas Rubias": [37.726, -7.088],
+    "Berrocal": [37.610, -6.540],
+    "Cañaveral de León": [38.016, -6.522],
+    "Alosno": [37.551, -7.114],
+    "Villanueva de los Castillejos": [37.502, -7.272],
+    "La Palma del Condado": [37.384, -6.554],
+    "Chucena": [37.362, -6.394],
+    "Lucena del Puerto": [37.303, -6.729],
+    "Villanueva de las Cruces": [37.628, -7.024],
+    "Beas": [37.424, -6.793],
+    "Trigueros": [37.383, -6.833],
+    "Gibraleón": [37.376, -6.971],
+    "Rociana del Condado": [37.308, -6.598],
+
+    // Resto de la Provincia (Eventos 'Más Navidad')
+    "Huelva Capital": [37.2614, -6.9447],
+    "Beas (El Condado)": [37.4243, -6.7932],
+    "Alosno (Andévalo)": [37.5517, -7.1147],
+    "Corrales, Aljaraque (La Costa)": [37.2604, -6.9723],
+    "Ayamonte (La Costa)": [37.2152, -7.4062],
+    "Lepe (La Costa)": [37.2543, -7.2047],
+    "Minas de Riotinto (Cuenca Minera)": [37.6933, -6.5925],
+    "Moguer (El Condado)": [37.2746, -6.8363],
+    "Gibraleón (Área Metro)": [37.3763, -6.9712],
+    "Punta Umbría (La Costa)": [37.1824, -6.9733],
+    "Palos de la Frontera (El Condado)": [37.2289, -6.8927],
+    "Valverde del Camino (Andévalo)": [37.5751, -6.7543],
+    "Bollullos par del Condado (El Condado)": [37.3396, -6.5383],
+    "La Rábida, Palos de la Frontera": [37.2093, -6.9272],
+    "Villarrasa (El Condado)": [37.3879, -6.6067],
+    "Isla Cristina (La Costa)": [37.2094, -7.3239],
+    "Nerva (Cuenca Minera)": [37.6946, -6.5485],
+    "Tharsis (Cuenca Minera)": [37.5977, -7.1234],
+    "La Palma del Condado (El Condado)": [37.3844, -6.5546],
+    "Cartaya (La Costa)": [37.2829, -7.1511],
+    "El Rocío (Almonte)": [37.1326, -6.4849],
+    "Paterna del Campo (El Condado)": [37.4194, -6.3688],
+    "San Juan del Puerto (Área Metro)": [37.3138, -6.8407]
 };

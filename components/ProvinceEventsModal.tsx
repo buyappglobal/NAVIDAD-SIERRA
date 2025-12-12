@@ -1,31 +1,52 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { ICONS, IMAGE_PLACEHOLDER } from '../constants';
 import { PROVINCE_EVENTS, ProvinceEvent } from '../data/provinceEvents';
-import { findProvinceEvents, generateProvinceEventDetails } from '../services/geminiService';
+import { generateProvinceEventDetails } from '../services/geminiService';
 import MarkdownRenderer from './MarkdownRenderer';
+import WeatherModal from './WeatherModal';
+import { townCoordinates } from '../data/townCoordinates';
 
 interface ProvinceEventsModalProps {
   onClose: () => void;
+  initialEventId?: string | null;
 }
 
-const FALLBACK_IMAGES = [
-    "https://images.unsplash.com/photo-1543589077-47d81606c1bf?q=80&w=1887&auto=format&fit=crop", // Luces genéricas
-    "https://images.unsplash.com/photo-1576602976047-174e57a47881?q=80&w=1969&auto=format&fit=crop", // Mercado navidad
-    "https://images.unsplash.com/photo-1512389142860-9c449e58a543?q=80&w=2069&auto=format&fit=crop", // Decoración calle
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Muelle_de_Rio_Tinto.jpg/1200px-Muelle_de_Rio_Tinto.jpg", // Muelle Tinto
-    "https://multimedia.andalucia.org/media/F3501E356673479B890DC83063673322/img/4955722340B94028A799DC972D738739/12-11-21_belen_viviente_beas_04.jpg?SX=1600&SY=900", // Belén
-    "https://images.unsplash.com/photo-1545048702-79362596cdc9?q=80&w=2070&auto=format&fit=crop", // Luces ciudad
-];
+const ZONES = ['Capital', 'Costa', 'Condado', 'Andévalo', 'Cuenca Minera'];
 
-const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) => {
+const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose, initialEventId }) => {
   const [selectedEvent, setSelectedEvent] = useState<ProvinceEvent | null>(null);
   const [eventDetails, setEventDetails] = useState<string | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [showWeatherModal, setShowWeatherModal] = useState(false);
   
   const [events, setEvents] = useState<ProvinceEvent[]>(PROVINCE_EVENTS);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [filterZone, setFilterZone] = useState<string>('Todas');
+  
+  // Dropdown states
+  const [showZoneDropdown, setShowZoneDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowZoneDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Handle Initial Event Selection (Deep Linking from Map)
+  useEffect(() => {
+      if (initialEventId) {
+          const evt = events.find(e => e.id === initialEventId);
+          if (evt) {
+              handleEventClick(evt);
+          }
+      }
+  }, [initialEventId]);
 
   // Intentar obtener la API Key de forma segura
   const getApiKey = () => {
@@ -37,15 +58,28 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
       }
   };
 
+  // Filtrar eventos pasados y por zona
+  const visibleEvents = useMemo(() => {
+      const today = new Date().toISOString().split('T')[0];
+      return events.filter(event => {
+          // Filtro de fecha (futuros o sin fecha)
+          const isFuture = !event.date || event.date >= today;
+          
+          // Filtro de zona (Location contiene la zona o es 'Todas')
+          // Asumimos que location incluye el nombre de la zona (ej: "Huelva Capital")
+          const matchesZone = filterZone === 'Todas' || (event.location && event.location.includes(filterZone));
+
+          return isFuture && matchesZone;
+      });
+  }, [events, filterZone]);
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.onerror = null;
     e.currentTarget.src = IMAGE_PLACEHOLDER;
   };
 
   const handleShare = async () => {
-    // Construct sharing URL with hash - Force production domain
     const shareUrl = "https://huelvalate.es/#/provincia";
-    
     const shareData = {
         title: 'Más Navidad en Huelva',
         text: 'Descubre los mejores eventos navideños en la capital y el resto de la provincia de Huelva.',
@@ -64,35 +98,9 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
     }
   };
 
-  const handleAiSearch = async () => {
-      const apiKey = getApiKey();
-      if (!apiKey) {
-          alert("Necesitas configurar tu clave API en el Asistente IA primero.");
-          return;
-      }
-
-      setIsLoading(true);
-      try {
-          const results = await findProvinceEvents(apiKey);
-          if (results && results.length > 0) {
-              // Mapear resultados a ProvinceEvent
-              const newEvents: ProvinceEvent[] = results.map((item: any, index: number) => ({
-                  id: `ai-prov-${Date.now()}-${index}`,
-                  imageUrl: FALLBACK_IMAGES[index % FALLBACK_IMAGES.length], // Usamos fallbacks seguros
-                  title: item.title || "Evento Navideño",
-                  location: item.location || "Huelva Provincia"
-              }));
-              setEvents(newEvents);
-              setHasSearched(true);
-          } else {
-              alert("La IA no encontró nuevos eventos en este momento.");
-          }
-      } catch (error) {
-          console.error(error);
-          alert("Error al buscar eventos. Inténtalo de nuevo más tarde.");
-      } finally {
-          setIsLoading(false);
-      }
+  const handleZoneSelect = (zone: string) => {
+      setFilterZone(zone);
+      setShowZoneDropdown(false);
   };
 
   const handleRefreshDetails = async () => {
@@ -100,27 +108,23 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
       
       const apiKey = getApiKey();
       if (!apiKey) {
-          alert("Configura tu clave API primero.");
+          alert("Configura tu clave API en el asistente primero.");
           return;
       }
 
       setDetailsLoading(true);
       
       try {
-          // Ya no esperamos un simple string, sino un objeto JSON { title, content }
           const detailsResponse: any = await generateProvinceEventDetails(apiKey, selectedEvent.title || "", selectedEvent.location || "");
           
           let newTitle = selectedEvent.title;
           let newContent = "";
 
-          // Comprobamos si la respuesta es un objeto (JSON parseado en el servicio) o texto plano (fallback)
           if (typeof detailsResponse === 'object' && detailsResponse.content) {
               newContent = detailsResponse.content;
               if (detailsResponse.title) {
                   newTitle = detailsResponse.title;
-                  // Actualizamos el título del evento seleccionado en la vista
                   setSelectedEvent(prev => prev ? { ...prev, title: newTitle } : null);
-                  // También actualizamos la lista principal para que se refleje al cerrar el modal
                   setEvents(prevEvents => prevEvents.map(e => e.id === selectedEvent.id ? { ...e, title: newTitle! } : e));
               }
           } else {
@@ -129,7 +133,6 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
 
           setEventDetails(newContent);
           
-          // Actualizar caché
           const cacheKey = `prov_event_details_${selectedEvent.title}_${selectedEvent.location}`;
           try {
               sessionStorage.setItem(cacheKey, JSON.stringify({ title: newTitle, content: newContent }));
@@ -145,10 +148,9 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
 
   const handleEventClick = async (event: ProvinceEvent) => {
       setSelectedEvent(event);
-      setEventDetails(null); // Reset details
+      setEventDetails(null); 
       setDetailsLoading(true);
 
-      // 1. Comprobar CACHÉ de sesión (prioridad máxima)
       const cacheKey = `prov_event_details_${event.title}_${event.location}`;
       try {
           const cachedData = sessionStorage.getItem(cacheKey);
@@ -171,14 +173,12 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
           console.warn("Session storage not available");
       }
 
-      // 2. Comprobar si el evento trae su propia DESCRIPCIÓN (Eventos por defecto = Coste 0)
       if (event.description) {
           setEventDetails(event.description);
           setDetailsLoading(false);
           return;
       }
 
-      // 3. Si no hay caché ni descripción, es un evento nuevo de IA o uno sin datos.
       const apiKey = getApiKey();
       if (!apiKey) {
           setEventDetails("Configura tu clave API para generar los detalles completos de este evento.");
@@ -216,6 +216,26 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
       }
   };
 
+  // Helper para encontrar el mejor match de coordenadas para el tiempo
+  const findBestTownMatch = (locationName?: string): string | null => {
+      if (!locationName) return null;
+      
+      // 1. Match exacto
+      if (townCoordinates[locationName]) return locationName;
+
+      // 2. Match parcial (ej: "Lepe" machea con "Lepe (La Costa)")
+      const keys = Object.keys(townCoordinates);
+      const match = keys.find(k => k.includes(locationName) || locationName.includes(k));
+      
+      return match || null;
+  };
+
+  const formatDate = (dateStr?: string) => {
+      if (!dateStr) return '';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-0 z-[80] backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-slate-900 w-full h-full md:h-[90vh] md:w-[90vw] md:rounded-xl shadow-2xl flex flex-col overflow-hidden relative">
@@ -246,43 +266,63 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
           </div>
         </div>
 
-        {/* Toolbar IA */}
-        <div className="bg-slate-50 dark:bg-slate-800/50 p-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+        {/* Toolbar Filtros */}
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-3 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center relative">
             <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">
-                Descubre 5 planes aleatorios fuera de la Sierra.
+                Filtra por zonas para ver qué hay cerca de ti.
             </p>
-            <button 
-                onClick={handleAiSearch}
-                disabled={isLoading}
-                className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md ml-auto"
-            >
-                {isLoading ? (
-                    <>
-                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Buscando...
-                    </>
-                ) : (
-                    <>
-                        {ICONS.sparkles}
-                        {hasSearched ? "Actualizar Lista (5)" : "Buscar con IA"}
-                    </>
+            
+            {/* ZONES DROPDOWN CONTAINER */}
+            <div className="relative ml-auto" ref={dropdownRef}>
+                <button 
+                    onClick={() => setShowZoneDropdown(!showZoneDropdown)}
+                    className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-500 transition-colors shadow-md"
+                >
+                    {ICONS.filter}
+                    {filterZone === 'Todas' ? 'Filtrar por Zona' : filterZone}
+                    <svg className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                {/* Dropdown Menu */}
+                {showZoneDropdown && (
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50 overflow-hidden animate-fade-in-up">
+                        <div className="py-1">
+                            <button
+                                onClick={() => handleZoneSelect('Todas')}
+                                className={`block w-full text-left px-4 py-2 text-sm border-b border-slate-100 dark:border-slate-700 ${filterZone === 'Todas' ? 'font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+                            >
+                                Todas las Zonas
+                            </button>
+                            {ZONES.map((zone) => (
+                                <button
+                                    key={zone}
+                                    onClick={() => handleZoneSelect(zone)}
+                                    className={`block w-full text-left px-4 py-2 text-sm ${filterZone === zone ? 'font-bold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'}`}
+                                >
+                                    {zone}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 )}
-            </button>
+            </div>
         </div>
 
         {/* Content Grid */}
         <div className="flex-1 overflow-y-auto p-4 bg-slate-50 dark:bg-black/20">
-            {events.length === 0 ? (
+            {visibleEvents.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-slate-500 dark:text-slate-400 opacity-60">
                     {ICONS.gallery}
-                    <p className="mt-4 text-sm">No hay eventos cargados. ¡Prueba el botón de IA!</p>
+                    <p className="mt-4 text-sm">No hay eventos en esta zona por ahora.</p>
+                    <button onClick={() => setFilterZone('Todas')} className="mt-2 text-purple-500 hover:underline text-sm font-bold">
+                        Ver todas las zonas
+                    </button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-20">
-                    {events.map((event) => (
+                    {visibleEvents.map((event) => (
                         <div 
                             key={event.id} 
                             className="group relative aspect-video sm:aspect-[3/4] bg-slate-200 dark:bg-slate-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all cursor-pointer border border-slate-200 dark:border-slate-700 flex flex-col"
@@ -302,10 +342,15 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
 
                             {/* Contenido Texto */}
                             <div className="relative z-10 flex flex-col justify-end h-full p-5">
-                                <div className="mb-2">
-                                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-purple-600 text-white mb-2 shadow-sm">
+                                <div className="flex justify-between items-start mb-2">
+                                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-purple-600 text-white shadow-sm">
                                         {event.location}
                                     </span>
+                                    {event.date && (
+                                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-black/50 text-white shadow-sm backdrop-blur-sm">
+                                            {formatDate(event.date)}
+                                        </span>
+                                    )}
                                 </div>
                                 <h3 className="text-white font-display font-bold text-lg leading-tight mb-2 group-hover:text-amber-300 transition-colors">
                                     {event.title}
@@ -354,22 +399,42 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
 
                     {/* Content Scrollable */}
                     <div className="p-6 overflow-y-auto flex-1 bg-white dark:bg-slate-800">
-                        <div className="flex items-center justify-between gap-2 mb-4">
-                            <span className="text-sm font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
-                                {ICONS.map} {selectedEvent.location}
-                            </span>
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                            <div className="flex flex-col">
+                                <span className="text-sm font-bold text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                                    {ICONS.map} {selectedEvent.location}
+                                </span>
+                                {selectedEvent.date && (
+                                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 capitalize ml-6">
+                                        📅 {new Date(selectedEvent.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                    </span>
+                                )}
+                            </div>
                             
-                            {/* BOTÓN EXPLÍCITO DE BÚSQUEDA ESPECÍFICA */}
-                            <button
-                                onClick={handleRefreshDetails}
-                                disabled={detailsLoading}
-                                className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-bold px-3 py-1.5 rounded-full transition-colors border border-purple-200 dark:border-purple-800 disabled:opacity-50"
-                            >
-                                {detailsLoading ? (
-                                    <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                                ) : ICONS.sparkles}
-                                Investigar este evento con IA
-                            </button>
+                            <div className="flex gap-2">
+                                {/* Botón El Tiempo */}
+                                {findBestTownMatch(selectedEvent.location) && (
+                                    <button
+                                        onClick={() => setShowWeatherModal(true)}
+                                        className="flex items-center gap-2 bg-sky-100 dark:bg-sky-900/30 hover:bg-sky-200 dark:hover:bg-sky-900/50 text-sky-700 dark:text-sky-300 text-xs font-bold px-3 py-1.5 rounded-full transition-colors border border-sky-200 dark:border-sky-800"
+                                    >
+                                        {ICONS.cloudSun}
+                                        Tiempo
+                                    </button>
+                                )}
+
+                                {/* Botón IA Específico del Evento */}
+                                <button
+                                    onClick={handleRefreshDetails}
+                                    disabled={detailsLoading}
+                                    className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 hover:bg-purple-100 dark:hover:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-bold px-3 py-1.5 rounded-full transition-colors border border-purple-200 dark:border-purple-800 disabled:opacity-50"
+                                >
+                                    {detailsLoading ? (
+                                        <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    ) : ICONS.sparkles}
+                                    Investigar con IA
+                                </button>
+                            </div>
                         </div>
 
                         {detailsLoading ? (
@@ -382,7 +447,7 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
                             </div>
                         ) : (
                             <div className="prose prose-sm dark:prose-invert max-w-none text-slate-700 dark:text-slate-300">
-                                <MarkdownRenderer text={eventDetails || "No hay información disponible."} />
+                                <MarkdownRenderer text={eventDetails || "No hay información disponible. Pulsa 'Investigar con IA'."} />
                             </div>
                         )}
                     </div>
@@ -396,6 +461,15 @@ const ProvinceEventsModal: React.FC<ProvinceEventsModalProps> = ({ onClose }) =>
                     </div>
                 </div>
             </div>
+        )}
+
+        {/* Weather Modal for Province Events */}
+        {showWeatherModal && selectedEvent && (
+            <WeatherModal
+                town={findBestTownMatch(selectedEvent.location) || selectedEvent.location || "Huelva"}
+                date={selectedEvent.date || new Date().toISOString().split('T')[0]}
+                onClose={() => setShowWeatherModal(false)}
+            />
         )}
 
       </div>

@@ -1,5 +1,4 @@
 
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ICONS } from '../constants';
 import { generatePlanFromQuery } from '../services/geminiService';
@@ -27,7 +26,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({ onClose, allEvents 
   const [messages, setMessages] = useState<Message[]>([
     {
       sender: 'ai',
-      text: "¡Hola! Soy tu asistente de viaje para la Sierra. Dime qué fechas o qué tipo de plan buscas y te crearé un itinerario a medida.\n\nPor ejemplo: 'Un plan para el puente de diciembre' o '¿Qué puedo hacer el fin de semana del 6 al 8 de diciembre?'"
+      text: "¡Hola! Soy tu asistente de viaje para la Sierra y la provincia de Huelva. Dime qué fechas o qué tipo de plan buscas y te crearé un itinerario a medida.\n\nPor ejemplo: 'Un plan para el puente de diciembre' o 'Dime eventos de Tierra de Cultura'."
     }
   ]);
   const [input, setInput] = useState('');
@@ -279,6 +278,7 @@ const AiAssistantModal: React.FC<AiAssistantModalProps> = ({ onClose, allEvents 
           {messages.filter(m => m.sender === 'ai').length === 1 && (
             <div className="flex flex-wrap justify-end gap-2 pt-2">
                 {quickActionButton("Un plan para el puente de diciembre")}
+                {quickActionButton("¿Qué es Tierra de Cultura?")}
             </div>
           )}
           <div ref={messagesEndRef} />

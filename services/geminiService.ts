@@ -29,7 +29,7 @@ export const parseEventsFromText = async (text: string): Promise<Omit<EventType,
     Devuelve los eventos como un array JSON que se ajuste al esquema proporcionado.
     Las fechas deben estar en formato YYYY-MM-DD. Si no puedes determinar una fecha exacta, omite el evento.
     Asigna la categoría más apropiada de la lista: "${Object.values(EventCategory).join('", "')}".
-    El campo 'town' debe ser uno de los pueblos de la Sierra de Aracena.
+    El campo 'town' debe ser uno de los pueblos de la Sierra de Aracena o de la provincia de Huelva.
   `;
     
   const prompt = `
@@ -147,13 +147,14 @@ export const generatePlanFromQuery = async (query: string, apiKey: string, event
 
     const systemInstruction = `
         Eres un asistente de viajes experto y amigable, especializado en la Sierra de Aracena y Picos de Aroche (Huelva).
+        IMPORTANTE: También tienes conocimiento de la campaña especial 'Tierra de Cultura' de la Diputación de Huelva, que incluye eventos en otros pueblos de la provincia (Andévalo, Condado, Costa).
+        
         Tu misión es crear planes de viaje personalizados para los usuarios basándote EXCLUSIVAMENTE en la lista de eventos en formato JSON que te proporciono.
-        - NO uses conocimiento externo. NO busques en internet. Toda tu información debe provenir del JSON.
         - Analiza la petición del usuario para entender las fechas y los intereses.
+        - Si el usuario pregunta por "Tierra de Cultura", prioriza los eventos de esa categoría.
         - Filtra la lista de eventos para encontrar los que coincidan con la petición.
         - Utiliza los campos 'itinerary' e 'interestInfo' de los eventos para enriquecer el plan.
         - Organiza el plan día por día en formato Markdown, usando negritas (**texto**) para resaltar los nombres de los eventos y lugares.
-        - Si no encuentras ningún evento en el JSON que coincida con la petición del usuario, informa amablemente de que no tienes datos para esas fechas o consulta.
         - No menciones que estás usando un JSON. Habla como un experto local.
     `;
 
@@ -191,17 +192,38 @@ export const generatePlanFromQuery = async (query: string, apiKey: string, event
 };
 
 // Función para buscar eventos en el RESTO de la provincia (Excluyendo Sierra)
-export const findProvinceEvents = async (apiKey: string): Promise<any[]> => {
+export const findProvinceEvents = async (apiKey: string, zone: string = 'General'): Promise<any[]> => {
   if (!apiKey) throw new Error("API_KEY_MISSING");
 
   const ai = new GoogleGenAI({ apiKey });
 
+  let zoneInstruction = "";
+  switch (zone) {
+      case 'Capital':
+          zoneInstruction = "Céntrate EXCLUSIVAMENTE en Huelva Capital (Plaza de las Monjas, Casa Colón, Gran Vía, etc.).";
+          break;
+      case 'Costa':
+          zoneInstruction = "Céntrate en la Costa Occidental (Lepe, Ayamonte, Isla Cristina, Punta Umbría, Cartaya).";
+          break;
+      case 'Condado':
+          zoneInstruction = "Céntrate en el Condado (Almonte, El Rocío, Moguer, La Palma del Condado, Bollullos).";
+          break;
+      case 'Andévalo':
+          zoneInstruction = "Céntrate en el Andévalo (Valverde del Camino, Calañas, Alosno, Cabezas Rubias).";
+          break;
+      case 'Cuenca Minera':
+          zoneInstruction = "Céntrate en la Cuenca Minera (Minas de Riotinto, Nerva, Zalamea la Real).";
+          break;
+      default:
+          zoneInstruction = "Busca eventos variados en toda la provincia de Huelva, EXCLUYENDO la Sierra de Aracena.";
+  }
+
   const prompt = `
-    Busca eventos de Navidad para Diciembre 2025 y Enero 2026 en la provincia de Huelva, EXCLUYENDO los pueblos de la Sierra de Aracena.
-    Céntrate en: Huelva Capital, Costa (Lepe, Ayamonte, Punta Umbría) y Condado (Almonte, Moguer, La Palma).
-    Busca: Alumbrados, Zambombas, Mercados, Belenes Vivientes, Cabalgatas.
+    Busca eventos de Navidad para Diciembre 2025 y Enero 2026 en Huelva.
+    ${zoneInstruction}
+    Busca: Alumbrados, Zambombas, Mercados, Belenes Vivientes, Cabalgatas, Conciertos.
     
-    Devuelve un array JSON con EXACTAMENTE 5 eventos variados y aleatorios encontrados. 
+    Devuelve un array JSON con EXACTAMENTE 4 eventos variados y aleatorios encontrados que sean FUTUROS (a partir de hoy).
     Sé conciso y eficiente. No inventes eventos, busca información real en Google Search.
     
     Estructura:
@@ -209,7 +231,8 @@ export const findProvinceEvents = async (apiKey: string): Promise<any[]> => {
       {
         "title": "Nombre del evento",
         "location": "Pueblo/Ciudad",
-        "date": "Fecha aproximada o texto (ej: 6-8 Dic)",
+        "date": "Fecha textual (ej: 6-8 Dic)",
+        "date_iso": "YYYY-MM-DD (Fecha de inicio aproximada para ordenar)",
         "short_desc": "Breve descripción de 10 palabras"
       }
     ]

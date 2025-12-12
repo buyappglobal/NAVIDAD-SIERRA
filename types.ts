@@ -7,6 +7,7 @@ export enum EventCategory {
   FIESTA = "Fiesta / Zambomba",
   MERCADO = "Mercado Navideño",
   FERIA_GASTRONOMICA = "Feria Gastronómica",
+  TIERRA_DE_CULTURA = "Tierra de Cultura",
   OTRO = "Otro",
 }
 

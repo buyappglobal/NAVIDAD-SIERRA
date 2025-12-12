@@ -21,14 +21,15 @@ export const analyzeSearchIntent = async (query: string, apiKey: string): Promis
   const ai = new GoogleGenAI({ apiKey });
 
   const systemInstruction = `
-    Eres un motor de búsqueda inteligente para una agenda cultural en la Sierra de Huelva (España). Año de referencia: 2025.
-    Tu trabajo es interpretar la búsqueda del usuario, corregir errores ortográficos severos (ej: "puentwe" -> "puente", "faborito" -> "favorito"), y devolver un filtro estructurado JSON.
+    Eres un motor de búsqueda inteligente para una agenda cultural en la provincia de Huelva (España). Año de referencia: 2025.
+    Tu trabajo es interpretar la búsqueda del usuario, corregir errores ortográficos severos y devolver un filtro estructurado JSON.
     
     Tus herramientas y datos de referencia:
     1. Lista de pueblos disponibles: ${townNames.join(", ")}.
     2. Categorías disponibles: ${Object.values(EventCategory).join(", ")}.
     
     Reglas de interpretación:
+    - CAMPAÑA ESPECIAL: Si el usuario busca "Tierra de Cultura", "Diputación", "cultura en la provincia", "Villablanca", "Aljaraque" o pueblos fuera de la Sierra, asígnalo a la categoría '${EventCategory.TIERRA_DE_CULTURA}' y añade el pueblo a 'townIds' si corresponde.
     - PUEBLOS: Si el usuario menciona un pueblo (o parecido), añádelo a 'townIds' usando el nombre exacto de la lista.
     - CATEGORÍAS: Si busca un tipo de evento, asígnalo a la 'categories' más adecuada.
       - "belen", "nacimiento", "portal" -> Belén Viviente.
@@ -36,16 +37,15 @@ export const analyzeSearchIntent = async (query: string, apiKey: string): Promis
       - "reyes", "cabalgata", "cartero" -> Cabalgata de Reyes.
       - "música", "concierto", "zambomba" -> Fiesta / Zambomba.
     - FECHAS: Interpreta expresiones temporales para Diciembre 2025 / Enero 2026.
-      - "Puente de diciembre", "el puente", "puentwe": Del 2025-12-05 al 2025-12-08.
+      - "Puente de diciembre", "el puente": Del 2025-12-05 al 2025-12-08.
       - "Este fin de semana": Calcula el próximo fin de semana relativo a la fecha actual (asume hoy es inicio de diciembre 2025).
       - "Navidad": 2025-12-24 a 2025-12-25.
       - "Reyes": 2026-01-05.
     - KEYWORDS (IMPORTANTE): Extrae palabras clave adicionales para filtrar por texto en el título o descripción.
-      - CORRIGE la ortografía antes de devolverlas (ej: "familia" si escribe "famila", "puente" si escribe "puentwe").
+      - CORRIGE la ortografía antes de devolverlas.
       - LIMPIEZA INTELIGENTE: EXCLUYE palabras que ya se hayan usado para determinar el Pueblo, la Categoría o la Fecha.
-      - Ejemplo 1: Si busca "belen en aracena" -> Pueblo="Aracena", Categoría="Belén Viviente", Keywords=[] (vacío, porque "belen" ya definió la categoría).
-      - Ejemplo 2: Si busca "plan familiar puentwe" -> Fecha="2025-12-05 a 08", Keywords=["familiar"] (corrige "puentwe" a fecha y extrae "familiar").
-      - Ejemplo 3: Si busca "gratis" -> Keywords=["gratis"].
+      - Ejemplo 1: Si busca "belen en aracena" -> Pueblo="Aracena", Categoría="Belén Viviente", Keywords=[].
+      - Ejemplo 2: Si busca "tierra de cultura" -> Categoría="Tierra de Cultura", Keywords=[].
   `;
 
   const prompt = `Analiza esta búsqueda: "${query}"`;
